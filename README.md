@@ -2,14 +2,13 @@
 # Computer Graphics 203.3710
 ## Students Team data
 
-Name: 
-
-Student Number: 
+Name: Shahar Tefler
 
 
-Name: 
 
-Student Number: 
+Name: Iris Berger
+
+Student Number: 213996549
 
 ### Lecturer
 *Roi Poranne*
