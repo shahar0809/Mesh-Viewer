@@ -35,6 +35,31 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 {
 	// TODO: Implement bresenham algorithm
 	// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+
+	// Color the start point
+	PutPixel(p1.x, p1.y, color);
+
+	double deltaX = (p2.x - p1.x);
+	double deltaY = (p2.y - p1.y);
+
+	double decisionParam = 2 * deltaY - deltaX;;
+
+	// Go over all X values from p1 to p2
+	for (int x = p1.x, y = p1.y; x <= p2.x; x++)
+	{
+		// Y doesn't change - The first candidate is chosen (Xk + 1, Yk)
+		if (decisionParam < 0)
+		{
+			decisionParam += 2 * deltaY;
+		}
+		// Y increases by 1 - The second candidate is chosen (Xk + 1, Yk + 1)
+		else
+		{
+			decisionParam += 2 * deltaY - 2 * deltaX;
+			y++;
+		}
+		PutPixel(x, y, color);
+	}
 }
 
 void Renderer::CreateBuffers(int w, int h)
