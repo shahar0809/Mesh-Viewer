@@ -62,6 +62,29 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	}
 }
 
+void Renderer::DrawLineSanityCheck()
+{
+	glm::ivec2 circleCenter(500, 500);
+	glm::ivec2 currentPoint;
+	glm::vec3 color({ 0, 1, 0 });
+
+	int stepSize = 90, circleRadius = 300, fullCircle = 360;
+
+	int currentStep = 0;
+	while (currentStep <= fullCircle)
+	{
+		// Calculte current point on circle
+		currentPoint.x = circleCenter.x + circleRadius * cos(currentStep * (PI / 180));
+		currentPoint.y = circleCenter.y + circleRadius * sin(currentStep * (PI / 180));
+
+		// Draw line from center to current point
+		DrawLine(circleCenter, currentPoint, color);
+
+		// Increase step size
+		currentStep += stepSize;
+	}
+}
+
 void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.
@@ -199,7 +222,7 @@ void Renderer::Render(const Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 	// draw circle
-
+	DrawLineSanityCheck();
 }
 
 int Renderer::GetViewportWidth() const
