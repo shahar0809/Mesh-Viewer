@@ -124,7 +124,7 @@ int x, y;
 In order to check our algorithm, we created a circle with a defined center `(X0, Y0)`, and a radius `R`.
 Then, we drew lines from the center to points on the circle with step size `a` = 10 using basic geometry.
 
-![sanity_check](Assignment1Report/part1_images/sanity_check.jpeg)
+![sanity_check](/Assignment1Report/part1_images/sanity_check.jpeg)
 
 ## Cake Drawing
 
