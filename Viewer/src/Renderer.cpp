@@ -127,18 +127,21 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 
 void Renderer::DrawLineSanityCheck()
 {
-	glm::ivec2 circleCenter(500, 500);
+	glm::ivec2 circleCenter(600, 400);
 	glm::ivec2 currentPoint;
-	glm::vec3 color({ 0, 1, 0 });
+	glm::vec3 color({ 0, 0, 1 });
 
-	int stepSize = 90, circleRadius = 300, fullCircle = 360;
+	int stepSize = 10, circleRadius = 150, fullCircle = 360;
+	PutPixel(circleCenter.x, circleCenter.y, { 0,0,0 });
 
 	int currentStep = 0;
-	while (currentStep <= fullCircle)
+	while (currentStep < fullCircle)
 	{
 		// Calculte current point on circle
 		currentPoint.x = circleCenter.x + circleRadius * cos(currentStep * (PI / 180));
 		currentPoint.y = circleCenter.y + circleRadius * sin(currentStep * (PI / 180));
+
+		PutPixel(currentPoint.x, currentPoint.y, { 0,0,0 });
 
 		// Draw line from center to current point
 		DrawLine(circleCenter, currentPoint, color);
