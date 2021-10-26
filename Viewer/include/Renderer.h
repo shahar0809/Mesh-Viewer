@@ -1,5 +1,7 @@
 #pragma once
 #include "Scene.h"
+#include <iostream>
+#include <complex>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 

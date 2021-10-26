@@ -33,32 +33,95 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 
 void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
 {
-	// TODO: Implement bresenham algorithm
-	// https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+	int x, y;
 
-	// Color the start point
-	PutPixel(p1.x, p1.y, color);
+	int deltaX = p2.x - p1.x;
+	int deltaY = p2.y - p1.y;
 
-	double deltaX = (p2.x - p1.x);
-	double deltaY = (p2.y - p1.y);
+	// Calculate absoloute values of deltas
+	int abs_deltaX = fabs(deltaX);
+	int abs_deltaY = fabs(deltaY);
 
-	double decisionParam = 2 * deltaY - deltaX;;
+	// Precalculate the decision parameters
+	int decisionParam_X = 2 * abs_deltaY - abs_deltaX;
+	int decisionParam_Y = 2 * abs_deltaX - abs_deltaY;
 
-	// Go over all X values from p1 to p2
-	for (int x = p1.x, y = p1.y; x <= p2.x; x++)
+	// Slope < 1
+	if (abs_deltaY <= abs_deltaX)
 	{
-		// Y doesn't change - The first candidate is chosen (Xk + 1, Yk)
-		if (decisionParam < 0)
+		// If the first points is after the second one (on X coordinates), switch them
+		if (deltaX < 0)
 		{
-			decisionParam += 2 * deltaY;
+			DrawLine(p2, p1, color);
+			return;
 		}
-		// Y increases by 1 - The second candidate is chosen (Xk + 1, Yk + 1)
+
+		y = p1.y;
+		// Go over all X's from start to end
+		for (x = p1.x; x < p2.x; x++)
+		{
+			if (decisionParam_X < 0)
+			{
+				decisionParam_X += 2 * abs_deltaY;
+			}
+			else
+			{
+				// If the slope is positive, we want to increase Y
+				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
+				{
+					y = y + 1;
+				}
+				// Otherwise, we'll decrease it (in the direction of the line)
+				else
+				{
+					y = y - 1;
+				}
+				decisionParam_X = decisionParam_X + 2 * (abs_deltaY - abs_deltaX);
+			}
+			PutPixel(x, y, color);
+		}
+	}
+	// We go over the Y coordinates, instead of X ( Slope >= 1)
+	else
+	{
+		int endY;
+		glm::ivec2 start, end;
+
+		// Change points order if necessary
+		if (deltaY < 0)
+		{
+			start = p2;
+			end = p1;
+		}
 		else
 		{
-			decisionParam += 2 * deltaY - 2 * deltaX;
-			y++;
+			start = p1;
+			end = p2;
 		}
-		PutPixel(x, y, color);
+
+		int x = start.x;
+		for (int y = start.y; y < end.y; y++)
+		{
+			if (decisionParam_Y < 0)
+			{
+				decisionParam_Y += 2 * abs_deltaX;
+			}
+			else
+			{
+				// If the slope is positive, we want to increase X
+				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
+				{
+					x = x + 1;
+				}
+				// Otherwise, we'll decrease it (in the direction of the line)
+				else
+				{
+					x = x - 1;
+				}
+				decisionParam_Y += 2 * (abs_deltaX - abs_deltaY);
+			}
+			PutPixel(x, y, color);
+		}
 	}
 }
 
@@ -223,6 +286,7 @@ void Renderer::Render(const Scene& scene)
 	int half_height = viewport_height / 2;
 	// draw circle
 	DrawLineSanityCheck();
+	//DrawLine(glm::ivec2(500, 500), glm::ivec2(450, 500), { 0, 1, 0 });
 }
 
 int Renderer::GetViewportWidth() const
