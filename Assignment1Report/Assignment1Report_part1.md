@@ -11,6 +11,8 @@ In order to implement the algorithm, we split into cases:
 
 Once we split it into cases, it was easier to implement the algorithm.
 - If the first point is before the second one, we simply switch them.
+![switch_points](/part1_images/switch_points.jpeg) Format: ![Alt Text](https://github.com/HaifaGraphicsCourses/computer-graphics-2022-shahar-and-iris/blob/master/Assignment1Report/part1_images/switch_points.jpeg)
+
 - If the slope is above 1, we switch between the X and Y values.
 
 Then, we implemented the algorithm as presented in class, for the standard case.
