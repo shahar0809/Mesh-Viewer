@@ -67,16 +67,16 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 			else
 			{
 				// If the slope is positive, we want to increase Y
-				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
+				if ((deltaX > 0 && deltaY > 0) || (deltaX < 0 && deltaY < 0))
 				{
-					y = y + 1;
+					y++;
 				}
 				// Otherwise, we'll decrease it (in the direction of the line)
 				else
 				{
-					y = y - 1;
+					y--;
 				}
-				decisionParam_X = decisionParam_X + 2 * (abs_deltaY - abs_deltaX);
+				decisionParam_X += 2 * (abs_deltaY - abs_deltaX);
 			}
 			PutPixel(x, y, color);
 		}
@@ -109,14 +109,14 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 			else
 			{
 				// If the slope is positive, we want to increase X
-				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
+				if ((deltaX > 0 && deltaY > 0) || (deltaX < 0 && deltaY < 0))
 				{
-					x = x + 1;
+					x++;
 				}
 				// Otherwise, we'll decrease it (in the direction of the line)
 				else
 				{
-					x = x - 1;
+					x--;
 				}
 				decisionParam_Y += 2 * (abs_deltaX - abs_deltaY);
 			}
@@ -372,9 +372,7 @@ void Renderer::Render(const Scene& scene)
 	int half_height = viewport_height / 2;
 	// draw circle
 	DrawLineSanityCheck();
-	//DrawLine(glm::ivec2(500, 500), glm::ivec2(450, 500), { 0, 1, 0 });
-	Draw();
-
+	//Draw();
 }
 
 int Renderer::GetViewportWidth() const
