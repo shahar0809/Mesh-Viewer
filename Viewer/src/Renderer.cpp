@@ -66,7 +66,7 @@ void Renderer::DrawLineSanityCheck()
 {
 	glm::ivec2 circleCenter(500, 500);
 	glm::ivec2 currentPoint;
-	glm::vec3 color({ 0, 1, 0 });
+	glm::vec3 color({ 0, 0, 0 });
 
 	int stepSize = 90, circleRadius = 300, fullCircle = 360;
 
@@ -75,7 +75,7 @@ void Renderer::DrawLineSanityCheck()
 	{
 		// Calculte current point on circle
 		currentPoint.x = circleCenter.x + circleRadius * cos(currentStep * (PI / 180));
-		currentPoint.y = circleCenter.y + circleRadius * sin(currentStep * (PI / 180));
+		currentPoint.y = circleCenter.y - circleRadius * sin(currentStep * (PI / 180));
 
 		// Draw line from center to current point
 		DrawLine(circleCenter, currentPoint, color);
@@ -83,6 +83,89 @@ void Renderer::DrawLineSanityCheck()
 		// Increase step size
 		currentStep += stepSize;
 	}
+}
+
+void Renderer::DrawingRectangle(int length, int width, int bold, glm::ivec2& startingPoint) {
+	//Drowing a Rectangle with a smoll filld piece on the to op it.
+	glm::ivec2 nextPoint(startingPoint.x + length, startingPoint.y);
+	glm::vec3 color({ 0, 0, 0 });
+	
+
+	for (int i = 0; i < bold + 1; i++) {
+		if (i == 0) {
+			DrawLine(startingPoint, nextPoint, color);
+			nextPoint.y = nextPoint.y + width - bold;
+			startingPoint.y = startingPoint.y + width - bold;
+		}
+		else {
+			DrawLine(startingPoint, nextPoint, color);
+			nextPoint.y = nextPoint.y + 1;
+			startingPoint.y = startingPoint.y + 1;
+		}
+	}
+	nextPoint.y = nextPoint.y - 1;
+	startingPoint.y = startingPoint.y - 1;
+	startingPoint.x = nextPoint.x;
+	startingPoint.y = nextPoint.y - width;
+	DrawLine(startingPoint, nextPoint, color);
+
+	nextPoint.x = startingPoint.x - length;
+	startingPoint.x = nextPoint.x;
+	DrawLine(startingPoint, nextPoint, color);
+}
+
+void Renderer::DrawingCandle(const glm::ivec2& startPoint, const glm::ivec2& point1, const glm::ivec2& point2, const glm::ivec2& point3, const glm::ivec2& point4, const glm::ivec2& point5, const glm::ivec2& point6) {
+	// print the flame of the candle
+	glm::vec3 color({255, 0, 0 });
+	DrawLine(startPoint, point1, color);
+	DrawLine(startPoint, point2, color);
+	DrawLine(point1, point3, color);
+	DrawLine(point2, point4, color);
+	DrawLine(point5, point6, color);
+}
+
+void Renderer::Draw() {
+	//drawing a cake
+
+	int rectangleIndex = 10;
+	int rectangleWidth = 200;
+	int rectanglength = 300;
+	int length = 25;
+	int width = 125;
+	int betweenRectangles = 50;
+	 
+	int candleY = rectangleIndex + rectangleWidth + rectangleWidth * 2 / 3 - 1;
+
+	int startX = rectangleIndex * 8 + betweenRectangles + betweenRectangles / 4 + length / 2;
+	int startY = rectangleIndex + rectangleWidth + 2 * width + 2 * length;
+	int startAdd = betweenRectangles / 4 + length + 1;
+
+	int point3X = rectangleIndex * 8 + betweenRectangles + betweenRectangles / 4;
+	int point3Y = candleY + width;
+
+	int point1X = rectangleIndex * 8 + betweenRectangles + betweenRectangles / 4 - betweenRectangles / 16;
+	int point1Y = startY - width * 3 / 16;
+	 
+	int point2X = rectangleIndex * 8 + betweenRectangles + betweenRectangles / 4 + length + betweenRectangles / 16;
+	int point2Y = startY - width * 3 / 16;
+
+	int point5Y = startY - width / 3;
+	int point6Y = startY - width / 16;
+	
+	DrawingRectangle(rectanglength, rectangleWidth, rectangleWidth / 8, glm::ivec2(rectangleIndex * 8, rectangleIndex));
+	DrawingRectangle(rectanglength * 2 / 3, rectangleWidth * 2 / 3, rectangleWidth / 12, glm::ivec2(rectangleIndex * 8 + betweenRectangles , rectangleIndex + rectangleWidth));
+	
+	DrawingRectangle(length, width, width / 8, glm::ivec2(rectangleIndex * 8 + betweenRectangles + betweenRectangles / 4, candleY));
+	DrawingRectangle(length, width, width / 8, glm::ivec2(rectangleIndex * 8 + betweenRectangles + 2 * betweenRectangles / 4 + length, candleY));
+	DrawingRectangle(length, width, width / 8, glm::ivec2(rectangleIndex * 8 + betweenRectangles + 3 * betweenRectangles / 4 + 2 * length, candleY));
+	DrawingRectangle(length, width, width / 8, glm::ivec2(rectangleIndex * 8 + betweenRectangles + 4 * betweenRectangles / 4 + 3 * length, candleY));
+	DrawingRectangle(length, width, width / 8, glm::ivec2(rectangleIndex * 8 + betweenRectangles + 5 * betweenRectangles / 4 + 4 * length, candleY));
+	
+	DrawingCandle(glm::ivec2(startX, startY), glm::ivec2(point1X, point1Y), glm::ivec2(point2X, point2Y), glm::ivec2(point3X, point3Y), glm::ivec2(point3X + length, point3Y), glm::vec2(startX, point5Y), glm::vec2(startX, point6Y));
+	DrawingCandle(glm::ivec2(startX + startAdd, startY), glm::ivec2(point1X + startAdd, point1Y), glm::ivec2(point2X + startAdd, point2Y), glm::ivec2(point3X + startAdd, point3Y), glm::ivec2(point3X + startAdd + length, point3Y), glm::vec2(startX + startAdd, point5Y), glm::vec2(startX + startAdd, point6Y));
+	DrawingCandle(glm::ivec2(startX + 2 * startAdd, startY), glm::ivec2(point1X + 2 * startAdd, point1Y), glm::ivec2(point2X + 2 * startAdd - 1, point2Y), glm::ivec2(point3X + 2 * startAdd - 1, point3Y), glm::ivec2(point3X + 2 * startAdd + length - 1, point3Y), glm::vec2(startX + 2 * startAdd, point5Y), glm::vec2(startX + 2 * startAdd, point6Y));
+	DrawingCandle(glm::ivec2(startX + 3 * startAdd, startY), glm::ivec2(point1X + 3 * startAdd, point1Y), glm::ivec2(point2X + 3 * startAdd - 1, point2Y), glm::ivec2(point3X + 3 * startAdd - 1, point3Y), glm::ivec2(point3X + 3 * startAdd + length - 1, point3Y), glm::vec2(startX + 3 * startAdd, point5Y), glm::vec2(startX + 3 * startAdd, point6Y));
+	DrawingCandle(glm::ivec2(startX + 4 * startAdd, startY), glm::ivec2(point1X + 4 * startAdd, point1Y), glm::ivec2(point2X + 4 * startAdd - 2, point2Y), glm::ivec2(point3X + 4 * startAdd - 2, point3Y), glm::ivec2(point3X + 4 * startAdd + length - 2, point3Y), glm::vec2(startX + 4 * startAdd, point5Y), glm::vec2(startX + 4 * startAdd, point6Y));
 }
 
 void Renderer::CreateBuffers(int w, int h)
@@ -222,7 +305,8 @@ void Renderer::Render(const Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 	// draw circle
-	DrawLineSanityCheck();
+	Draw();
+
 }
 
 int Renderer::GetViewportWidth() const
