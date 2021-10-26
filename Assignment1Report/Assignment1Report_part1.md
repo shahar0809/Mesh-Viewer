@@ -11,9 +11,12 @@ In order to implement the algorithm, we split into cases:
 
 Once we split it into cases, it was easier to implement the algorithm.
 - If the first point is before the second one, we simply switch them.
-![switch_points](/part1_images/switch_points.jpeg) Format: ![Alt Text](https://github.com/HaifaGraphicsCourses/computer-graphics-2022-shahar-and-iris/blob/master/Assignment1Report/part1_images/switch_points.jpeg)
+
+	![switch_points](/part1_images/switch_points.jpeg) 
 
 - If the slope is above 1, we switch between the X and Y values.
+
+	![switch_coordinates](/Assignment1Report/part1_images/switch_coordinates.jpeg)
 
 Then, we implemented the algorithm as presented in class, for the standard case.
 
@@ -116,3 +119,18 @@ int x, y;
 	}
 ```
 
+## Our Sanity Check
+
+In order to check our algorithm, we created a circle with a defined center `(X0, Y0)`, and a radius `R`.
+Then, we drew lines from the center to points on the circle with step size `a` using basic geometry.
+
+	![sanity_check](/Assignment1Report/part1_images/sanity_check.jpeg)
+
+## Cake Drawing
+
+We decided to draw a cake with candles, because, why not?
+
+	![drawing_cake](/Assignment1Report/part1_images/drawing_cake.jpeg)
+	
+## The End
+	![gif](https://www.google.com/url?sa=i&url=https%3A%2F%2Fgifer.com%2Fen%2F1VFb&psig=AOvVaw2oSTLkzyMJthJ7Sr8nRN-Q&ust=1635367465635000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCLjO7dn46PMCFQAAAAAdAAAAABAb)
