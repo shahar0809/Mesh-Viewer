@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2021.2.2\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\MeshViewer.dir/objects.a
+C:\MinGW\bin\ar.exe cr CMakeFiles\MeshViewer.dir/objects.a @CMakeFiles\MeshViewer.dir\objects1.rsp
+C:\MinGW\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\MeshViewer.dir/objects.a -Wl,--no-whole-archive -o bin\MeshViewer.exe -Wl,--out-implib,lib\libMeshViewer.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\MeshViewer.dir\linklibs.rsp

@@ -46,6 +46,11 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	int decisionParam_X = 2 * abs_deltaY - abs_deltaX;
 	int decisionParam_Y = 2 * abs_deltaX - abs_deltaY;
 
+	if (deltaX == 0 && deltaY == 0)
+	{
+		return;
+	}
+
 	// Slope < 1
 	if (abs_deltaY <= abs_deltaX)
 	{
@@ -69,12 +74,12 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				// If the slope is positive, we want to increase Y
 				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
 				{
-					y = y + 1;
+					y++;
 				}
 				// Otherwise, we'll decrease it (in the direction of the line)
 				else
 				{
-					y = y - 1;
+					y--;
 				}
 				decisionParam_X = decisionParam_X + 2 * (abs_deltaY - abs_deltaX);
 			}
@@ -149,6 +154,28 @@ void Renderer::DrawLineSanityCheck()
 		// Increase step size
 		currentStep += stepSize;
 	}
+}
+
+void Renderer::DrawModel(const MeshModel& model)
+{
+	for (int i = 0; i < model.GetFacesCount(); i++)
+	{
+		Face currFace = model.GetFace(i);
+		DrawFace(currFace, model);
+	}
+}
+
+void Renderer::DrawFace(const Face& face, const MeshModel& model)
+{
+	//std::cout << "hello" << std::endl;
+	glm::vec3 
+		v1 = model.GetVertice(face.GetVertexIndex(0)),
+		v2 = model.GetVertice(face.GetVertexIndex(1)),
+		v3 = model.GetVertice(face.GetVertexIndex(2));
+
+	DrawLine(v1, v2, { 0, 0, 0 });
+	DrawLine(v2, v3, { 0, 0, 0 });
+	DrawLine(v3, v1, { 0, 0, 0 });
 }
 
 void Renderer::CreateBuffers(int w, int h)
@@ -287,9 +314,13 @@ void Renderer::Render(const Scene& scene)
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
-	// draw circle
-	DrawLineSanityCheck();
-	//DrawLine(glm::ivec2(500, 500), glm::ivec2(450, 500), { 0, 1, 0 });
+
+	// Draw mesh triangles
+	for (int i = 0; i < scene.GetModelCount(); i++)
+	{
+		MeshModel currModel = scene.GetModel(i);
+		DrawModel(currModel);
+	}
 }
 
 int Renderer::GetViewportWidth() const

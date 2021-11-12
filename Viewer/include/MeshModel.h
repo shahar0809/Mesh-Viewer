@@ -10,6 +10,8 @@ public:
 	virtual ~MeshModel();
 	const Face& GetFace(int index) const;
 	int GetFacesCount() const;
+	const glm::vec3& GetVertice(int index) const;
+	int GetVerticesCount() const;
 	const std::string& GetModelName() const;
 
 private:
