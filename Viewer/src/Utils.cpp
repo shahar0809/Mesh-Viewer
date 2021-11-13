@@ -45,7 +45,7 @@ std::shared_ptr<MeshModel> Utils::LoadMeshModel(const std::string& filePath)
 		{
 			// Print vertices when loading mesh model
 			glm::vec3 vertice = Utils::Vec3fFromStream(issLine);
-			std::cout << "V: (" << vertice.x << "," << vertice.y << ")" << std::endl;
+			std::cout << "V: (" << vertice.x << "," << vertice.y << "," << vertice.z << ")" << std::endl;
 
 			vertices.push_back(vertice);
 		}
@@ -124,12 +124,14 @@ glm::vec3 Utils::FromHomogCoords(glm::vec4 vec)
 	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
 }
 
-std::pair<std::pair<double, double>, std::pair<double, double>> Utils::GetMin(std::vector<glm::vec3> vertices)
+std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> Utils::GetMin(std::vector<glm::vec3> vertices)
 {
 	double minX = vertices[0].x,
 		minY = vertices[0].y,
 		maxX = vertices[0].x,
-		maxY = vertices[0].y;
+		maxY = vertices[0].y,
+		maxZ = vertices[0].z,
+		minZ = vertices[0].z;
 
 	for (glm::vec3 v : vertices)
 	{
@@ -149,7 +151,15 @@ std::pair<std::pair<double, double>, std::pair<double, double>> Utils::GetMin(st
 		{
 			maxY = v.y;
 		}
+		if (v.z > maxZ)
+		{
+			maxZ = v.z;
+		}
+		if (v.z < minZ)
+		{
+			minZ = v.z;
+		}
 	}
 
-	return std::pair<std::pair<double, double>, std::pair<double, double>>(std::pair<double, double>(minX, maxX), std::pair<double, double>(minY, maxY));
+	return std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>>(std::make_tuple(minX, minY, minZ), std::make_tuple(maxX, maxY, maxZ));
 }
