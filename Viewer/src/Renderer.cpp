@@ -46,6 +46,11 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 	int decisionParam_X = 2 * abs_deltaY - abs_deltaX;
 	int decisionParam_Y = 2 * abs_deltaX - abs_deltaY;
 
+	if (deltaX == 0 && deltaY == 0)
+	{
+		return;
+	}
+
 	// Slope < 1
 	if (abs_deltaY <= abs_deltaX)
 	{
@@ -151,6 +156,7 @@ void Renderer::DrawLineSanityCheck()
 	}
 }
 
+<<<<<<< HEAD
 void Renderer::DrawingRectangle(int length, int width, int bold, glm::ivec2& startingPoint) {
 	//Drowing a Rectangle with a smoll filld piece on the to op it.
 	glm::ivec2 nextPoint(startingPoint.x + length, startingPoint.y);
@@ -232,6 +238,27 @@ void Renderer::Draw() {
 	DrawingCandle(glm::ivec2(startX + 2 * startAdd, startY), glm::ivec2(point1X + 2 * startAdd, point1Y), glm::ivec2(point2X + 2 * startAdd - 1, point2Y), glm::ivec2(point3X + 2 * startAdd - 1, point3Y), glm::ivec2(point3X + 2 * startAdd + length - 1, point3Y), glm::vec2(startX + 2 * startAdd, point5Y), glm::vec2(startX + 2 * startAdd, point6Y));
 	DrawingCandle(glm::ivec2(startX + 3 * startAdd, startY), glm::ivec2(point1X + 3 * startAdd, point1Y), glm::ivec2(point2X + 3 * startAdd - 1, point2Y), glm::ivec2(point3X + 3 * startAdd - 1, point3Y), glm::ivec2(point3X + 3 * startAdd + length - 1, point3Y), glm::vec2(startX + 3 * startAdd, point5Y), glm::vec2(startX + 3 * startAdd, point6Y));
 	DrawingCandle(glm::ivec2(startX + 4 * startAdd, startY), glm::ivec2(point1X + 4 * startAdd, point1Y), glm::ivec2(point2X + 4 * startAdd - 2, point2Y), glm::ivec2(point3X + 4 * startAdd - 2, point3Y), glm::ivec2(point3X + 4 * startAdd + length - 2, point3Y), glm::vec2(startX + 4 * startAdd, point5Y), glm::vec2(startX + 4 * startAdd, point6Y));
+=======
+void Renderer::DrawModel(const MeshModel& model)
+{
+	for (int i = 0; i < model.GetFacesCount(); i++)
+	{
+		Face currFace = model.GetFace(i);
+		DrawFace(currFace, model);
+	}
+}
+
+void Renderer::DrawFace(const Face& face, const MeshModel& model)
+{
+	//std::cout << "hello" << std::endl;
+	glm::vec3 
+		v1 = model.GetVertice(face.GetVertexIndex(0)),
+		v2 = model.GetVertice(face.GetVertexIndex(1)),
+		v3 = model.GetVertice(face.GetVertexIndex(2));
+
+	DrawLine(v1, v2, { 0, 0, 0 });
+	DrawLine(v2, v3, { 0, 0, 0 });
+	DrawLine(v3, v1, { 0, 0, 0 });
 }
 
 void Renderer::CreateBuffers(int w, int h)
@@ -370,9 +397,13 @@ void Renderer::Render(const Scene& scene)
 	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
-	// draw circle
-	DrawLineSanityCheck();
-	//Draw();
+
+	// Draw mesh triangles
+	for (int i = 0; i < scene.GetModelCount(); i++)
+	{
+		MeshModel currModel = scene.GetModel(i);
+		DrawModel(currModel);
+	}
 }
 
 int Renderer::GetViewportWidth() const

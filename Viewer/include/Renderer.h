@@ -27,6 +27,9 @@ private:
 
 	void DrawLineSanityCheck();
 
+	void DrawModel(const MeshModel& model);
+	void DrawFace(const Face& face, const MeshModel& model);
+
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();
 	void InitOpenglRendering();
