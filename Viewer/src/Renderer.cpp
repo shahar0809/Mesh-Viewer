@@ -72,7 +72,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 			else
 			{
 				// If the slope is positive, we want to increase Y
-				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
+				if ((deltaX > 0 && deltaY > 0) || (deltaX < 0 && deltaY < 0))
 				{
 					y++;
 				}
@@ -81,7 +81,7 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				{
 					y--;
 				}
-				decisionParam_X = decisionParam_X + 2 * (abs_deltaY - abs_deltaX);
+				decisionParam_X += 2 * (abs_deltaY - abs_deltaX);
 			}
 			PutPixel(x, y, color);
 		}
@@ -114,14 +114,14 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 			else
 			{
 				// If the slope is positive, we want to increase X
-				if ((deltaX < 0 && deltaY < 0) || (deltaX > 0 && deltaY > 0))
+				if ((deltaX > 0 && deltaY > 0) || (deltaX < 0 && deltaY < 0))
 				{
-					x = x + 1;
+					x++;
 				}
 				// Otherwise, we'll decrease it (in the direction of the line)
 				else
 				{
-					x = x - 1;
+					x--;
 				}
 				decisionParam_Y += 2 * (abs_deltaX - abs_deltaY);
 			}
@@ -144,7 +144,7 @@ void Renderer::DrawLineSanityCheck()
 	{
 		// Calculte current point on circle
 		currentPoint.x = circleCenter.x + circleRadius * cos(currentStep * (PI / 180));
-		currentPoint.y = circleCenter.y + circleRadius * sin(currentStep * (PI / 180));
+		currentPoint.y = circleCenter.y - circleRadius * sin(currentStep * (PI / 180));
 
 		PutPixel(currentPoint.x, currentPoint.y, { 0,0,0 });
 
