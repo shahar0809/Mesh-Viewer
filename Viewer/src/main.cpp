@@ -140,10 +140,16 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 
 	if (!io.WantCaptureMouse)
 	{
-		// TODO: Handle mouse events here
-		if (io.MouseDown[0])
+		auto mouseDelta = ImGui::GetMouseDragDelta();
+		// Translate active model on mouse drag
+		if (mouseDelta.x != 0 || mouseDelta.y != 0)
 		{
-			// Left mouse button is down
+			scene.GetActiveModel().ApplyModelTranslate(mouseDelta.x, mouseDelta.x, 0);
+		}
+		// Scale active model on mouse scroll
+		if (io.MouseWheel)
+		{
+			scene.GetActiveModel().ApplyModelScale(io.MouseWheel, io.MouseWheel, io.MouseWheel);
 		}
 	}
 
@@ -207,6 +213,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	// TODO: Add more controls as needed
 	
 	ImGui::End();
+
+	static std::vector<std::string> modelNames;
 
 	static float ModelScaleValue[3] = { 1 }, ModelTransValue[3] = { 0 }, ModelRotateValue = 0;
 
