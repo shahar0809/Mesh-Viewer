@@ -113,3 +113,43 @@ std::string Utils::GetFileName(const std::string& filePath)
 
 	return filePath.substr(index + 1, len - index);
 }
+
+glm::vec4 Utils::ToHomogCoords(glm::vec3 vec)
+{
+	return glm::vec4(vec, 1);
+}
+
+glm::vec3 Utils::FromHomogCoords(glm::vec4 vec)
+{
+	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
+}
+
+std::pair<std::pair<double, double>, std::pair<double, double>> Utils::GetMin(std::vector<glm::vec3> vertices)
+{
+	double minX = vertices[0].x,
+		minY = vertices[0].y,
+		maxX = vertices[0].x,
+		maxY = vertices[0].y;
+
+	for (glm::vec3 v : vertices)
+	{
+		if (v.x < minX)
+		{
+			minX = v.x;
+		}
+		if (v.y < minY)
+		{
+			minY = v.y;
+		}
+		if (v.x > maxX)
+		{
+			maxX = v.x;
+		}
+		if (v.y > maxY)
+		{
+			maxY = v.y;
+		}
+	}
+
+	return std::pair<std::pair<double, double>, std::pair<double, double>>(std::pair<double, double>(minX, maxX), std::pair<double, double>(minY, maxY));
+}

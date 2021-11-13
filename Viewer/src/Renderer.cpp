@@ -167,15 +167,31 @@ void Renderer::DrawModel(const MeshModel& model)
 
 void Renderer::DrawFace(const Face& face, const MeshModel& model)
 {
-	//std::cout << "hello" << std::endl;
-	glm::vec3 
-		v1 = model.GetVertice(face.GetVertexIndex(0)),
-		v2 = model.GetVertice(face.GetVertexIndex(1)),
-		v3 = model.GetVertice(face.GetVertexIndex(2));
+	//glm::mat4 modelTrans = model.GetTransformation();
+	std::vector<glm::vec3> transformedVecs;
 
-	DrawLine(v1, v2, { 0, 0, 0 });
-	DrawLine(v2, v3, { 0, 0, 0 });
-	DrawLine(v3, v1, { 0, 0, 0 });
+	auto result = Utils::GetMin(model.GetVertices());
+	double avgX = (result.first.first - result.first.second) / 2,
+		avgY = (result.second.first - result.second.second) / 2;
+
+	double scaleVal = 1000 / (result.second.first - result.second.second);
+
+	glm::mat4 trans{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { -int(avgX), -int(avgY), 1, 1} };
+	glm::mat4 scale{ {scaleVal, 0, 0, 0}, {0, scaleVal, 0, 0}, {0, 0, scaleVal, 0}, {0, 0, 0, scaleVal} };
+	glm::mat4 transf = scale * trans;
+
+	glm::vec3 color{ 0, 0, 0 };
+
+	// Apply transformation on vertices
+	for (int i = 0; i < 3; i++)
+	{
+		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
+		transformedVecs.push_back(Utils::FromHomogCoords(transf * homVec));
+	}
+
+	DrawLine(transformedVecs[0], transformedVecs[1], color);
+	DrawLine(transformedVecs[1], transformedVecs[2], color);
+	DrawLine(transformedVecs[2], transformedVecs[0], color);
 }
 
 void Renderer::CreateBuffers(int w, int h)

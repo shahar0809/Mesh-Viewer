@@ -16,6 +16,8 @@ public:
 	int GetModelCount() const;
 	MeshModel& GetModel(int index) const;
 	MeshModel& GetActiveModel() const;
+
+	void fitModel(shared_ptr<MeshModel>& mesh_model);
 	
 	void AddCamera(const shared_ptr<Camera>& camera);
 	int GetCameraCount() const;

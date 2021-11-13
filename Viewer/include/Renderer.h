@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Utils.h"
 #include <iostream>
 #include <complex>
 #include <glad/glad.h>
