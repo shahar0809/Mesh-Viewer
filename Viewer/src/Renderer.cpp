@@ -167,18 +167,24 @@ void Renderer::DrawModel(const MeshModel& model)
 
 void Renderer::DrawFace(const Face& face, const MeshModel& model)
 {
-	//glm::mat4 modelTrans = model.GetTransformation();
+	//glm::mat4x4 modelTrans = model.GetTransformation();
 	std::vector<glm::vec3> transformedVecs;
 
 	auto result = Utils::GetMin(model.GetVertices());
-	double avgX = (result.first.first - result.first.second) / 2,
-		avgY = (result.second.first - result.second.second) / 2;
+	double avgX = (std::get<0>(result.second) - std::get<0>(result.first)) / 2,
+		avgY = (std::get<1>(result.second) - std::get<1>(result.first)) / 2,
+		avgZ = (std::get<2>(result.second) - std::get<2>(result.first)) / 2;
 
-	double scaleVal = 1000 / (result.second.first - result.second.second);
+	//double scaleVal = (viewport_height / 2) / (std::get<0>(result.second) - std::get<0>(result.first));
+	double scaleVal = 100000;
+	double transX = (viewport_width / 2) - int(avgX - int(avgX) * scaleVal),
+		transY = (viewport_height / 2) - int(avgY - int(avgY) * scaleVal);
 
-	glm::mat4 trans{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { -int(avgX), -int(avgY), 1, 1} };
-	glm::mat4 scale{ {scaleVal, 0, 0, 0}, {0, scaleVal, 0, 0}, {0, 0, scaleVal, 0}, {0, 0, 0, scaleVal} };
-	glm::mat4 transf = scale * trans;
+	glm::mat4x4 transZero{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { -int(avgX), -int(avgY), -int(avgZ), 1} };
+	glm::mat4x4 scale{ {scaleVal, 0, 0, 0}, {0, scaleVal, 0, 0}, {0, 0, scaleVal, 0}, {0, 0, 0, scaleVal} };
+	glm::mat4x4 transCenter{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { transX, transY, 0, 1} };
+
+	glm::mat4x4 transf = transCenter * scale * transZero;
 
 	glm::vec3 color{ 0, 0, 0 };
 
@@ -186,7 +192,8 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model)
 	for (int i = 0; i < 3; i++)
 	{
 		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
-		transformedVecs.push_back(Utils::FromHomogCoords(transf * homVec));
+		glm::vec4 res = transf * homVec;
+		transformedVecs.push_back(Utils::FromHomogCoords(res));
 	}
 
 	DrawLine(transformedVecs[0], transformedVecs[1], color);

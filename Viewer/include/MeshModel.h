@@ -36,7 +36,7 @@ public:
 	void SetWorldRotate(double rotateVal);
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
-	glm::mat4 GetTransformation() const;
+	glm::mat4x4 GetTransformation() const;
 
 private:
 	std::vector<Face> faces;
@@ -44,8 +44,8 @@ private:
 	std::vector<glm::vec3> normals;
 	std::string model_name;
 
-	glm::mat4 ScaleModel, TranslateModel, RotateModel;
-	glm::mat4 ScaleWorld, TranslateWorld, RotateWorld;
+	glm::mat4x4 ScaleModel, TranslateModel, RotateModel;
+	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld;
 
 	// Store current rotate values (to avoid using arcsin, arccos)
 	double ModelRotateVal, WorldRotateVal;

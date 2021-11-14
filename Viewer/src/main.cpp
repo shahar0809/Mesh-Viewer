@@ -17,7 +17,7 @@
  * Fields
  */
 bool show_demo_window = false;
-bool show_another_window = false;
+bool show_another_window = true;
 glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
 
 /**
@@ -140,10 +140,16 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 
 	if (!io.WantCaptureMouse)
 	{
-		// TODO: Handle mouse events here
-		if (io.MouseDown[0])
+		auto mouseDelta = ImGui::GetMouseDragDelta();
+		// Translate active model on mouse drag
+		if (mouseDelta.x != 0 || mouseDelta.y != 0)
 		{
-			// Left mouse button is down
+			scene.GetActiveModel().ApplyModelTranslate(mouseDelta.x, mouseDelta.x, 0);
+		}
+		// Scale active model on mouse scroll
+		if (io.MouseWheel)
+		{
+			scene.GetActiveModel().ApplyModelScale(io.MouseWheel, io.MouseWheel, io.MouseWheel);
 		}
 	}
 
@@ -208,44 +214,46 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	
 	ImGui::End();
 
-	/**
-	 * Imgui demo - you can remove it once you are familiar with imgui
-	 */
-	
-	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
+	static std::vector<std::string> modelNames;
 
-	// 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+	static float ModelScaleValue[3] = { 1 }, ModelTransValue[3] = { 0 }, ModelRotateValue = 0;
+
+	ImGui::Begin("Model");
+	ImGui::Text("Modify values");
+
+	/* Set new parameters for each transformation when the slider is changed [Model] */
+	if (ImGui::SliderFloat3("Scale", ModelScaleValue, 0.0f, 1000.000f))
 	{
-		static float f = 0.0f;
-		static int counter = 0;
+		scene.GetActiveModel().SetModelScale(ModelScaleValue[0], ModelScaleValue[1], ModelScaleValue[2]);
+	}
+	if (ImGui::SliderFloat3("Translate", ModelTransValue, 0.0f, 1000.000f))
+	{
+		scene.GetActiveModel().SetModelTranslate(ModelTransValue[0], ModelTransValue[1], ModelTransValue[2]);
+	}
+	if (ImGui::SliderFloat("Rotate", &ModelRotateValue, 0.0f, 360.0f))
+	{
+		scene.GetActiveModel().SetModelRotate(ModelRotateValue);
+	}
+	ImGui::End();
 
-		ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+	static float WorldScaleValue[3] = { 1 }, WorldTransValue[3] = { 0 }, WorldRotateValue = 0;
 
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-		ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-		ImGui::Checkbox("Another Window", &show_another_window);
+	ImGui::Begin("World");      
+	ImGui::Text("Modify values");
 
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-		if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		ImGui::End();
+	/* Set new parameters for each transformation when the slider is changed [Model] */
+	if (ImGui::SliderFloat3("Scale", WorldScaleValue, 0.0f, 1000.000f))
+	{
+		scene.GetActiveModel().SetWorldScale(WorldScaleValue[0], WorldScaleValue[1], WorldScaleValue[2]);
+	}
+	if (ImGui::SliderFloat3("Translate", WorldTransValue, 0.0f, 1000.000f))
+	{
+		scene.GetActiveModel().SetWorldTranslate(WorldTransValue[0], WorldTransValue[1], WorldTransValue[2]);
+	}
+	if (ImGui::SliderFloat("Rotate", &WorldRotateValue, 0.0f, 360.0f))
+	{
+		scene.GetActiveModel().SetWorldRotate(WorldRotateValue);
 	}
 
-	// 3. Show another simple window.
-	if (show_another_window)
-	{
-		ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			show_another_window = false;
-		ImGui::End();
-	}
+	ImGui::End();
 }

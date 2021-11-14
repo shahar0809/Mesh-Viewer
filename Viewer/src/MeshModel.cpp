@@ -11,36 +11,36 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	SetModelScale(1, 1, 1);
 	SetWorldScale(1, 1, 1);
 
-	TranslateModel = glm::mat4{
+	TranslateModel = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
 
-	TranslateWorld = glm::mat4{
+	TranslateWorld = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
 
-	ScaleModel = glm::mat4{
+	ScaleModel = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
-	ScaleWorld = glm::mat4{
+	ScaleWorld = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
 
-	RotateModel = glm::mat4(0);
+	RotateModel = glm::mat4x4(0);
 	RotateModel[3][3] = 1;
-	RotateWorld = glm::mat4(0);
+	RotateWorld = glm::mat4x4(0);
 	RotateWorld[3][3] = 1;
 
 	SetModelRotate(0);
@@ -194,9 +194,9 @@ void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
 	TranslateModel[2][3] = transZ;
 }
 
-glm::mat4 MeshModel::GetTransformation() const
+glm::mat4x4 MeshModel::GetTransformation() const
 {
-	glm::mat4 ModelTrans = ScaleModel * RotateModel * TranslateModel;
-	glm::mat4 WorldTrans = ScaleWorld * RotateWorld * TranslateWorld;
+	glm::mat4x4 ModelTrans = ScaleModel * RotateModel * TranslateModel;
+	glm::mat4x4 WorldTrans = ScaleWorld * RotateWorld * TranslateWorld;
 	return WorldTrans * ModelTrans;
 }
