@@ -103,7 +103,7 @@ void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::ApplyModelRotate(double rotateVal)
 {
 	ModelRotateVal += rotateVal;
-	double radiansVal = Utils::ToRadians(ModelRotateVal);
+	double radiansVal = ToRadians(ModelRotateVal);
 
 	RotateModel[0][0] = cos(radiansVal);
 	RotateModel[1][0] = -sin(radiansVal);
@@ -130,7 +130,7 @@ void MeshModel::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::ApplyWorldRotate(double rotateVal)
 {
 	WorldRotateVal += rotateVal;
-	double radiansVal = Utils::ToRadians(WorldRotateVal);
+	double radiansVal = ToRadians(WorldRotateVal);
 
 	RotateWorld[0][0] = cos(radiansVal);
 	RotateWorld[1][0] = -sin(radiansVal);
@@ -158,7 +158,7 @@ void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::SetModelRotate(double rotateVal)
 {
 	ModelRotateVal = rotateVal;
-	double radiansVal = Utils::ToRadians(rotateVal);
+	double radiansVal = ToRadians(rotateVal);
 
 	RotateModel[0][0] = cos(radiansVal);
 	RotateModel[1][0] = -sin(radiansVal);
@@ -185,7 +185,7 @@ void MeshModel::SetWorldScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::SetWorldRotate(double rotateVal)
 {
 	WorldRotateVal = rotateVal;
-	double radiansVal = Utils::ToRadians(WorldRotateVal);
+	double radiansVal = ToRadians(WorldRotateVal);
 
 	RotateWorld[0][0] = cos(radiansVal);
 	RotateWorld[1][0] = -sin(radiansVal);
@@ -207,4 +207,14 @@ glm::mat4x4 MeshModel::GetTransformation() const
 	glm::mat4x4 ModelTrans = ScaleModel * RotateModel * TranslateModel;
 	glm::mat4x4 WorldTrans = ScaleWorld * RotateWorld * TranslateWorld;
 	return WorldTrans * ModelTrans;
+}
+
+double MeshModel::ToRadians(double value)
+{
+	return value * (M_PI / 180);
+}
+
+double MeshModel::ToDegrees(double value)
+{
+	return value * (180 / M_PI);
 }

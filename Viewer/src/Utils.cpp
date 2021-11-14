@@ -124,16 +124,6 @@ glm::vec3 Utils::FromHomogCoords(glm::vec4 vec)
 	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
 }
 
-double Utils::ToRadians(double value)
-{
-	return value * (M_PI / 180);
-}
-
-double Utils::ToDegrees(double value)
-{
-	return value * (180 / M_PI);
-}
-
 std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> Utils::GetMin(std::vector<glm::vec3> vertices)
 {
 	double minX = vertices[0].x,

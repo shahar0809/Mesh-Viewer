@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 	model->ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
 	
 	model->SetModelScale(scaleVal, scaleVal, 0);
-	model->ApplyModelTranslate(1, 1, 1);
+	model->ApplyModelTranslate(200, 200, 1);
 	
 
 	scene.AddModel(model);

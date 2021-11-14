@@ -4,7 +4,8 @@
 #include <string>
 #include <memory>
 #include "Face.h"
-#include "Utils.h"
+
+#define M_PI 3.14159265358979323846264338327950288
 
 class MeshModel
 {
@@ -52,4 +53,7 @@ private:
 
 	// Store current rotate values (to avoid using arcsin, arccos)
 	double ModelRotateVal, WorldRotateVal;
+
+	static double ToRadians(double value);
+	static double ToDegrees(double value);
 };
