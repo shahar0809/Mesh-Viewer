@@ -40,10 +40,10 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 	// TODO: Handle mouse scroll here
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	const std::string path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\demo.obj";
+	const std::string path = "C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/banana.obj";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -55,40 +55,22 @@ int main(int argc, char **argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
-	
+
 	std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
-	std::vector<glm::vec3> transformedVecs;
-
-	auto result = Utils::GetMin(model->GetVertices());
-	double avgX = (std::get<0>(result.second) + std::get<0>(result.first)) / 2,
-		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
-		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
-
-	double scaleVal = (windowHeight / 2) / (std::get<1>(result.second) - std::get<1>(result.first));
-	double transX = (windowWidth / 2) - int(avgX - int(avgX) * scaleVal),
-		transY = (windowHeight / 2) - int(avgY - int(avgY) * scaleVal);
-
-	glm::vec3 color{ 0, 0, 0 };
-	model->ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
-	
-	model->SetModelScale(scaleVal, scaleVal, 0);
-	model->ApplyModelTranslate(200, 200, 1);
-	
-
 	scene.AddModel(model);
-	
+
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
-    while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
 		StartFrame();
 		DrawImguiMenus(io, scene);
 		RenderFrame(window, scene, renderer, io);
-    }
+	}
 
 	Cleanup(window);
-    return 0;
+	return 0;
 }
 
 static void GlfwErrorCallback(int error, const char* description)
@@ -104,11 +86,11 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
-	#if __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
-	
+
+#if _APPLE_
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
 	GLFWwindow* window = glfwCreateWindow(w, h, window_name, NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
@@ -143,7 +125,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	int frameBufferWidth, frameBufferHeight;
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
-	
+
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
 		// TODO: Set new aspect ratio
@@ -199,7 +181,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	 * MeshViewer menu
 	 */
 	ImGui::Begin("MeshViewer Menu");
-	
+
 	// Menu Bar
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -232,7 +214,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	// Controls
 	ImGui::ColorEdit3("Clear Color", (float*)&clear_color);
 	// TODO: Add more controls as needed
-	
+
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
@@ -259,7 +241,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	static float WorldScaleValue[3] = { 1 }, WorldTransValue[3] = { 0 }, WorldRotateValue = 0;
 
-	ImGui::Begin("World");      
+	ImGui::Begin("World");
 	ImGui::Text("Modify values");
 
 	/* Set new parameters for each transformation when the slider is changed [Model] */

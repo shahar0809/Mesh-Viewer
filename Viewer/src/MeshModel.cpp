@@ -67,14 +67,7 @@ int MeshModel::GetFacesCount() const
 
 const glm::vec3& MeshModel::GetVertice(int index) const
 {
-	if (index >= vertices.size())
-	{
-		printf("ERORR ************************");
-	}
-	else
-	{
-		return vertices[index];
-	}
+	return vertices[index];
 }
 
 int MeshModel::GetVerticesCount() const
@@ -204,8 +197,8 @@ void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
 
 glm::mat4x4 MeshModel::GetTransformation() const
 {
-	glm::mat4x4 ModelTrans = ScaleModel * RotateModel * TranslateModel;
-	glm::mat4x4 WorldTrans = ScaleWorld * RotateWorld * TranslateWorld;
+	glm::mat4x4 ModelTrans = TranslateModel * RotateModel * ScaleModel;
+	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld * ScaleWorld;
 	return WorldTrans * ModelTrans;
 }
 
