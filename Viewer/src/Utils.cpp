@@ -116,7 +116,7 @@ std::string Utils::GetFileName(const std::string& filePath)
 
 glm::vec4 Utils::ToHomogCoords(glm::vec3 vec)
 {
-	return glm::vec4(vec, 1);
+	return glm::vec4(vec, 1.0f);
 }
 
 glm::vec3 Utils::FromHomogCoords(glm::vec4 vec)

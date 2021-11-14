@@ -42,7 +42,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char **argv)
 {
-	const std::string path = "C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/demo.obj";
+	// TODO: Need to use relative path
+	const std::string path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\demo.obj";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -54,7 +55,27 @@ int main(int argc, char **argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
-	scene.AddModel(Utils::LoadMeshModel(path));
+	
+	std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
+	std::vector<glm::vec3> transformedVecs;
+
+	auto result = Utils::GetMin(model->GetVertices());
+	double avgX = (std::get<0>(result.second) + std::get<0>(result.first)) / 2,
+		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
+		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
+
+	double scaleVal = (windowHeight / 2) / (std::get<1>(result.second) - std::get<1>(result.first));
+	double transX = (windowWidth / 2) - int(avgX - int(avgX) * scaleVal),
+		transY = (windowHeight / 2) - int(avgY - int(avgY) * scaleVal);
+
+	glm::vec3 color{ 0, 0, 0 };
+	model->ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
+	
+	model->SetModelScale(scaleVal, scaleVal, 0);
+	model->ApplyModelTranslate(200, 200, 1);
+	
+
+	scene.AddModel(model);
 	
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);

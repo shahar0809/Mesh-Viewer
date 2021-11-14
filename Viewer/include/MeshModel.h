@@ -5,6 +5,8 @@
 #include <memory>
 #include "Face.h"
 
+#define M_PI 3.14159265358979323846264338327950288
+
 class MeshModel
 {
 public:
@@ -47,6 +49,11 @@ private:
 	glm::mat4x4 ScaleModel, TranslateModel, RotateModel;
 	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld;
 
+	glm::mat4x4 WorldTrans, ModelTrans;
+
 	// Store current rotate values (to avoid using arcsin, arccos)
 	double ModelRotateVal, WorldRotateVal;
+
+	static double ToRadians(double value);
+	static double ToDegrees(double value);
 };
