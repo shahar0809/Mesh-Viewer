@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "Face.h"
+#include "Utils.h"
 
 class MeshModel
 {
@@ -46,6 +47,8 @@ private:
 
 	glm::mat4x4 ScaleModel, TranslateModel, RotateModel;
 	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld;
+
+	glm::mat4x4 WorldTrans, ModelTrans;
 
 	// Store current rotate values (to avoid using arcsin, arccos)
 	double ModelRotateVal, WorldRotateVal;

@@ -1,2 +1,0 @@
-C:\MinGW\bin\ar.exe qc ..\..\lib\libnativefiledialog.a CMakeFiles/nativefiledialog.dir/nativefiledialog/src/nfd_common.c.obj CMakeFiles/nativefiledialog.dir/nativefiledialog/src/nfd_win.cpp.obj
-C:\MinGW\bin\ranlib.exe ..\..\lib\libnativefiledialog.a

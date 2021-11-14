@@ -8,9 +8,6 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	WorldRotateVal = 0;
 	ModelRotateVal = 0;
 
-	SetModelScale(1, 1, 1);
-	SetWorldScale(1, 1, 1);
-
 	TranslateModel = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -31,6 +28,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
+
 	ScaleWorld = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -38,13 +36,19 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		0, 0, 0, 1
 	};
 
-	RotateModel = glm::mat4x4(0);
-	RotateModel[3][3] = 1;
-	RotateWorld = glm::mat4x4(0);
-	RotateWorld[3][3] = 1;
+	RotateModel = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
 
-	SetModelRotate(0);
-	SetWorldRotate(0);
+	RotateWorld = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
 }
 
 MeshModel::~MeshModel()
@@ -99,19 +103,20 @@ void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::ApplyModelRotate(double rotateVal)
 {
 	ModelRotateVal += rotateVal;
+	double radiansVal = Utils::ToRadians(ModelRotateVal);
 
-	RotateModel[0][0] = cos(ModelRotateVal);
-	RotateModel[0][1] = -sin(ModelRotateVal);
-	RotateModel[1][0] = sin(ModelRotateVal);
-	RotateModel[1][1] = cos(ModelRotateVal);
+	RotateModel[0][0] = cos(radiansVal);
+	RotateModel[1][0] = -sin(radiansVal);
+	RotateModel[0][1] = sin(radiansVal);
+	RotateModel[1][1] = cos(radiansVal);
 }
 
 void MeshModel::ApplyModelTranslate(double transX, double transY, double transZ)
 {
 	// Add current translation parameters (in last column) by new parameters
-	TranslateModel[0][3] += transX;
-	TranslateModel[1][3] += transY;
-	TranslateModel[2][3] += transZ;
+	TranslateModel[3][0] += transX;
+	TranslateModel[3][1] += transY;
+	TranslateModel[3][2] += transZ;
 }
 
 void MeshModel::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
@@ -125,20 +130,21 @@ void MeshModel::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::ApplyWorldRotate(double rotateVal)
 {
 	WorldRotateVal += rotateVal;
+	double radiansVal = Utils::ToRadians(WorldRotateVal);
 
-	RotateWorld[0][0] = cos(WorldRotateVal);
-	RotateWorld[0][1] = -sin(WorldRotateVal);
-	RotateWorld[1][0] = sin(WorldRotateVal);
-	RotateWorld[1][1] = cos(WorldRotateVal);
+	RotateWorld[0][0] = cos(radiansVal);
+	RotateWorld[1][0] = -sin(radiansVal);
+	RotateWorld[0][1] = sin(radiansVal);
+	RotateWorld[1][1] = cos(radiansVal);
 
 }
 
 void MeshModel::ApplyWorldTranslate(double transX, double transY, double transZ)
 {
 	// Add current translation parameters (in last column) by new parameters
-	TranslateModel[0][3] += transX;
-	TranslateModel[1][3] += transY;
-	TranslateModel[2][3] += transZ;
+	TranslateModel[3][0] += transX;
+	TranslateModel[3][1] += transY;
+	TranslateModel[3][2] += transZ;
 }
 
 void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
@@ -152,19 +158,20 @@ void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::SetModelRotate(double rotateVal)
 {
 	ModelRotateVal = rotateVal;
+	double radiansVal = Utils::ToRadians(rotateVal);
 
-	RotateModel[0][0] = cos(ModelRotateVal);
-	RotateModel[0][1] = -sin(ModelRotateVal);
-	RotateModel[1][0] = sin(ModelRotateVal);
-	RotateModel[1][1] = cos(ModelRotateVal);
+	RotateModel[0][0] = cos(radiansVal);
+	RotateModel[1][0] = -sin(radiansVal);
+	RotateModel[0][1] = sin(radiansVal);
+	RotateModel[1][1] = cos(radiansVal);
 }
 
 void MeshModel::SetModelTranslate(double transX, double transY, double transZ)
 {
 	// Set current translation parameters (in last column) to be new parameters
-	TranslateModel[0][3] = transX;
-	TranslateModel[1][3] = transY;
-	TranslateModel[2][3] = transZ;
+	TranslateModel[3][0] = transX;
+	TranslateModel[3][1] = transY;
+	TranslateModel[3][2] = transZ;
 }
 
 void MeshModel::SetWorldScale(double scaleX, double scaleY, double scaleZ)
@@ -178,20 +185,21 @@ void MeshModel::SetWorldScale(double scaleX, double scaleY, double scaleZ)
 void MeshModel::SetWorldRotate(double rotateVal)
 {
 	WorldRotateVal = rotateVal;
+	double radiansVal = Utils::ToRadians(WorldRotateVal);
 
-	RotateWorld[0][0] = cos(WorldRotateVal);
-	RotateWorld[0][1] = -sin(WorldRotateVal);
-	RotateWorld[1][0] = sin(WorldRotateVal);
-	RotateWorld[1][1] = cos(WorldRotateVal);
+	RotateWorld[0][0] = cos(radiansVal);
+	RotateWorld[1][0] = -sin(radiansVal);
+	RotateWorld[0][1] = sin(radiansVal);
+	RotateWorld[1][1] = cos(radiansVal);
 
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
 {
 	// Set current translation parameters (in last column) to be new parameters
-	TranslateModel[0][3] = transX;
-	TranslateModel[1][3] = transY;
-	TranslateModel[2][3] = transZ;
+	TranslateModel[3][0] = transX;
+	TranslateModel[3][1] = transY;
+	TranslateModel[3][2] = transZ;
 }
 
 glm::mat4x4 MeshModel::GetTransformation() const
