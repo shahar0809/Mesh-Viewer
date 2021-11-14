@@ -831,15 +831,53 @@ for (int i = 0; i < 3; i++)
 }
 ```
 
-And draw lines between all vertices of each face:
+## 3 - Display model
+Firstly, we pass the model to the renderer, through the scene object:
 ```cpp
+std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
+scene.AddModel(model);
+```
+
+Now, we go through all models in the scene:
+```cpp
+// Draw mesh triangles
+for (int i = 0; i < scene.GetModelCount(); i++)
+{
+	MeshModel currModel = scene.GetModel(i);
+	DrawModel(currModel);
+}
+```
+And through all faces:
+```cpp
+for (int i = 0; i < model.GetFacesCount(); i++)
+{
+	Face currFace = model.GetFace(i);
+	DrawFace(currFace, model);
+}
+```
+
+And we draw a line between the vertices of each face:
+```cpp
+std::vector<glm::vec3> transformedVecs;
+
+glm::vec3 color{ 0, 0, 0 };
+	
+// Apply transformation on vertices
+for (int i = 0; i < 3; i++)
+{
+	glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
+	glm::vec4 res = modelTrans * homVec;
+	transformedVecs.push_back(Utils::FromHomogCoords(res));
+}
+
+std::cout << model.GetVertice(face.GetVertexIndex(0) - 1).x << "," << model.GetVertice(face.GetVertexIndex(0) - 1).y << std::endl;
+std::cout << transformedVecs[0].x << "," << transformedVecs[0].y << std::endl;
 DrawLine(transformedVecs[0], transformedVecs[1], color);
 DrawLine(transformedVecs[1], transformedVecs[2], color);
 DrawLine(transformedVecs[2], transformedVecs[0], color);
 ```
 
-
-## 3 - Transform vertices to fit in window
+## 4 - Transform vertices to fit in window
 Firstly, we wanted to be able to apply local and world transformation on the model.
 So, we added to `MeshModel` six matrices (SRT):
 - Scale Model
