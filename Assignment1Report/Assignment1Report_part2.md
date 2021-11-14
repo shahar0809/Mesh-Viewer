@@ -788,8 +788,58 @@ F: (271,272,256)
 F: (241,256,272)
 F: (241,272,257)
 `
-
 ## 2 - Transform vertices to fit in window
+We want to calculate scale and translate values so that the model will fit in our window.
+
+At first, we calculate translate values so that the model will move to the start of the screen (0, 0):
+
+```cpp
+// Returns minimum and maximum values of x,y,z
+auto result = Utils::GetMinMax(model.GetVertices());
+// Calculate average between max and min in x,y,z
+double avgX = (std::get<0>(result.second) + std::get<0>(result.first)) / 2,
+		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
+		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
+```
+
+Then, we calculate scale value so that the model will fit in size in the screen. 
+```cpp
+double scaleVal = (viewport_height / 2) / (std::get<1>(result.second) - std::get<1>(result.first));
+```
+
+Lastly, we calculate translate values so that the model will move to the center of the screen:
+```cpp
+double transX = (viewport_width / 2) - int(avgX - int(avgX) * scaleVal),
+	transY = (viewport_height / 2) - int(avgY - int(avgY) * scaleVal);
+```
+
+Then, we calculate the transformation matrices:
+
+``` cpp 
+glm::mat4x4 transZero{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { -int(avgX), -int(avgY), -int(avgZ), 1} };
+glm::mat4x4 scale{ {scaleVal, 0, 0, 0}, {0, scaleVal, 0, 0}, {0, 0, scaleVal, 0}, {0, 0, 0, 1} };
+glm::mat4x4 transCenter{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { transX, transY, 0, 1} };
+```
+
+Now, we apply the transformations on all vertices:
+```cpp
+for (int i = 0; i < 3; i++)
+{
+	glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
+	glm::vec4 res = modelTrans * homVec;
+	transformedVecs.push_back(Utils::FromHomogCoords(res));
+}
+```
+
+And draw lines between all vertices of each face:
+```cpp
+DrawLine(transformedVecs[0], transformedVecs[1], color);
+DrawLine(transformedVecs[1], transformedVecs[2], color);
+DrawLine(transformedVecs[2], transformedVecs[0], color);
+```
+
+
+## 3 - Transform vertices to fit in window
 Firstly, we wanted to be able to apply local and world transformation on the model.
 So, we added to `MeshModel` six matrices (SRT):
 - Scale Model
@@ -821,4 +871,5 @@ These methods apply the parameters without depending on the previous values:
 	void SetWorldRotate(double rotateVal);
 	void SetWorldTranslate(double transX, double transY, double transZ);
 ```
+
 
