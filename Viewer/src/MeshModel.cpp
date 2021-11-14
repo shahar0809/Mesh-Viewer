@@ -5,8 +5,8 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	vertices(vertices),
 	normals(normals)
 {
-	WorldRotateVal = 0;
-	ModelRotateVal = 0;
+	WorldRotateVal = glm::vec3(0);
+	ModelRotateVal = glm::vec3(0);
 
 	TranslateModel = glm::mat4x4{
 		1, 0, 0, 0,
@@ -67,14 +67,7 @@ int MeshModel::GetFacesCount() const
 
 const glm::vec3& MeshModel::GetVertice(int index) const
 {
-	if (index >= vertices.size())
-	{
-		printf("ERORR ************************");
-	}
-	else
-	{
-		return vertices[index];
-	}
+	return vertices[index];
 }
 
 int MeshModel::GetVerticesCount() const
@@ -100,7 +93,7 @@ void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 	ScaleModel[2][2] *= scaleZ;
 }
 
-void MeshModel::ApplyModelRotate(double rotateVal)
+void MeshModel::ApplyModelRotate(double rotateX, double rotateY, double rotateZ)
 {
 	ModelRotateVal += rotateVal;
 	double radiansVal = ToRadians(ModelRotateVal);

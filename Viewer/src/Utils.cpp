@@ -124,7 +124,7 @@ glm::vec3 Utils::FromHomogCoords(glm::vec4 vec)
 	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
 }
 
-std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> Utils::GetMin(std::vector<glm::vec3> vertices)
+std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> Utils::GetMinMax(std::vector<glm::vec3> vertices)
 {
 	double minX = vertices[0].x,
 		minY = vertices[0].y,

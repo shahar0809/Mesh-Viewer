@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
 	std::vector<glm::vec3> transformedVecs;
 
-	auto result = Utils::GetMin(model->GetVertices());
+	auto result = Utils::GetMinMax(model->GetVertices());
 	double avgX = (std::get<0>(result.second) + std::get<0>(result.first)) / 2,
 		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
 		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
@@ -237,21 +237,28 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	static std::vector<std::string> modelNames;
 
-	static float ModelScaleValue[3] = { 1 }, ModelTransValue[3] = { 0 }, ModelRotateValue = 0;
+	static float ModelScaleValue[3] = { 1 }, ModelTransValue[3] = { 0 }, ModelRotateValue[3] = { 0 };
 
 	ImGui::Begin("Model");
 	ImGui::Text("Modify values");
 
 	/* Set new parameters for each transformation when the slider is changed [Model] */
-	if (ImGui::SliderFloat3("Scale", ModelScaleValue, 0.0f, 1000.000f))
+	if (ImGui::SliderFloat3("Scale", ModelScaleValue, -200.0f, 200.0f))
 	{
-		scene.GetActiveModel().SetModelScale(ModelScaleValue[0], ModelScaleValue[1], ModelScaleValue[2]);
+		if (ModelScaleValue[0] == 0)
+			ModelScaleValue[0] = 1;
+		if (ModelScaleValue[1] == 0)
+			ModelScaleValue[1] = 1;
+		if (ModelScaleValue[2] == 0)
+			ModelScaleValue[2] = 1;
+
+		scene.GetActiveModel().ApplyModelScale(ModelScaleValue[0], ModelScaleValue[1], ModelScaleValue[2]);
 	}
 	if (ImGui::SliderFloat3("Translate", ModelTransValue, 0.0f, 1000.000f))
 	{
 		scene.GetActiveModel().SetModelTranslate(ModelTransValue[0], ModelTransValue[1], ModelTransValue[2]);
 	}
-	if (ImGui::SliderFloat("Rotate", &ModelRotateValue, 0.0f, 360.0f))
+	if (ImGui::SliderFloat3("Rotate", ModelRotateValue, 0.0f, 360.0f))
 	{
 		scene.GetActiveModel().SetModelRotate(ModelRotateValue);
 	}

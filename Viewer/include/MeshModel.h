@@ -22,20 +22,20 @@ public:
 
 	// Apply transformations on both model and world (dependant on previous values)
 	void ApplyModelScale(double scaleX, double scaleY, double scaleZ);
-	void ApplyModelRotate(double rotateVal);
+	void ApplyModelRotate(double rotateX, double rotateY, double rotateZ);
 	void ApplyModelTranslate(double transX, double transY, double transZ);
 
 	void ApplyWorldScale(double scaleX, double scaleY, double scaleZ);
-	void ApplyWorldRotate(double rotateVal);
+	void ApplyWorldRotate(double rotateX, double rotateY, double rotateZ);
 	void ApplyWorldTranslate(double transX, double transY, double transZ);
 
 	// Set transformations - without depending on previous values
 	void SetModelScale(double scaleX, double scaleY, double scaleZ);
-	void SetModelRotate(double rotateVal);
+	void SetModelRotate(double rotateX, double rotateY, double rotateZ);
 	void SetModelTranslate(double transX, double transY, double transZ);
 
 	void SetWorldScale(double scaleX, double scaleY, double scaleZ);
-	void SetWorldRotate(double rotateVal);
+	void SetWorldRotate(double rotateX, double rotateY, double rotateZ);
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
 	glm::mat4x4 GetTransformation() const;
@@ -52,7 +52,7 @@ private:
 	glm::mat4x4 WorldTrans, ModelTrans;
 
 	// Store current rotate values (to avoid using arcsin, arccos)
-	double ModelRotateVal, WorldRotateVal;
+	glm::vec3 ModelRotateVal, WorldRotateVal;
 
 	static double ToRadians(double value);
 	static double ToDegrees(double value);
