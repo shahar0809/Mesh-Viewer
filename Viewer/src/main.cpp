@@ -40,7 +40,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 	// TODO: Handle mouse scroll here
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
 	const std::string path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\demo.obj";
@@ -55,40 +55,22 @@ int main(int argc, char **argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
-	
+
 	std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
-	std::vector<glm::vec3> transformedVecs;
-
-	auto result = Utils::GetMinMax(model->GetVertices());
-	double avgX = (std::get<0>(result.second) + std::get<0>(result.first)) / 2,
-		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
-		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
-
-	double scaleVal = (windowHeight / 2) / (std::get<1>(result.second) - std::get<1>(result.first));
-	double transX = (windowWidth / 2) - int(avgX - int(avgX) * scaleVal),
-		transY = (windowHeight / 2) - int(avgY - int(avgY) * scaleVal);
-
-	glm::vec3 color{ 0, 0, 0 };
-	model->ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
-	
-	model->SetModelScale(scaleVal, scaleVal, 0);
-	model->ApplyModelTranslate(200, 200, 1);
-	
-
 	scene.AddModel(model);
-	
+
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
-    while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
 		StartFrame();
 		DrawImguiMenus(io, scene);
 		RenderFrame(window, scene, renderer, io);
-    }
+	}
 
 	Cleanup(window);
-    return 0;
+	return 0;
 }
 
 static void GlfwErrorCallback(int error, const char* description)
@@ -104,11 +86,11 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
-	#if __APPLE__
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	#endif
-	
+
+#if _APPLE_
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
 	GLFWwindow* window = glfwCreateWindow(w, h, window_name, NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // Enable vsync
@@ -143,7 +125,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	int frameBufferWidth, frameBufferHeight;
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
-	
+
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
 		// TODO: Set new aspect ratio
@@ -199,7 +181,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	 * MeshViewer menu
 	 */
 	ImGui::Begin("MeshViewer Menu");
-	
+
 	// Menu Bar
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -232,7 +214,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	// Controls
 	ImGui::ColorEdit3("Clear Color", (float*)&clear_color);
 	// TODO: Add more controls as needed
-	
+
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
@@ -254,33 +236,39 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		scene.GetActiveModel().ApplyModelScale(ModelScaleValue[0], ModelScaleValue[1], ModelScaleValue[2]);
 	}
-	if (ImGui::SliderFloat3("Translate", ModelTransValue, 0.0f, 1000.000f))
+	if (ImGui::SliderFloat3("Translate", ModelTransValue, -200.0f, 200.000f))
 	{
 		scene.GetActiveModel().SetModelTranslate(ModelTransValue[0], ModelTransValue[1], ModelTransValue[2]);
 	}
 	if (ImGui::SliderFloat3("Rotate", ModelRotateValue, 0.0f, 360.0f))
 	{
-		scene.GetActiveModel().SetModelRotate(ModelRotateValue);
+		scene.GetActiveModel().SetModelRotate(ModelRotateValue[0], ModelRotateValue[1], ModelRotateValue[2]);
 	}
 	ImGui::End();
 
-	static float WorldScaleValue[3] = { 1 }, WorldTransValue[3] = { 0 }, WorldRotateValue = 0;
+	static float WorldScaleValue[3] = { 1 }, WorldTransValue[3] = { 0 }, WorldRotateValue[3] = { 0 };
 
-	ImGui::Begin("World");      
+	ImGui::Begin("World");
 	ImGui::Text("Modify values");
 
 	/* Set new parameters for each transformation when the slider is changed [Model] */
-	if (ImGui::SliderFloat3("Scale", WorldScaleValue, 0.0f, 1000.000f))
+	if (ImGui::SliderFloat3("Scale", WorldScaleValue, -200.0f, 200.000f))
 	{
+		if (WorldScaleValue[0] == 0)
+			WorldScaleValue[0] = 1;
+		if (WorldScaleValue[1] == 0)
+			WorldScaleValue[1] = 1;
+		if (WorldScaleValue[2] == 0)
+			WorldScaleValue[2] = 1;
 		scene.GetActiveModel().SetWorldScale(WorldScaleValue[0], WorldScaleValue[1], WorldScaleValue[2]);
 	}
-	if (ImGui::SliderFloat3("Translate", WorldTransValue, 0.0f, 1000.000f))
+	if (ImGui::SliderFloat3("Translate", WorldTransValue, -200.0f, 200.000f))
 	{
 		scene.GetActiveModel().SetWorldTranslate(WorldTransValue[0], WorldTransValue[1], WorldTransValue[2]);
 	}
-	if (ImGui::SliderFloat("Rotate", &WorldRotateValue, 0.0f, 360.0f))
+	if (ImGui::SliderFloat3("Rotate", WorldRotateValue, 0.0f, 360.0f))
 	{
-		scene.GetActiveModel().SetWorldRotate(WorldRotateValue);
+		scene.GetActiveModel().SetWorldRotate(WorldRotateValue[0], WorldRotateValue[1], WorldRotateValue[2]);
 	}
 
 	ImGui::End();

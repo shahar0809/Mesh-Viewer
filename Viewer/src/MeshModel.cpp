@@ -95,8 +95,15 @@ void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 
 void MeshModel::ApplyModelRotate(double rotateX, double rotateY, double rotateZ)
 {
-	ModelRotateVal += rotateVal;
-	double radiansVal = ToRadians(ModelRotateVal);
+	ModelRotateVal.x += rotateX;
+	ModelRotateVal.y += rotateY;
+	ModelRotateVal.z += rotateZ;
+
+	//glm::mat4x4 rotMatrix = glm::eulerAngleXYZ(rotateX, rotateY, rotateZ);
+	// TODO: Implement rotation around z,y 
+	// Maybe there's something in the recording
+
+	double radiansVal = ToRadians(ModelRotateVal.z);
 
 	RotateModel[0][0] = cos(radiansVal);
 	RotateModel[1][0] = -sin(radiansVal);
@@ -120,16 +127,18 @@ void MeshModel::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
 	ScaleWorld[2][2] *= scaleZ;
 }
 
-void MeshModel::ApplyWorldRotate(double rotateVal)
+void MeshModel::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
 {
-	WorldRotateVal += rotateVal;
-	double radiansVal = ToRadians(WorldRotateVal);
+	WorldRotateVal.x += rotateX;
+	WorldRotateVal.y += rotateY;
+	WorldRotateVal.z += rotateZ;
+
+	double radiansVal = ToRadians(WorldRotateVal.x);
 
 	RotateWorld[0][0] = cos(radiansVal);
 	RotateWorld[1][0] = -sin(radiansVal);
 	RotateWorld[0][1] = sin(radiansVal);
 	RotateWorld[1][1] = cos(radiansVal);
-
 }
 
 void MeshModel::ApplyWorldTranslate(double transX, double transY, double transZ)
@@ -148,10 +157,13 @@ void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
 	ScaleModel[2][2] = scaleZ;
 }
 
-void MeshModel::SetModelRotate(double rotateVal)
+void MeshModel::SetModelRotate(double rotateX, double rotateY, double rotateZ)
 {
-	ModelRotateVal = rotateVal;
-	double radiansVal = ToRadians(rotateVal);
+	ModelRotateVal.x = rotateX;
+	ModelRotateVal.y = rotateY;
+	ModelRotateVal.z = rotateZ;
+
+	double radiansVal = ToRadians(ModelRotateVal.x);
 
 	RotateModel[0][0] = cos(radiansVal);
 	RotateModel[1][0] = -sin(radiansVal);
@@ -175,16 +187,18 @@ void MeshModel::SetWorldScale(double scaleX, double scaleY, double scaleZ)
 	ScaleWorld[2][2] = scaleZ;
 }
 
-void MeshModel::SetWorldRotate(double rotateVal)
+void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 {
-	WorldRotateVal = rotateVal;
-	double radiansVal = ToRadians(WorldRotateVal);
+	WorldRotateVal.x = rotateX;
+	WorldRotateVal.y = rotateY;
+	WorldRotateVal.z = rotateZ;
+
+	double radiansVal = ToRadians(WorldRotateVal.x);
 
 	RotateWorld[0][0] = cos(radiansVal);
 	RotateWorld[1][0] = -sin(radiansVal);
 	RotateWorld[0][1] = sin(radiansVal);
 	RotateWorld[1][1] = cos(radiansVal);
-
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
@@ -197,8 +211,8 @@ void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
 
 glm::mat4x4 MeshModel::GetTransformation() const
 {
-	glm::mat4x4 ModelTrans = ScaleModel * RotateModel * TranslateModel;
-	glm::mat4x4 WorldTrans = ScaleWorld * RotateWorld * TranslateWorld;
+	glm::mat4x4 ModelTrans = TranslateModel * RotateModel * ScaleModel;
+	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld * ScaleWorld;
 	return WorldTrans * ModelTrans;
 }
 

@@ -877,7 +877,25 @@ DrawLine(transformedVecs[1], transformedVecs[2], color);
 DrawLine(transformedVecs[2], transformedVecs[0], color);
 ```
 
-## 4 - Transform vertices to fit in window
+Now, we can clearly see the object:
+
+![Object On Screen](part2_images/object_on_screen.png)
+
+## 4 - Add GUI items to control model
+There are 3 transformations to control:
+- Scale
+- Rotate
+- Translate
+
+And each one can be applied on a certain axis (X, Y, Z).
+
+Therefore, We created 9 sliders to control each transformation on each exis.
+
+![Gui Sliders](part2_images/gui_sliders.png)
+
+
+
+## 5 - Apply transformations on model
 Firstly, we wanted to be able to apply local and world transformation on the model.
 So, we added to `MeshModel` six matrices (SRT):
 - Scale Model

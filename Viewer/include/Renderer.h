@@ -35,6 +35,8 @@ private:
 	void CreateOpenglBuffer();
 	void InitOpenglRendering();
 
+	void fitInScreen(MeshModel& model);
+
 	float* color_buffer;
 	int viewport_width;
 	int viewport_height;
