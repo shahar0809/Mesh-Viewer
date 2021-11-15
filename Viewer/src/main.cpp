@@ -43,7 +43,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	const std::string path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\demo.obj";
+	const std::string path = "C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/banana.obj";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -56,8 +56,23 @@ int main(int argc, char** argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
-	std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
-	scene.AddModel(model);
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(path);
+	scene.AddModel(model1);
+	renderer.fitInScreen(scene.GetModel(0));
+
+	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/bunny.obj");
+	scene.AddModel(model2);
+	renderer.fitInScreen(scene.GetModel(1));
+
+
+	//FirstScaleValue = ModelScaleValue[0];
+	//TransValueX = ModelTransValue[0];
+	//TransValueX = ModelTransValue[1];
+
+
+
+	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/pawn.obj");
+	//scene.AddModel(model3);
 
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -87,7 +102,7 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#if _APPLE_
+#if APPLE
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
@@ -141,20 +156,20 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		}
 	}
 
-	if (!io.WantCaptureMouse)
-	{
-		auto mouseDelta = ImGui::GetMouseDragDelta();
-		// Translate active model on mouse drag
-		if (mouseDelta.x != 0 || mouseDelta.y != 0)
-		{
-			scene.GetActiveModel().ApplyModelTranslate(mouseDelta.x, mouseDelta.x, 0);
-		}
-		// Scale active model on mouse scroll
-		if (io.MouseWheel)
-		{
-			scene.GetActiveModel().ApplyModelScale(io.MouseWheel, io.MouseWheel, io.MouseWheel);
-		}
-	}
+	//if (!io.WantCaptureMouse)
+	//{
+	//	auto mouseDelta = ImGui::GetMouseDragDelta();
+	//	// Translate active model on mouse drag
+	//	if (mouseDelta.x != 0 || mouseDelta.y != 0)
+	//	{
+	//		scene.GetActiveModel().ApplyModelTranslate(mouseDelta.x, mouseDelta.x, 0);
+	//	}
+	//	// Scale active model on mouse scroll
+	//	if (io.MouseWheel)
+	//	{
+	//		scene.GetActiveModel().ApplyModelScale(io.MouseWheel, io.MouseWheel, io.MouseWheel);
+	//	}
+	//}
 
 	renderer.ClearColorBuffer(clear_color);
 	renderer.Render(scene);
@@ -217,59 +232,88 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	ImGui::End();
 
+	static bool isModelOnScreen[5] = { false };
+	static int numberOfModels = scene.GetModelCount();
 	static std::vector<std::string> modelNames;
 
-	static float ModelScaleValue[3] = { 1 }, ModelTransValue[3] = { 0 }, ModelRotateValue[3] = { 0 };
+	static float ModelScaleValue_array[20][3];
+	static float ModelTransValue_array[20][3];
+	static float ModelRotateValue_array[20][3];
 
-	ImGui::Begin("Model");
-	ImGui::Text("Modify values");
+	static float WorldScaleValue_array[20][3];
+	static float WorldTransValue_array[20][3];
+	static float WorldRotateValue_array[20][3];
 
-	/* Set new parameters for each transformation when the slider is changed [Model] */
-	if (ImGui::SliderFloat3("Scale", ModelScaleValue, -200.0f, 200.0f))
+	//static float ModelScaleValue[3] = { 1, 1, 1 }, ModelTransValue[3] = { 0, 0, 0 }, ModelRotateValue[3] = { 0, 0, 0 };
 	{
-		if (ModelScaleValue[0] == 0)
-			ModelScaleValue[0] = 1;
-		if (ModelScaleValue[1] == 0)
-			ModelScaleValue[1] = 1;
-		if (ModelScaleValue[2] == 0)
-			ModelScaleValue[2] = 1;
+		ImGui::Begin("Model and World Transformation");
+		ImGui::Text("Modify values");
 
-		scene.GetActiveModel().ApplyModelScale(ModelScaleValue[0], ModelScaleValue[1], ModelScaleValue[2]);
-	}
-	if (ImGui::SliderFloat3("Translate", ModelTransValue, -200.0f, 200.000f))
-	{
-		scene.GetActiveModel().SetModelTranslate(ModelTransValue[0], ModelTransValue[1], ModelTransValue[2]);
-	}
-	if (ImGui::SliderFloat3("Rotate", ModelRotateValue, 0.0f, 360.0f))
-	{
-		scene.GetActiveModel().SetModelRotate(ModelRotateValue[0], ModelRotateValue[1], ModelRotateValue[2]);
-	}
-	ImGui::End();
+		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+		{
+			for (int i = 0; i < numberOfModels; i++)
+			{
+				string str = "model" + std::to_string(i);
+				char* model = &str[0];
+				if (ImGui::BeginTabItem(model))
+				{
+					scene.SetActiveModelIndex(i);
+					ImGui::Checkbox(("Add this model to screen"), isModelOnScreen);
 
-	static float WorldScaleValue[3] = { 1 }, WorldTransValue[3] = { 0 }, WorldRotateValue[3] = { 0 };
+					ModelScaleValue_array[i][1] = 1, ModelScaleValue_array[i][2] = 1, ModelScaleValue_array[i][2] = 1;
+					ModelTransValue_array[i][1] = 0, ModelTransValue_array[i][2] = 0, ModelTransValue_array[i][2] = 0;
+					ModelRotateValue_array[i][1] = 0, ModelRotateValue_array[i][2] = 0, ModelRotateValue_array[i][2] = 0;
 
-	ImGui::Begin("World");
-	ImGui::Text("Modify values");
+					/* Set new parameters for each transformation when the slider is changed [Model] */
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -500.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 500.0f))
+					{
+						if (ModelScaleValue_array[i][0] == 0.0)
+							ModelScaleValue_array[i][0] = 1;
+						if (ModelScaleValue_array[i][1] == 0.0)
+							ModelScaleValue_array[i][1] = 1;
+						if (ModelScaleValue_array[i][2] == 0.0)
+							ModelScaleValue_array[i][2] = 1;
 
-	/* Set new parameters for each transformation when the slider is changed [Model] */
-	if (ImGui::SliderFloat3("Scale", WorldScaleValue, -200.0f, 200.000f))
-	{
-		if (WorldScaleValue[0] == 0)
-			WorldScaleValue[0] = 1;
-		if (WorldScaleValue[1] == 0)
-			WorldScaleValue[1] = 1;
-		if (WorldScaleValue[2] == 0)
-			WorldScaleValue[2] = 1;
-		scene.GetActiveModel().SetWorldScale(WorldScaleValue[0], WorldScaleValue[1], WorldScaleValue[2]);
-	}
-	if (ImGui::SliderFloat3("Translate", WorldTransValue, -200.0f, 200.000f))
-	{
-		scene.GetActiveModel().SetWorldTranslate(WorldTransValue[0], WorldTransValue[1], WorldTransValue[2]);
-	}
-	if (ImGui::SliderFloat3("Rotate", WorldRotateValue, 0.0f, 360.0f))
-	{
-		scene.GetActiveModel().SetWorldRotate(WorldRotateValue[0], WorldRotateValue[1], WorldRotateValue[2]);
-	}
+						scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], -1000.0f, 1000.000f))
+					{
+						scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], 0.0f, 360.0f))
+					{
+						scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+					}
 
-	ImGui::End();
+					WorldScaleValue_array[i][1] = 1, WorldScaleValue_array[i][2] = 1, WorldScaleValue_array[i][2] = 1;
+					WorldTransValue_array[i][1] = 0, WorldTransValue_array[i][2] = 0, WorldTransValue_array[i][2] = 0;
+					WorldRotateValue_array[i][1] = 0, WorldRotateValue_array[i][2] = 0, WorldRotateValue_array[i][2] = 0;
+
+					/* Set new parameters for each transformation when the slider is changed [World] */
+					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -500.0f, 500.000f))
+					{
+						if (WorldScaleValue_array[i][0] == 0.0)
+							WorldScaleValue_array[i][0] = 1;
+						if (WorldScaleValue_array[i][1] == 0.0)
+							WorldScaleValue_array[i][1] = 1;
+						if (WorldScaleValue_array[i][2] == 0.0)
+							WorldScaleValue_array[i][2] = 1;
+
+						scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], -1000.0f, 1000.000f))
+					{
+						scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], 0.0f, 360.0f))
+					{
+						scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
+					}
+
+					ImGui::EndTabItem();
+				}
+
+			}
+		}
+	}
 }

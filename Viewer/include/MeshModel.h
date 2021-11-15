@@ -41,6 +41,13 @@ public:
 
 	glm::mat4x4 GetTransformation() const;
 
+	float GetFirstScaleValue() const;
+	float GetFirstTransValueX() const;
+	float GetFirstTransValueY() const;
+	void SetFirstScaleValue(float ScaleValue);
+	void SetFirstTransValueX(float TransValueX);
+	void SetFirstTransValueY(float TransValueY);
+
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
@@ -54,6 +61,10 @@ private:
 
 	// Store current rotate values (to avoid using arcsin, arccos)
 	glm::vec3 ModelRotateVal, WorldRotateVal;
+
+	float FirstScaleValue;
+	float FirstTransValueX;
+	float FirstTransValueY;
 
 	static double ToRadians(double value);
 	static double ToDegrees(double value);

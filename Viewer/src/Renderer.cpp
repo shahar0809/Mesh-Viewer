@@ -25,7 +25,7 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color)
 {
 	if (i < 0) return; if (i >= viewport_width) return;
 	if (j < 0) return; if (j >= viewport_height) return;
-	
+
 	color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
 	color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
 	color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
@@ -184,10 +184,14 @@ void Renderer::fitInScreen(MeshModel& model)
 	//std::cout << "Scale value:" << scaleVal << std::endl;
 	//std::cout << "Trans X value:" << transX << std::endl;
 	//std::cout << "Trans Y value:" << transY << std::endl;
-	
+
 	model.ApplyModelTranslate(transX, transY, 0);
 	model.SetModelScale(scaleVal, scaleVal, 0);
 	model.ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
+
+	model.SetFirstScaleValue(scaleVal);
+	model.SetFirstTransValueX(transX);
+	model.SetFirstTransValueY(transY);
 }
 
 void Renderer::DrawFace(const Face& face, const MeshModel& model)
@@ -196,7 +200,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model)
 	std::vector<glm::vec3> transformedVecs;
 
 	glm::vec3 color{ 0, 0, 1 };
-	
+
 	// Apply transformation on vertices
 	for (int i = 0; i < 3; i++)
 	{
@@ -205,8 +209,8 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model)
 		transformedVecs.push_back(Utils::FromHomogCoords(res));
 	}
 
-	std::cout << model.GetVertice(face.GetVertexIndex(0) - 1).x << "," << model.GetVertice(face.GetVertexIndex(0) - 1).y << std::endl;
-	std::cout << transformedVecs[0].x << "," << transformedVecs[0].y << std::endl;
+	//std::cout << model.GetVertice(face.GetVertexIndex(0) - 1).x << "," << model.GetVertice(face.GetVertexIndex(0) - 1).y << std::endl;
+	//std::cout << transformedVecs[0].x << "," << transformedVecs[0].y << std::endl;
 	DrawLine(transformedVecs[0], transformedVecs[1], color);
 	DrawLine(transformedVecs[1], transformedVecs[2], color);
 	DrawLine(transformedVecs[2], transformedVecs[0], color);
@@ -242,12 +246,12 @@ void Renderer::InitOpenglRendering()
 	// Creates a unique identifier for a buffer.
 	glGenBuffers(1, &buffer);
 
-	// (-1, 1)____(1, 1)
+	// (-1, 1)__(1, 1)
 	//	     |\  |
 	//	     | \ | <--- The exture is drawn over two triangles that stretch over the screen.
 	//	     |__\|
 	// (-1,-1)    (1,-1)
-	const GLfloat vtc[]={
+	const GLfloat vtc[] = {
 		-1, -1,
 		 1, -1,
 		-1,  1,
@@ -256,19 +260,19 @@ void Renderer::InitOpenglRendering()
 		 1,  1
 	};
 
-	const GLfloat tex[]={
+	const GLfloat tex[] = {
 		0,0,
 		1,0,
 		0,1,
 		0,1,
 		1,0,
-		1,1};
+		1,1 };
 
 	// Makes this buffer the current one.
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
 	// This is the opengl way for doing malloc on the gpu. 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc)+sizeof(tex), NULL, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vtc) + sizeof(tex), NULL, GL_STATIC_DRAW);
 
 	// memcopy vtc to buffer[0,sizeof(vtc)-1]
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vtc), vtc);
@@ -277,25 +281,25 @@ void Renderer::InitOpenglRendering()
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(vtc), sizeof(tex), tex);
 
 	// Loads and compiles a sheder.
-	GLuint program = InitShader( "vshader.glsl", "fshader.glsl" );
+	GLuint program = InitShader("vshader.glsl", "fshader.glsl");
 
 	// Make this program the current one.
 	glUseProgram(program);
 
 	// Tells the shader where to look for the vertex position data, and the data dimensions.
-	GLint  vPosition = glGetAttribLocation( program, "vPosition" );
-	glEnableVertexAttribArray( vPosition );
-	glVertexAttribPointer( vPosition,2,GL_FLOAT,GL_FALSE,0,0 );
+	GLint  vPosition = glGetAttribLocation(program, "vPosition");
+	glEnableVertexAttribArray(vPosition);
+	glVertexAttribPointer(vPosition, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	// Same for texture coordinates data.
-	GLint  vTexCoord = glGetAttribLocation( program, "vTexCoord" );
-	glEnableVertexAttribArray( vTexCoord );
-	glVertexAttribPointer( vTexCoord,2,GL_FLOAT,GL_FALSE,0,(GLvoid *)sizeof(vtc) );
+	GLint  vTexCoord = glGetAttribLocation(program, "vTexCoord");
+	glEnableVertexAttribArray(vTexCoord);
+	glVertexAttribPointer(vTexCoord, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)sizeof(vtc));
 
 	//glProgramUniform1i( program, glGetUniformLocation(program, "texture"), 0 );
 
 	// Tells the shader to use GL_TEXTURE0 as the texture id.
-	glUniform1i(glGetUniformLocation(program, "texture"),0);
+	glUniform1i(glGetUniformLocation(program, "texture"), 0);
 }
 
 void Renderer::CreateOpenglBuffer()
@@ -353,7 +357,6 @@ void Renderer::Render(const Scene& scene)
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);
-		fitInScreen(currModel);
 		DrawModel(currModel);
 	}
 }
