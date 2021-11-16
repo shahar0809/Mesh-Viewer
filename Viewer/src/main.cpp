@@ -60,19 +60,16 @@ int main(int argc, char** argv)
 	scene.AddModel(model1);
 	renderer.fitInScreen(scene.GetModel(0));
 
-	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/bunny.obj");
+	/*std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/bunny.obj");
 	scene.AddModel(model2);
-	renderer.fitInScreen(scene.GetModel(1));
-
-
-	//FirstScaleValue = ModelScaleValue[0];
-	//TransValueX = ModelTransValue[0];
-	//TransValueX = ModelTransValue[1];
-
-
+	renderer.fitInScreen(scene.GetModel(1));*/
 
 	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/pawn.obj");
 	//scene.AddModel(model3);
+
+
+
+	
 
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -236,13 +233,13 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	static int numberOfModels = scene.GetModelCount();
 	static std::vector<std::string> modelNames;
 
-	static float ModelScaleValue_array[20][3];
-	static float ModelTransValue_array[20][3];
-	static float ModelRotateValue_array[20][3];
+	static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
+	static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+	static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-	static float WorldScaleValue_array[20][3];
-	static float WorldTransValue_array[20][3];
-	static float WorldRotateValue_array[20][3];
+	static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
+	static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+	static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
 	//static float ModelScaleValue[3] = { 1, 1, 1 }, ModelTransValue[3] = { 0, 0, 0 }, ModelRotateValue[3] = { 0, 0, 0 };
 	{
@@ -260,12 +257,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.SetActiveModelIndex(i);
 					ImGui::Checkbox(("Add this model to screen"), isModelOnScreen);
 
-					ModelScaleValue_array[i][1] = 1, ModelScaleValue_array[i][2] = 1, ModelScaleValue_array[i][2] = 1;
-					ModelTransValue_array[i][1] = 0, ModelTransValue_array[i][2] = 0, ModelTransValue_array[i][2] = 0;
-					ModelRotateValue_array[i][1] = 0, ModelRotateValue_array[i][2] = 0, ModelRotateValue_array[i][2] = 0;
-
 					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -500.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 500.0f))
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -1000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 1000.0f))
 					{
 						if (ModelScaleValue_array[i][0] == 0.0)
 							ModelScaleValue_array[i][0] = 1;
@@ -285,12 +278,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
 					}
 
-					WorldScaleValue_array[i][1] = 1, WorldScaleValue_array[i][2] = 1, WorldScaleValue_array[i][2] = 1;
-					WorldTransValue_array[i][1] = 0, WorldTransValue_array[i][2] = 0, WorldTransValue_array[i][2] = 0;
-					WorldRotateValue_array[i][1] = 0, WorldRotateValue_array[i][2] = 0, WorldRotateValue_array[i][2] = 0;
-
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -500.0f, 500.000f))
+					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -2000.0f, 2000.000f))
 					{
 						if (WorldScaleValue_array[i][0] == 0.0)
 							WorldScaleValue_array[i][0] = 1;

@@ -54,8 +54,8 @@ private:
 	std::vector<glm::vec3> normals;
 	std::string model_name;
 
-	glm::mat4x4 ScaleModel, TranslateModel, RotateModel;
-	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld;
+	glm::mat4x4 ScaleModel, TranslateModel, RotateModel, RotateModelX, RotateModelY, RotateModelZ;
+	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld, RotateWorldX, RotateWorldY, RotateWorldZ;
 
 	glm::mat4x4 WorldTrans, ModelTrans;
 
