@@ -66,6 +66,27 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		0, 0, 0, 1
 	};
 
+	RotateWorldX = glm::mat4x4{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1
+	};
+
+	RotateWorldY = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateWorldZ = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
 	RotateWorld = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -264,24 +285,26 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 
 	double radiansValX = ToRadians(ModelRotateVal.x);
 
-	RotateModel[1][1] = cos(radiansValX);
-	RotateModel[1][2] = -sin(radiansValX);
-	RotateModel[2][1] = sin(radiansValX);
-	RotateModel[2][2] = cos(radiansValX);
+	RotateWorldX[1][1] = cos(radiansValX);
+	RotateWorldX[1][2] = -sin(radiansValX);
+	RotateWorldX[2][1] = sin(radiansValX);
+	RotateWorldX[2][2] = cos(radiansValX);
 
 	double radiansValY = ToRadians(ModelRotateVal.y);
 
-	RotateModel[0][0] = cos(radiansValY);
-	RotateModel[0][2] = sin(radiansValY);
-	RotateModel[2][0] = -sin(radiansValY);
-	RotateModel[2][2] = cos(radiansValY);
+	RotateWorldY[0][0] = cos(radiansValY);
+	RotateWorldY[0][2] = sin(radiansValY);
+	RotateWorldY[2][0] = -sin(radiansValY);
+	RotateWorldY[2][2] = cos(radiansValY);
 
 	double radiansValZ = ToRadians(WorldRotateVal.z);
 
-	RotateWorld[0][0] = cos(radiansValZ);
-	RotateWorld[1][0] = -sin(radiansValZ);
-	RotateWorld[0][1] = sin(radiansValZ);
-	RotateWorld[1][1] = cos(radiansValZ);
+	RotateWorldZ[0][0] = cos(radiansValZ);
+	RotateWorldZ[1][0] = -sin(radiansValZ);
+	RotateWorldZ[0][1] = sin(radiansValZ);
+	RotateWorldZ[1][1] = cos(radiansValZ);
+
+	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)

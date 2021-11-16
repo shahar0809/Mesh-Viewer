@@ -20,6 +20,14 @@ bool show_demo_window = false;
 bool show_another_window = true;
 glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
 
+static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
+static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+
+static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
+static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+
 /**
  * Function declarations
  */
@@ -146,10 +154,49 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 	if (!io.WantCaptureKeyboard)
 	{
 		// TODO: Handle keyboard events here
-		if (io.KeysDown[65])
+		if (io.KeysDown[83])
 		{
-			// A key is down
-			// Use the ASCII table for more key codes (https://www.asciitable.com/)
+			// A key is down (S)
+			ModelTransValue_array[scene.GetActiveModelIndex()][1] -= 5;
+			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		}
+		else if (io.KeysDown[87])
+		{
+			// A key is up (W)
+			ModelTransValue_array[scene.GetActiveModelIndex()][1] += 5;
+			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		}
+		else if (io.KeysDown[65])
+		{
+			// A key is left (A)
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= 5;
+			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		}
+		else if (io.KeysDown[68])
+		{
+			// A key is right (D)
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] += 5;
+			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		}
+		else if (io.KeysDown[91])
+		{
+			// A key is [
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < 2000.0f) {
+				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += 5;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += 5;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += 5;
+			}
+			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		}
+		else if (io.KeysDown[93])
+		{
+			// A key is ]
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > -2000.0f - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) {
+				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= 5;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= 5;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= 5;
+			}
+			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 	}
 
@@ -230,16 +277,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::End();
 
 	static bool isModelOnScreen[5] = { false };
-	static int numberOfModels = scene.GetModelCount();
 	static std::vector<std::string> modelNames;
+	static int numberOfModels = scene.GetModelCount();
 
-	static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
+	/*static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 	static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 	static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
 	static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 	static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-	static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+	static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };*/
 
 	//static float ModelScaleValue[3] = { 1, 1, 1 }, ModelTransValue[3] = { 0, 0, 0 }, ModelRotateValue[3] = { 0, 0, 0 };
 	{
@@ -257,8 +304,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.SetActiveModelIndex(i);
 					ImGui::Checkbox(("Add this model to screen"), isModelOnScreen);
 
+					/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
 					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -1000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 1000.0f))
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -2000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 2000.0f))
 					{
 						if (ModelScaleValue_array[i][0] == 0.0)
 							ModelScaleValue_array[i][0] = 1;
