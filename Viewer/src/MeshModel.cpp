@@ -319,7 +319,7 @@ glm::mat4x4 MeshModel::GetTransformation() const
 {
 	glm::mat4x4 ModelTrans = TranslateModel * RotateModel * ScaleModel;
 	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld * ScaleWorld;
-	return WorldTrans * ModelTrans;
+	return ModelTrans *WorldTrans;
 }
 
 double MeshModel::ToRadians(double value)

@@ -186,7 +186,7 @@ void Renderer::fitInScreen(MeshModel& model)
 	//std::cout << "Trans Y value:" << transY << std::endl;
 
 	model.ApplyModelTranslate(transX, transY, 0);
-	model.SetModelScale(scaleVal, scaleVal, 0);
+	model.SetModelScale(scaleVal, scaleVal, scaleVal);
 	model.ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
 
 	model.SetFirstScaleValue(scaleVal);
