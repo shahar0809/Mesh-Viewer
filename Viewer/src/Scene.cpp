@@ -11,9 +11,6 @@ Scene::Scene() :
 
 void Scene::AddModel(const std::shared_ptr<MeshModel>& mesh_model)
 {
-	/*mesh_model->ApplyModelTranslate(200, 200, 200);
-	mesh_model->ApplyModelScale(400, 400, 500);*/
-
 	mesh_models.push_back(mesh_model);
 }
 

@@ -48,6 +48,9 @@ public:
 	void SetFirstTransValueX(float TransValueX);
 	void SetFirstTransValueY(float TransValueY);
 
+	glm::vec3 color;
+	bool IsOnScreen = false;
+
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;

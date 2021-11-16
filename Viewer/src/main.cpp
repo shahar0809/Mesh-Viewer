@@ -18,7 +18,15 @@
  */
 bool show_demo_window = false;
 bool show_another_window = true;
-glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+
+/**
+* Constants
+*/
+int mouse_offset = 5;
+
+float scaleMax = 3000.0f, scaleMin = -3000.0f;
+float translateMax = 1000.0f, translateMin = -1000.0f;
+float rotateMax = 360.0f, rotateMin = 0;
 
 static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
@@ -51,7 +59,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	const std::string path = "C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/banana.obj";
+	const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -64,22 +72,18 @@ int main(int argc, char** argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
-	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(path);
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
 	renderer.fitInScreen(scene.GetModel(0));
 
-	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/bunny.obj");
+	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "bunny.obj");
 	scene.AddModel(model2);
 	renderer.fitInScreen(scene.GetModel(1));
 
-	std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/pawn.obj");
+	std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "pawn.obj");
 	scene.AddModel(model3);
 	renderer.fitInScreen(scene.GetModel(2));
-
-
-
 	
-
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
 	while (!glfwWindowShouldClose(window))
@@ -158,34 +162,34 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		if (io.KeysDown[83])
 		{
 			// A key is down (S)
-			ModelTransValue_array[scene.GetActiveModelIndex()][1] -= 5;
+			ModelTransValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		else if (io.KeysDown[87])
 		{
 			// A key is up (W)
-			ModelTransValue_array[scene.GetActiveModelIndex()][1] += 5;
+			ModelTransValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		else if (io.KeysDown[65])
 		{
 			// A key is left (A)
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= 5;
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		else if (io.KeysDown[68])
 		{
 			// A key is right (D)
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] += 5;
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		else if (io.KeysDown[91])
 		{
 			// A key is [
 			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < 3000.0f) {
-				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += 5;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += 5;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += 5;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
 			}
 			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
@@ -193,9 +197,9 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		{
 			// A key is ]
 			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > -3000.0f - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) {
-				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= 5;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= 5;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= 5;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
 			}
 			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
@@ -300,16 +304,31 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			{
 				string str = "model" + std::to_string(i);
 				char* model = &str[0];
+
 				if (ImGui::BeginTabItem(model))
 				{
 					scene.SetActiveModelIndex(i);
-					ImGui::Checkbox("Add this model to screen", &isModelOnScreen[i]);
+
+					if (ImGui::Checkbox("Show on screen", &scene.GetActiveModel().IsOnScreen))
+					{
+						if (scene.GetActiveModel().IsOnScreen)
+						{
+							scene.GetActiveModel().color = model_color;
+						}
+						else
+						{
+							scene.GetActiveModel().color = clear_color;
+						}
+					}
 					/*scene.PutOnScene(&isModelOnScreen[i]);*/
 
-					/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
-					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -3000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 3000.0f))
+					static float LocalScale[3] = { 1 }, LocalTranslate[3] = { 0 }, LocalRotate[3] = { 0 };
+					static float WorldScale[3] = { 1 }, WorldTranslate[3] = { 0 }, WorldRotate[3] = { 0 };
+
+					// Local scale slidebar
+					if (ImGui::SliderFloat3("Model Scale", LocalScale, scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
 					{
+						// Avoid model disappearing when scale is 0
 						if (ModelScaleValue_array[i][0] == 0.0)
 							ModelScaleValue_array[i][0] = 1;
 						if (ModelScaleValue_array[i][1] == 0.0)
@@ -317,19 +336,25 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						if (ModelScaleValue_array[i][2] == 0.0)
 							ModelScaleValue_array[i][2] = 1;
 
-						scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
+						scene.GetActiveModel().SetModelScale(LocalScale[0], LocalScale[1], LocalScale[2]);
 					}
-					if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], -1000.0f, 1000.000f))
+					// Local translate slidebar
+					if (ImGui::SliderFloat3("Model Translate", LocalTranslate, translateMin, translateMax))
 					{
-						scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
+						scene.GetActiveModel().SetModelTranslate(LocalTranslate[0], LocalTranslate[1], LocalTranslate[2]);
 					}
-					if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], 0.0f, 360.0f))
+					// Local rotate slidebar
+					if (ImGui::SliderFloat3("Model Rotate", LocalRotate, rotateMin, rotateMax))
 					{
-						scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+						scene.GetActiveModel().SetModelRotate(LocalRotate[0], LocalRotate[1], LocalRotate[2]);
 					}
 
+					// Spacing
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -3000.0f, 3000.000f))
+					// World scale slidebar
+					if (ImGui::SliderFloat3("World Scale", WorldScale, scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
 					{
 						if (WorldScaleValue_array[i][0] == 0.0)
 							WorldScaleValue_array[i][0] = 1;
@@ -338,20 +363,62 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						if (WorldScaleValue_array[i][2] == 0.0)
 							WorldScaleValue_array[i][2] = 1;
 
-						scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
+						scene.GetActiveModel().SetWorldScale(WorldScale[0], WorldScale[1], WorldScale[2]);
 					}
-					if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], -1000.0f, 1000.000f))
+					if (ImGui::SliderFloat3("World Translate", WorldTranslate, translateMin, translateMax))
 					{
-						scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
+						scene.GetActiveModel().SetWorldTranslate(WorldTranslate[0], WorldTranslate[1], WorldTranslate[2]);
 					}
-					if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], 0.0f, 360.0f))
+					if (ImGui::SliderFloat3("World Rotate", WorldRotate, rotateMin, rotateMax))
 					{
-						scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
+						scene.GetActiveModel().SetWorldRotate(WorldRotate[0], WorldRotate[1], WorldRotate[2]);
 					}
 
 					ImGui::EndTabItem();
 				}
 
+				/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
+				/* Set new parameters for each transformation when the slider is changed [Model] */
+				//if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -3000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 3000.0f))
+				//{
+				//	if (ModelScaleValue_array[i][0] == 0.0)
+				//		ModelScaleValue_array[i][0] = 1;
+				//	if (ModelScaleValue_array[i][1] == 0.0)
+				//		ModelScaleValue_array[i][1] = 1;
+				//	if (ModelScaleValue_array[i][2] == 0.0)
+				//		ModelScaleValue_array[i][2] = 1;
+
+				//	scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
+				//}
+				//if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], -1000.0f, 1000.000f))
+				//{
+				//	scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
+				//}
+				//if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], 0.0f, 360.0f))
+				//{
+				//	scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+				//}
+
+				///* Set new parameters for each transformation when the slider is changed [World] */
+				//if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -3000.0f, 3000.000f))
+				//{
+				//	if (WorldScaleValue_array[i][0] == 0.0)
+				//		WorldScaleValue_array[i][0] = 1;
+				//	if (WorldScaleValue_array[i][1] == 0.0)
+				//		WorldScaleValue_array[i][1] = 1;
+				//	if (WorldScaleValue_array[i][2] == 0.0)
+				//		WorldScaleValue_array[i][2] = 1;
+
+				//	scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
+				//}
+				//if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], -1000.0f, 1000.000f))
+				//{
+				//	scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
+				//}
+				//if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], 0.0f, 360.0f))
+				//{
+				//	scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
+				//}
 			}
 		}
 	}

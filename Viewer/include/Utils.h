@@ -4,6 +4,9 @@
 #include <tuple>
 #include "MeshModel.h"
 
+static glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+static glm::vec3 model_color = glm::vec3{ 0, 0, 1 };
+
 class Utils
 {
 public:

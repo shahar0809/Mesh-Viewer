@@ -199,8 +199,6 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model)
 	glm::mat4x4 modelTrans = model.GetTransformation();
 	std::vector<glm::vec3> transformedVecs;
 
-	glm::vec3 color{ 0, 0, 1 };
-
 	// Apply transformation on vertices
 	for (int i = 0; i < 3; i++)
 	{
@@ -211,9 +209,9 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model)
 
 	//std::cout << model.GetVertice(face.GetVertexIndex(0) - 1).x << "," << model.GetVertice(face.GetVertexIndex(0) - 1).y << std::endl;
 	//std::cout << transformedVecs[0].x << "," << transformedVecs[0].y << std::endl;
-	DrawLine(transformedVecs[0], transformedVecs[1], color);
-	DrawLine(transformedVecs[1], transformedVecs[2], color);
-	DrawLine(transformedVecs[2], transformedVecs[0], color);
+	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
+	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
+	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
 }
 
 void Renderer::CreateBuffers(int w, int h)
@@ -357,7 +355,15 @@ void Renderer::Render(const Scene& scene)
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);
-		DrawModel(currModel);
+		if (!currModel.IsOnScreen)
+			DrawModel(currModel);
+	}
+
+	for (int i = 0; i < scene.GetModelCount(); i++)
+	{
+		MeshModel currModel = scene.GetModel(i);
+		if (currModel.IsOnScreen)
+			DrawModel(currModel);
 	}
 }
 
