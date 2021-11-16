@@ -68,12 +68,13 @@ int main(int argc, char** argv)
 	scene.AddModel(model1);
 	renderer.fitInScreen(scene.GetModel(0));
 
-	/*std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/bunny.obj");
+	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/bunny.obj");
 	scene.AddModel(model2);
-	renderer.fitInScreen(scene.GetModel(1));*/
+	renderer.fitInScreen(scene.GetModel(1));
 
-	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/pawn.obj");
-	//scene.AddModel(model3);
+	std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel("C:/Users/karin/Documents/GitHub/computer-graphics-2022-shahar-and-iris/Data/pawn.obj");
+	scene.AddModel(model3);
+	renderer.fitInScreen(scene.GetModel(2));
 
 
 
@@ -181,7 +182,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		else if (io.KeysDown[91])
 		{
 			// A key is [
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < 2000.0f) {
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < 3000.0f) {
 				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += 5;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += 5;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += 5;
@@ -191,7 +192,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		else if (io.KeysDown[93])
 		{
 			// A key is ]
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > -2000.0f - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) {
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > -3000.0f - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) {
 				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= 5;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= 5;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= 5;
@@ -302,11 +303,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				if (ImGui::BeginTabItem(model))
 				{
 					scene.SetActiveModelIndex(i);
-					ImGui::Checkbox(("Add this model to screen"), isModelOnScreen);
+					ImGui::Checkbox("Add this model to screen", &isModelOnScreen[i]);
+					/*scene.PutOnScene(&isModelOnScreen[i]);*/
 
 					/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
 					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -2000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 2000.0f))
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -3000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 3000.0f))
 					{
 						if (ModelScaleValue_array[i][0] == 0.0)
 							ModelScaleValue_array[i][0] = 1;
@@ -327,7 +329,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					}
 
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -2000.0f, 2000.000f))
+					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -3000.0f, 3000.000f))
 					{
 						if (WorldScaleValue_array[i][0] == 0.0)
 							WorldScaleValue_array[i][0] = 1;

@@ -172,7 +172,7 @@ void Renderer::fitInScreen(MeshModel& model)
 		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
 		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
 
-	double scaleVal = (viewport_height / 2) / (std::get<1>(result.second) - std::get<1>(result.first));
+	double scaleVal = (viewport_height / 3) / (std::get<1>(result.second) - std::get<1>(result.first));
 	double transX = (viewport_width / 2) - int(avgX - int(avgX) * scaleVal),
 		transY = (viewport_height / 2) - int(avgY - int(avgY) * scaleVal);
 
