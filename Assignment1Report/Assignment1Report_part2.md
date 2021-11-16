@@ -893,11 +893,9 @@ Therefore, We created 9 sliders to control each transformation on each exis.
 
 ![Gui Sliders](part2_images/gui_sliders.png)
 
-
-
 ## 5 - Apply transformations on model
 Firstly, we wanted to be able to apply local and world transformation on the model.
-So, we added to `MeshModel` six matrices (SRT):
+So, we added to `MeshModel` six matrices (TRS):
 - Scale Model
 - Rotation Model
 - Translation Model
@@ -928,4 +926,48 @@ These methods apply the parameters without depending on the previous values:
 	void SetWorldTranslate(double transX, double transY, double transZ);
 ```
 
+Each Scale and Apply function changes the matching transformation matrix in the model.
 
+We apply the transformation on the vertices by multiplying each vertix by the model transformation:
+```cpp
+glm::mat4x4 modelTrans = model.GetTransformation();
+std::vector<glm::vec3> transformedVecs;
+
+// Apply transformation on vertices
+for (int i = 0; i < 3; i++)
+{
+	glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
+	glm::vec4 res = modelTrans * homVec;
+	transformedVecs.push_back(Utils::FromHomogCoords(res));
+}
+```
+Translating in the model frame, and then rotating in the world frame:
+![Trans Model Rot World](part2_images/trans_model_rot_world.png)
+
+Rotating in world frame, and then translating in the model frame:
+![Trans World Rot Model](part2_images/trans_world_rot_model.png)
+
+## 6 - Load several models
+Each new model is added to the scene, while we only control the active one.
+
+We used the ImGUI widget tabs, in order to allow the user to choose which model to transform.
+
+![Multi Objects](part2_images/multi_objects.png)
+
+We also added a Checkbox, which allows the user to show/erase the mode from the screen.
+
+![Multi Objects](part2_images/multiple-models.gif)
+
+## 7 - Transformations using mouse and keyboard
+We implemented 2 transformations using the mouse:
+- Translation of the model using the `A`, `S`, `D`, `W` keys
+- Scaling of the model using the `[`, `]`
+
+Translation:
+![Multi Objects](part2_images/translation.gif)
+
+Scaling:
+![Multi Objects](part2_images/scaling.gif)
+
+## The END
+![GIF](part1_images/happy_gif.gif)
