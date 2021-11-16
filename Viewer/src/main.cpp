@@ -321,105 +321,58 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						}
 					}
 
-					/*static float LocalScale[3] = { 1 }, LocalTranslate[3] = { 0 }, LocalRotate[3] = { 0 };
-					static float WorldScale[3] = { 1 }, WorldTranslate[3] = { 0 }, WorldRotate[3] = { 0 };*/
 
-					// Local scale slidebar
-					//if (ImGui::SliderFloat3("Model Scale", LocalScale, scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
-					//{
-					//	// Avoid model disappearing when scale is 0
-					//	if (ModelScaleValue_array[i][0] == 0.0)
-					//		ModelScaleValue_array[i][0] = 1;
-					//	if (ModelScaleValue_array[i][1] == 0.0)
-					//		ModelScaleValue_array[i][1] = 1;
-					//	if (ModelScaleValue_array[i][2] == 0.0)
-					//		ModelScaleValue_array[i][2] = 1;
+					/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
+					/* Set new parameters for each transformation when the slider is changed [Model] */
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -3000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 3000.0f))
+					{
+						if (ModelScaleValue_array[i][0] == 0.0)
+							ModelScaleValue_array[i][0] = 1;
+						if (ModelScaleValue_array[i][1] == 0.0)
+							ModelScaleValue_array[i][1] = 1;
+						if (ModelScaleValue_array[i][2] == 0.0)
+							ModelScaleValue_array[i][2] = 1;
 
-					//	scene.GetActiveModel().SetModelScale(LocalScale[0], LocalScale[1], LocalScale[2]);
-					//}
-					//// Local translate slidebar
-					//if (ImGui::SliderFloat3("Model Translate", LocalTranslate, translateMin, translateMax))
-					//{
-					//	scene.GetActiveModel().SetModelTranslate(LocalTranslate[0], LocalTranslate[1], LocalTranslate[2]);
-					//}
-					//// Local rotate slidebar
-					//if (ImGui::SliderFloat3("Model Rotate", LocalRotate, rotateMin, rotateMax))
-					//{
-					//	scene.GetActiveModel().SetModelRotate(LocalRotate[0], LocalRotate[1], LocalRotate[2]);
-					//}
+						scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], -1000.0f, 1000.000f))
+					{
+						scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], 0.0f, 360.0f))
+					{
+						scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+					}
 
-					//// Spacing
-					//ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
-					///* Set new parameters for each transformation when the slider is changed [World] */
-					//// World scale slidebar
-					//if (ImGui::SliderFloat3("World Scale", WorldScale, scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
-					//{
-					//	if (WorldScaleValue_array[i][0] == 0.0)
-					//		WorldScaleValue_array[i][0] = 1;
-					//	if (WorldScaleValue_array[i][1] == 0.0)
-					//		WorldScaleValue_array[i][1] = 1;
-					//	if (WorldScaleValue_array[i][2] == 0.0)
-					//		WorldScaleValue_array[i][2] = 1;
-
-					//	scene.GetActiveModel().SetWorldScale(WorldScale[0], WorldScale[1], WorldScale[2]);
-					//}
-					//if (ImGui::SliderFloat3("World Translate", WorldTranslate, translateMin, translateMax))
-					//{
-					//	scene.GetActiveModel().SetWorldTranslate(WorldTranslate[0], WorldTranslate[1], WorldTranslate[2]);
-					//}
-					//if (ImGui::SliderFloat3("World Rotate", WorldRotate, rotateMin, rotateMax))
-					//{
-					//	scene.GetActiveModel().SetWorldRotate(WorldRotate[0], WorldRotate[1], WorldRotate[2]);
-					//}
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 
-				/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
-				/* Set new parameters for each transformation when the slider is changed [Model] */
-				if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -3000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 3000.0f))
-				{
-					if (ModelScaleValue_array[i][0] == 0.0)
-						ModelScaleValue_array[i][0] = 1;
-					if (ModelScaleValue_array[i][1] == 0.0)
-						ModelScaleValue_array[i][1] = 1;
-					if (ModelScaleValue_array[i][2] == 0.0)
-						ModelScaleValue_array[i][2] = 1;
+					/* Set new parameters for each transformation when the slider is changed [World] */
+					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -3000.0f, 3000.000f))
+					{
+						if (WorldScaleValue_array[i][0] == 0.0)
+							WorldScaleValue_array[i][0] = 1;
+						if (WorldScaleValue_array[i][1] == 0.0)
+							WorldScaleValue_array[i][1] = 1;
+						if (WorldScaleValue_array[i][2] == 0.0)
+							WorldScaleValue_array[i][2] = 1;
 
-					scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
-				}
-				if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], -1000.0f, 1000.000f))
-				{
-					scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
-				}
-				if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], 0.0f, 360.0f))
-				{
-					scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
-				}
-
-				/* Set new parameters for each transformation when the slider is changed [World] */
-				if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -3000.0f, 3000.000f))
-				{
-					if (WorldScaleValue_array[i][0] == 0.0)
-						WorldScaleValue_array[i][0] = 1;
-					if (WorldScaleValue_array[i][1] == 0.0)
-						WorldScaleValue_array[i][1] = 1;
-					if (WorldScaleValue_array[i][2] == 0.0)
-						WorldScaleValue_array[i][2] = 1;
-
-					scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
-				}
-				if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], -1000.0f, 1000.000f))
-				{
-					scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
-				}
-				if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], 0.0f, 360.0f))
-				{
-					scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
-				}
+						scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], -1000.0f, 1000.000f))
+					{
+						scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], 0.0f, 360.0f))
+					{
+						scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
+					}
 
 					ImGui::EndTabItem();
 				}
 			}
 		}
+
+		ImGui::End();
 	}
 }

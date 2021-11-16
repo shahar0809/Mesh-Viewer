@@ -283,14 +283,16 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	WorldRotateVal.y = rotateY;
 	WorldRotateVal.z = rotateZ;
 
-	double radiansValX = ToRadians(ModelRotateVal.x);
+	std::cout << rotateX << "," << rotateY << "," << rotateZ << std::endl;
+
+	double radiansValX = ToRadians(WorldRotateVal.x);
 
 	RotateWorldX[1][1] = cos(radiansValX);
 	RotateWorldX[1][2] = -sin(radiansValX);
 	RotateWorldX[2][1] = sin(radiansValX);
 	RotateWorldX[2][2] = cos(radiansValX);
 
-	double radiansValY = ToRadians(ModelRotateVal.y);
+	double radiansValY = ToRadians(WorldRotateVal.y);
 
 	RotateWorldY[0][0] = cos(radiansValY);
 	RotateWorldY[0][2] = sin(radiansValY);
@@ -305,6 +307,15 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+
+	std::cout << "Rotate world: " << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			std::cout << RotateWorld[j][i] << "," <<  std::endl;
+		}
+	}
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
@@ -319,7 +330,8 @@ glm::mat4x4 MeshModel::GetTransformation() const
 {
 	glm::mat4x4 ModelTrans = TranslateModel * RotateModel * ScaleModel;
 	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld * ScaleWorld;
-	return ModelTrans *WorldTrans;
+	
+	return WorldTrans * ModelTrans;
 }
 
 double MeshModel::ToRadians(double value)
