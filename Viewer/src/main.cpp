@@ -24,9 +24,19 @@ bool show_another_window = true;
 */
 int mouse_offset = 5;
 
-float scaleMax = 3000.0f, scaleMin = -3000.0f;
+float scaleMax = 1000.0f, scaleMin = -1000.0f;
+float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
 float translateMax = 1000.0f, translateMin = -1000.0f;
 float rotateMax = 360.0f, rotateMin = 0;
+
+// ASCII values for keyboard events
+static const int S_KEY_ASCII = int('S'),
+				 W_KEY_ASCII = int('W'),
+				 A_KEY_ASCII = int('A'),
+				 D_KEY_ASCII = int('D');
+
+static const int ZOOM_IN_KEY_ASCII = int('['),
+				 ZOOM_OUT_KEY_ASCII = int(']');
 
 static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
@@ -71,7 +81,8 @@ int main(int argc, char** argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
-
+	
+	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
 	renderer.fitInScreen(scene.GetModel(0));
@@ -158,45 +169,46 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 
 	if (!io.WantCaptureKeyboard)
 	{
-		// TODO: Handle keyboard events here
-		if (io.KeysDown[83])
+		// The key is down (S)
+		if (io.KeysDown[S_KEY_ASCII])
 		{
-			// A key is down (S)
 			ModelTransValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
-		else if (io.KeysDown[87])
+		// The key is up (W)
+		else if (io.KeysDown[W_KEY_ASCII])
 		{
-			// A key is up (W)
 			ModelTransValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
-		else if (io.KeysDown[65])
+		// The key is left (A)
+		else if (io.KeysDown[A_KEY_ASCII])
 		{
-			// A key is left (A)
 			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
-		else if (io.KeysDown[68])
+		// The key is right (D)
+		else if (io.KeysDown[D_KEY_ASCII])
 		{
-			// A key is right (D)
 			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
 			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
-		else if (io.KeysDown[91])
+		// Zoom in on model
+		else if (io.KeysDown[ZOOM_IN_KEY_ASCII])
 		{
-			// A key is [
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < 3000.0f) {
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax) 
+			{
 				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
 			}
 			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
-		else if (io.KeysDown[93])
+		// Zoom out on model
+		else if (io.KeysDown[ZOOM_OUT_KEY_ASCII])
 		{
-			// A key is ]
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > -3000.0f - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) {
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > scaleMin - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) 
+			{
 				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
@@ -204,21 +216,6 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 	}
-
-	//if (!io.WantCaptureMouse)
-	//{
-	//	auto mouseDelta = ImGui::GetMouseDragDelta();
-	//	// Translate active model on mouse drag
-	//	if (mouseDelta.x != 0 || mouseDelta.y != 0)
-	//	{
-	//		scene.GetActiveModel().ApplyModelTranslate(mouseDelta.x, mouseDelta.x, 0);
-	//	}
-	//	// Scale active model on mouse scroll
-	//	if (io.MouseWheel)
-	//	{
-	//		scene.GetActiveModel().ApplyModelScale(io.MouseWheel, io.MouseWheel, io.MouseWheel);
-	//	}
-	//}
 
 	renderer.ClearColorBuffer(clear_color);
 	renderer.Render(scene);
@@ -277,32 +274,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 	// Controls
 	ImGui::ColorEdit3("Clear Color", (float*)&clear_color);
-	// TODO: Add more controls as needed
-
 	ImGui::End();
 
-	static bool isModelOnScreen[5] = { false };
 	static std::vector<std::string> modelNames;
 	static int numberOfModels = scene.GetModelCount();
 
-	/*static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
-	static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-	static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-
-	static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
-	static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-	static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };*/
-
-	//static float ModelScaleValue[3] = { 1, 1, 1 }, ModelTransValue[3] = { 0, 0, 0 }, ModelRotateValue[3] = { 0, 0, 0 };
 	{
 		ImGui::Begin("Model and World Transformation");
-		ImGui::Text("Modify values");
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 		{
 			for (int i = 0; i < numberOfModels; i++)
 			{
-				string str = "model" + std::to_string(i);
+				string str = "Model " + std::to_string(i);
 				char* model = &str[0];
 
 				if (ImGui::BeginTabItem(model))
@@ -321,10 +305,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						}
 					}
 
-
-					/*cout << ModelScaleValue_array[i][0] << " " << ModelScaleValue_array[i][1] << " " << ModelScaleValue_array[i][2] << endl << endl;*/
 					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], -3000.0f - 2 * scene.GetModel(i).GetFirstScaleValue(), 3000.0f))
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
 					{
 						if (ModelScaleValue_array[i][0] == 0.0)
 							ModelScaleValue_array[i][0] = 1;
@@ -335,20 +317,19 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 						scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
 					}
-					if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], -1000.0f, 1000.000f))
+					if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], translateMin, translateMax))
 					{
 						scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
 					}
-					if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], 0.0f, 360.0f))
+					if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], rotateMin, rotateMax))
 					{
 						scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
 					}
 
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], -3000.0f, 3000.000f))
+					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], scaleMinWorld, scaleMaxWorld))
 					{
 						if (WorldScaleValue_array[i][0] == 0.0)
 							WorldScaleValue_array[i][0] = 1;
@@ -359,11 +340,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 						scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
 					}
-					if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], -1000.0f, 1000.000f))
+					if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], translateMin, translateMax))
 					{
 						scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
 					}
-					if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], 0.0f, 360.0f))
+					if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], rotateMin, rotateMax))
 					{
 						scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
 					}

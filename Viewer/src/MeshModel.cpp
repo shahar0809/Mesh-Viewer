@@ -173,16 +173,28 @@ void MeshModel::ApplyModelRotate(double rotateX, double rotateY, double rotateZ)
 	ModelRotateVal.y += rotateY;
 	ModelRotateVal.z += rotateZ;
 
-	//glm::mat4x4 rotMatrix = glm::eulerAngleXYZ(rotateX, rotateY, rotateZ);
-	// TODO: Implement rotation around z,y 
-	// Maybe there's something in the recording
+	double radiansValX = ToRadians(ModelRotateVal.x);
 
-	double radiansVal = ToRadians(ModelRotateVal.z);
+	RotateModelX[1][1] = cos(radiansValX);
+	RotateModelX[1][2] = -sin(radiansValX);
+	RotateModelX[2][1] = sin(radiansValX);
+	RotateModelX[2][2] = cos(radiansValX);
 
-	RotateModel[0][0] = cos(radiansVal);
-	RotateModel[1][0] = -sin(radiansVal);
-	RotateModel[0][1] = sin(radiansVal);
-	RotateModel[1][1] = cos(radiansVal);
+	double radiansValY = ToRadians(ModelRotateVal.y);
+
+	RotateModelY[0][0] = cos(radiansValY);
+	RotateModelY[0][2] = sin(radiansValY);
+	RotateModelY[2][0] = -sin(radiansValY);
+	RotateModelY[2][2] = cos(radiansValY);
+
+	double radiansValZ = ToRadians(ModelRotateVal.z);
+
+	RotateModelZ[0][0] = cos(radiansValZ);
+	RotateModelZ[1][0] = -sin(radiansValZ);
+	RotateModelZ[0][1] = sin(radiansValZ);
+	RotateModelZ[1][1] = cos(radiansValZ);
+
+	RotateModel = RotateModelZ * RotateModelY * RotateModelX;
 }
 
 void MeshModel::ApplyModelTranslate(double transX, double transY, double transZ)
@@ -207,12 +219,28 @@ void MeshModel::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
 	WorldRotateVal.y += rotateY;
 	WorldRotateVal.z += rotateZ;
 
-	double radiansVal = ToRadians(WorldRotateVal.z);
+	double radiansValX = ToRadians(WorldRotateVal.x);
 
-	RotateWorld[0][0] = cos(radiansVal);
-	RotateWorld[1][0] = -sin(radiansVal);
-	RotateWorld[0][1] = sin(radiansVal);
-	RotateWorld[1][1] = cos(radiansVal);
+	RotateWorldX[1][1] = cos(radiansValX);
+	RotateWorldX[1][2] = -sin(radiansValX);
+	RotateWorldX[2][1] = sin(radiansValX);
+	RotateWorldX[2][2] = cos(radiansValX);
+
+	double radiansValY = ToRadians(WorldRotateVal.y);
+
+	RotateWorldY[0][0] = cos(radiansValY);
+	RotateWorldY[0][2] = sin(radiansValY);
+	RotateWorldY[2][0] = -sin(radiansValY);
+	RotateWorldY[2][2] = cos(radiansValY);
+
+	double radiansValZ = ToRadians(WorldRotateVal.z);
+
+	RotateWorldZ[0][0] = cos(radiansValZ);
+	RotateWorldZ[1][0] = -sin(radiansValZ);
+	RotateWorldZ[0][1] = sin(radiansValZ);
+	RotateWorldZ[1][1] = cos(radiansValZ);
+
+	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
 }
 
 void MeshModel::ApplyWorldTranslate(double transX, double transY, double transZ)
@@ -283,8 +311,6 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	WorldRotateVal.y = rotateY;
 	WorldRotateVal.z = rotateZ;
 
-	std::cout << rotateX << "," << rotateY << "," << rotateZ << std::endl;
-
 	double radiansValX = ToRadians(WorldRotateVal.x);
 
 	RotateWorldX[1][1] = cos(radiansValX);
@@ -307,15 +333,6 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
-
-	std::cout << "Rotate world: " << std::endl;
-	for (int i = 0; i < 4; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			std::cout << RotateWorld[j][i] << "," <<  std::endl;
-		}
-	}
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
