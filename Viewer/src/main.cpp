@@ -89,7 +89,7 @@ int main(int argc, char** argv)
 
 	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "bunny.obj");
 	scene.AddModel(model2);
-	renderer.fitInScreen(scene.GetModel(1));
+	renderer.fitInScreen(scene.GetModel(0));
 
 	std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "pawn.obj");
 	scene.AddModel(model3);
