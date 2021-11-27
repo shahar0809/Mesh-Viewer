@@ -11,6 +11,7 @@ public:
 
 	const glm::mat4x4& GetProjectionTransformation() const;
 	const glm::mat4x4& GetViewTransformation() const;
+	void SetOrthoTransformation(float left, float right, float bottum, float top, float nearParameter, float farParameter);
 
 private:
 	glm::mat4x4 view_transformation;

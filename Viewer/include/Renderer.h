@@ -30,8 +30,8 @@ private:
 
 	void DrawLineSanityCheck();
 
-	void DrawModel(const MeshModel& model);
-	void DrawFace(const Face& face, const MeshModel& model);
+	void DrawModel(const MeshModel& model, const Camera& camera);
+	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
 
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();

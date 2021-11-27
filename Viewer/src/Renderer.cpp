@@ -156,12 +156,12 @@ void Renderer::DrawLineSanityCheck()
 	}
 }
 
-void Renderer::DrawModel(const MeshModel& model)
+void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
 		Face currFace = model.GetFace(i);
-		DrawFace(currFace, model);
+		DrawFace(currFace, model, camera);
 	}
 }
 
@@ -194,9 +194,9 @@ void Renderer::fitInScreen(MeshModel& model)
 	model.SetFirstTransValueY(transY);
 }
 
-void Renderer::DrawFace(const Face& face, const MeshModel& model)
+void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	glm::mat4x4 modelTrans = model.GetTransformation();
+	glm::mat4x4 modelTrans = model.GetTransformation() * camera.GetViewTransformation();
 	std::vector<glm::vec3> transformedVecs;
 
 	// Apply transformation on vertices
@@ -351,19 +351,21 @@ void Renderer::Render(const Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 
+	const Camera &camera = scene.GetCamera(scene.GetActiveCameraIndex());
+
 	// Draw mesh triangles
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);
 		if (!currModel.IsOnScreen)
-			DrawModel(currModel);
+			DrawModel(currModel, camera);
 	}
 
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);
 		if (currModel.IsOnScreen)
-			DrawModel(currModel);
+			DrawModel(currModel, camera);
 	}
 }
 

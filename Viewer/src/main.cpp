@@ -28,6 +28,7 @@ float scaleMax = 1000.0f, scaleMin = -1000.0f;
 float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
 float translateMax = 1000.0f, translateMin = -1000.0f;
 float rotateMax = 360.0f, rotateMin = 0;
+float cameraMax = 30.0f, cameraMin = 0;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
@@ -45,6 +46,8 @@ static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {
 static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+
+static float CameraControler[6] = { 1, 1, 1, 1, 1, 1 };
 
 /**
  * Function declarations
@@ -69,7 +72,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	//const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -85,15 +89,19 @@ int main(int argc, char** argv)
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
-	renderer.fitInScreen(scene.GetModel(0));
+	//renderer.fitInScreen(scene.GetModel(0));
 
-	std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "bunny.obj");
-	scene.AddModel(model2);
-	renderer.fitInScreen(scene.GetModel(0));
+	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "bunny.obj");
+	//scene.AddModel(model2);
+	////renderer.fitInScreen(scene.GetModel(1));
 
-	std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "pawn.obj");
-	scene.AddModel(model3);
-	renderer.fitInScreen(scene.GetModel(2));
+	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "pawn.obj");
+	//scene.AddModel(model3);
+	////renderer.fitInScreen(scene.GetModel(2));
+
+	/* Load a camera */
+	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();;
+	scene.AddCamera(camera1);
 	
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -355,5 +363,33 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 
 		ImGui::End();
+
+		ImGui::Begin("Camera Control");
+		
+		/* change view volume */
+		ImGui::SliderFloat("Left", &CameraControler[0], cameraMin, cameraMax);
+		ImGui::SliderFloat("Right", &CameraControler[1], cameraMin, cameraMax);
+		ImGui::SliderFloat("Bottom", &CameraControler[2], cameraMin, cameraMax);
+		ImGui::SliderFloat("Top", &CameraControler[3], cameraMin, cameraMax);
+		ImGui::SliderFloat("Near", &CameraControler[4], cameraMin, cameraMax);
+		ImGui::SliderFloat("Far", &CameraControler[5], cameraMin, cameraMax);
+
+		scene.GetActiveCamera().SetOrthoTransformation(CameraControler[0], CameraControler[1], CameraControler[2], CameraControler[3], CameraControler[4], CameraControler[5]);
+
+		ImGui::End();
+		
+
+		//if (ImGui::SliderFloat("Left", CameraControler[i], cameraMin, cameraMax))
+		//{
+		//	
+		//}
+		//if (ImGui::SliderFloat("Right", CameraControler[i], cameraMin, cameraMax))
+		//{
+
+		//}
+		//if (ImGui::SliderFloat("Bottom", CameraControler[i], cameraMin, cameraMax))
+		//{
+	
+		//}
 	}
 }
