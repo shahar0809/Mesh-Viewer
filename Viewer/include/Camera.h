@@ -12,6 +12,7 @@ public:
 
 	const glm::mat4x4& GetProjectionTransformation() const;
 	const glm::mat4x4& GetViewTransformation() const;
+	void SetOrthoTransformation(float left, float right, float bottum, float top, float nearParameter, float farParameter);
 
 	const glm::vec4& getEye() const;
 	const glm::vec4& getAt() const;
@@ -52,5 +53,4 @@ private:
 	glm::vec3 LocalRotateVal, WorldRotateVal;
 
 	void CalcViewTrans();
-	void OrthographicProj(float left, float right, float top, float bottom);
 };

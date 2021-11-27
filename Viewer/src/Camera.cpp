@@ -2,7 +2,19 @@
 
 Camera::Camera()
 {
-	
+	projection_transformation = glm::mat4x4{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 0, 0,
+	0, 0, 0, 1
+	};
+
+	view_transformation = glm::mat4x4{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1
+	};
 }
 
 Camera::~Camera()
@@ -226,9 +238,13 @@ void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const gl
 	camera_inverse = camera_inverse * glm::inverse(TranslateLocal);
 }
 
-void Camera::OrthographicProj(float left, float right, float top, float bottom)
-{
-
+void Camera::SetOrthoTransformation(float left, float right, float bottum, float top, float nearParameter, float farParameter) {
+	view_transformation[0][0] = 2 / (right - left);
+	view_transformation[0][3] = -(right + left) / (right - left);
+	view_transformation[1][1] = 2 / (top - bottum);
+	view_transformation[1][3] = -(top + bottum) / (top - bottum);
+	view_transformation[2][2] = 2 / (nearParameter - farParameter);
+	view_transformation[2][3] = -(nearParameter + farParameter) / (nearParameter - farParameter);
 }
 
 void Camera::CalcViewTrans()
@@ -236,17 +252,18 @@ void Camera::CalcViewTrans()
 
 }
 
-const glm::vec3& Camera::getEye() const
+const glm::vec4& Camera::getEye() const
 {
     return Eye;
 }
 
-const glm::vec3& Camera::getAt() const
+const glm::vec4& Camera::getAt() const
 {
     return At;
 }
 
-const glm::vec3& Camera::getUp() const
+const glm::vec4& Camera::getUp() const
 {
     return Up;
 }
+

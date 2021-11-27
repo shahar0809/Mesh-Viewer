@@ -21,7 +21,7 @@ public:
 	
 	void AddCamera(const shared_ptr<Camera>& camera);
 	int GetCameraCount() const;
-	Camera& GetCamera(int index);
+	Camera& GetCamera(int index) const;
 	Camera& GetActiveCamera();
 
 	void SetActiveCameraIndex(int index);
