@@ -38,6 +38,9 @@ void Camera::ApplyLocalScale(double scaleX, double scaleY, double scaleZ)
 	ScaleLocal[0][0] *= scaleX;
 	ScaleLocal[1][1] *= scaleY;
 	ScaleLocal[2][2] *= scaleZ;
+
+	camera = ScaleLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(ScaleLocal);
 }
 
 void Camera::ApplyLocalRotate(double rotateX, double rotateY, double rotateZ)
@@ -68,6 +71,8 @@ void Camera::ApplyLocalRotate(double rotateX, double rotateY, double rotateZ)
 	RotateLocalZ[1][1] = cos(radiansValZ);
 
 	RotateLocal = RotateLocalZ * RotateLocalY * RotateLocalX;
+	camera = RotateLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(RotateLocal);
 }
 
 void Camera::ApplyLocalTranslate(double transX, double transY, double transZ)
@@ -76,6 +81,9 @@ void Camera::ApplyLocalTranslate(double transX, double transY, double transZ)
 	TranslateLocal[3][0] += transX;
 	TranslateLocal[3][1] += transY;
 	TranslateLocal[3][2] += transZ;
+
+	camera = TranslateLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(TranslateLocal);
 }
 
 void Camera::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
@@ -84,6 +92,9 @@ void Camera::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
 	ScaleWorld[0][0] *= scaleX;
 	ScaleWorld[1][1] *= scaleY;
 	ScaleWorld[2][2] *= scaleZ;
+
+	camera = ScaleWorld * camera;
+	camera_inverse = camera_inverse * glm::inverse(ScaleWorld);
 }
 
 void Camera::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
@@ -114,6 +125,9 @@ void Camera::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+
+	camera = RotateWorld * camera;
+	camera_inverse = camera_inverse * glm::inverse(RotateWorld);
 }
 
 void Camera::ApplyWorldTranslate(double transX, double transY, double transZ)
@@ -122,6 +136,9 @@ void Camera::ApplyWorldTranslate(double transX, double transY, double transZ)
 	TranslateLocal[3][0] += transX;
 	TranslateLocal[3][1] += transY;
 	TranslateLocal[3][2] += transZ;
+
+	camera = TranslateLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(TranslateLocal);
 }
 
 void Camera::SetLocalScale(double scaleX, double scaleY, double scaleZ)
@@ -130,6 +147,9 @@ void Camera::SetLocalScale(double scaleX, double scaleY, double scaleZ)
 	ScaleLocal[0][0] = scaleX;
 	ScaleLocal[1][1] = scaleY;
 	ScaleLocal[2][2] = scaleZ;
+
+	camera = ScaleLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(ScaleLocal);
 }
 
 void Camera::SetLocalRotate(double rotateX, double rotateY, double rotateZ)
@@ -160,6 +180,9 @@ void Camera::SetLocalRotate(double rotateX, double rotateY, double rotateZ)
 	RotateLocalZ[1][1] = cos(radiansValZ);
 
 	RotateLocal = RotateLocalZ * RotateLocalY * RotateLocalX;
+
+	camera = RotateLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(RotateLocal);
 }
 
 void Camera::SetLocalTranslate(double transX, double transY, double transZ)
@@ -168,6 +191,9 @@ void Camera::SetLocalTranslate(double transX, double transY, double transZ)
 	TranslateLocal[3][0] = transX;
 	TranslateLocal[3][1] = transY;
 	TranslateLocal[3][2] = transZ;
+
+	camera = TranslateLocal * camera;
+	camera_inverse = camera_inverse * glm::inverse(TranslateLocal);
 }
 
 void Camera::SetWorldScale(double scaleX, double scaleY, double scaleZ)
@@ -176,6 +202,9 @@ void Camera::SetWorldScale(double scaleX, double scaleY, double scaleZ)
 	ScaleWorld[0][0] = scaleX;
 	ScaleWorld[1][1] = scaleY;
 	ScaleWorld[2][2] = scaleZ;
+
+	camera = ScaleWorld * camera;
+	camera_inverse = camera_inverse * glm::inverse(ScaleWorld);
 }
 
 void Camera::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
@@ -206,6 +235,9 @@ void Camera::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+
+	camera = RotateWorld * camera;
+	camera_inverse = camera_inverse * glm::inverse(RotateWorld);
 }
 
 void Camera::SetWorldTranslate(double transX, double transY, double transZ)
@@ -214,6 +246,9 @@ void Camera::SetWorldTranslate(double transX, double transY, double transZ)
 	TranslateWorld[3][0] = transX;
 	TranslateWorld[3][1] = transY;
 	TranslateWorld[3][2] = transZ;
+
+	camera = TranslateWorld * camera;
+	camera_inverse = camera_inverse * glm::inverse(TranslateWorld);
 }
 
 /**
@@ -224,9 +259,8 @@ void Camera::SetWorldTranslate(double transX, double transY, double transZ)
 */
 void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up)
 {
-	Eye = eye;
-	At = at;
-	Up = up;
+	//glm::lookAt(eye, at, up)
+	Eye = eye; At = at; Up = up;
 
 	glm::vec4 z = glm::normalize(at - eye);
 	glm::vec4 x = glm::normalize(glm::vec4(glm::cross(glm::vec3(up), glm::vec3(z)), 1.0f));
@@ -234,8 +268,6 @@ void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const gl
 
 	camera = glm::mat4x4(x, y, z, glm::vec4(0, 0, 0, 1));
 	SetLocalTranslate(-eye.x, -eye.y, -eye.z);
-	camera = camera * TranslateLocal;
-	camera_inverse = camera_inverse * glm::inverse(TranslateLocal);
 }
 
 void Camera::SetOrthoTransformation(float left, float right, float bottum, float top, float nearParameter, float farParameter) {
@@ -267,3 +299,15 @@ const glm::vec4& Camera::getUp() const
     return Up;
 }
 
+glm::mat4x4 Camera::GetTransformation() const
+{
+	glm::mat4x4 LocalTrans = TranslateLocal * RotateLocal * ScaleLocal;
+	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld * ScaleWorld;
+
+	return WorldTrans * LocalTrans;
+}
+
+const glm::mat4x4& Camera::GetCameraInverse() const
+{
+	return camera_inverse;
+}

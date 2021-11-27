@@ -19,7 +19,7 @@ public:
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;
 
-	void fitInScreen(MeshLocal& model);
+	//void fitInScreen(MeshLocal& model);
 	
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
@@ -32,6 +32,9 @@ private:
 
 	void DrawModel(const MeshModel& model, const Camera& camera);
 	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
+
+	void DrawBoundingBox(const MeshModel& model);
+	//void DrawAxis(glm::vec3 center);
 
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();

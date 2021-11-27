@@ -10,6 +10,7 @@ public:
 
 	void SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up);
 
+	glm::mat4x4 GetTransformation() const;
 	const glm::mat4x4& GetProjectionTransformation() const;
 	const glm::mat4x4& GetViewTransformation() const;
 	void SetOrthoTransformation(float left, float right, float bottum, float top, float nearParameter, float farParameter);
@@ -17,6 +18,8 @@ public:
 	const glm::vec4& getEye() const;
 	const glm::vec4& getAt() const;
 	const glm::vec4& getUp() const;
+
+	const glm::mat4x4& GetCameraInverse() const;
 
 	// Apply transformations on both model and world (dependant on previous values)
 	void ApplyLocalScale(double scaleX, double scaleY, double scaleZ);
@@ -37,10 +40,10 @@ public:
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
 private:
-	glm::mat4x4 view_transformation;
-	glm::mat4x4 projection_transformation;
-	glm::mat4x4 camera;
-	glm::mat4x4 camera_inverse;
+	glm::mat4x4 view_transformation;			// Orthographic transf
+	glm::mat4x4 projection_transformation;		// Projection tranformation
+	glm::mat4x4 camera;							// C
+	glm::mat4x4 camera_inverse;					// Cinv
 
 	glm::vec4 Eye, At, Up;
 

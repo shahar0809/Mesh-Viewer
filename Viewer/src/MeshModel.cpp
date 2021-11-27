@@ -351,6 +351,98 @@ glm::mat4x4 MeshModel::GetTransformation() const
 	return WorldTrans * ModelTrans;
 }
 
+/**
+ * @brief Calculates the 8 points of the model's bounding box.
+	1. (minX, minY, minZ)
+	2. (minX, minY, maxZ)
+	3. (minX, maxY, minZ)
+	4. (minX, maxY, maxZ)
+	5. (maxX, minY, minZ)
+	6. (maxX, minY, maxZ)
+	7. (maxX, maxY, minZ)
+	8. (maxX, maxY, maxZ)
+*/
+void MeshModel::CalcBoundingBox()
+{
+	auto minMax = GetMinMax(vertices);
+
+	// (minX, minY, minZ)
+	boundingBox[0] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first));
+	// (minX, minY, maxZ)
+	boundingBox[1] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.second));
+	// (minX, maxY, minZ)
+	boundingBox[2] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.first));
+	// (minX, maxY, maxZ)
+	boundingBox[3] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.second));
+	// (maxX, minY, minZ)
+	boundingBox[4] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.first));
+	// (maxX, minY, maxZ)
+	boundingBox[5] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.second));
+	// (maxX, maxY, minZ)
+	boundingBox[6] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.first));
+	// (maxX, maxY, maxZ)
+	boundingBox[7] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.second));
+}
+
+/**
+ * @brief Calculates the minimum and maximum values of X,Y,Z axises.
+ * @param vertices The vertices of the model
+ * @return pair(tuple(min), tuple(max))
+*/
+std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> MeshModel::GetMinMax(std::vector<glm::vec3> vertices)
+{
+	double minX = vertices[0].x,
+		minY = vertices[0].y,
+		maxX = vertices[0].x,
+		maxY = vertices[0].y,
+		maxZ = vertices[0].z,
+		minZ = vertices[0].z;
+
+	for (glm::vec3 v : vertices)
+	{
+		if (v.x < minX)
+		{
+			minX = v.x;
+		}
+		if (v.y < minY)
+		{
+			minY = v.y;
+		}
+		if (v.x > maxX)
+		{
+			maxX = v.x;
+		}
+		if (v.y > maxY)
+		{
+			maxY = v.y;
+		}
+		if (v.z > maxZ)
+		{
+			maxZ = v.z;
+		}
+		if (v.z < minZ)
+		{
+			minZ = v.z;
+		}
+	}
+
+	return std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>>(std::make_tuple(minX, minY, minZ), std::make_tuple(maxX, maxY, maxZ));
+}
+
+glm::vec3 MeshModel::GetCenter()
+{
+	auto minMax = GetMinMax(vertices);
+
+	return glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2, 
+		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
+		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
+}
+
+const glm::vec3* MeshModel::getBoundingBox() const
+{
+	return boundingBox;
+}
+
 double MeshModel::ToRadians(double value)
 {
 	return value * (M_PI / 180);

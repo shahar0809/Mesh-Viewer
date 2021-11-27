@@ -3,6 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/euler_angles.hpp>
 #include <string>
+#include <tuple>
 #include <memory>
 #include "Face.h"
 
@@ -18,6 +19,8 @@ public:
 	const glm::vec3& GetVertice(int index) const;
 	int GetVerticesCount() const;
 	const std::string& GetModelName() const;
+
+	const glm::vec3* getBoundingBox() const;
 
 	const std::vector<glm::vec3> GetVertices() const;
 
@@ -48,14 +51,22 @@ public:
 	void SetFirstTransValueX(float TransValueX);
 	void SetFirstTransValueY(float TransValueY);
 
+	void CalcBoundingBox();
+	glm::vec3 GetCenter();
+
+	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
+
 	glm::vec3 color;
 	bool IsOnScreen = false;
+
 
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::string model_name;
+
+	glm::vec3 boundingBox[8];
 
 	glm::mat4x4 ScaleModel, TranslateModel, RotateModel, RotateModelX, RotateModelY, RotateModelZ;
 	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld, RotateWorldX, RotateWorldY, RotateWorldZ;

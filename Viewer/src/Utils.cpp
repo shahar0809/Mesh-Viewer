@@ -126,6 +126,11 @@ glm::vec3 Utils::FromHomogCoords(glm::vec4 vec)
 	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
 }
 
+/**
+ * @brief Calculates the minimum and maximum values of X,Y,Z axises.
+ * @param vertices The vertices of the model
+ * @return pair(tuple(min), tuple(max))
+*/
 std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> Utils::GetMinMax(std::vector<glm::vec3> vertices)
 {
 	double minX = vertices[0].x,
