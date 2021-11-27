@@ -19,3 +19,234 @@ const glm::mat4x4& Camera::GetViewTransformation() const
 {
 	return view_transformation;
 }
+
+void Camera::ApplyLocalScale(double scaleX, double scaleY, double scaleZ)
+{
+	// Multiply current scale parameters (in diagonal) by new parameters
+	ScaleLocal[0][0] *= scaleX;
+	ScaleLocal[1][1] *= scaleY;
+	ScaleLocal[2][2] *= scaleZ;
+}
+
+void Camera::ApplyLocalRotate(double rotateX, double rotateY, double rotateZ)
+{
+	LocalRotateVal.x += rotateX;
+	LocalRotateVal.y += rotateY;
+	LocalRotateVal.z += rotateZ;
+
+	double radiansValX = Utils::ToRadians(LocalRotateVal.x);
+
+	RotateLocalX[1][1] = cos(radiansValX);
+	RotateLocalX[1][2] = -sin(radiansValX);
+	RotateLocalX[2][1] = sin(radiansValX);
+	RotateLocalX[2][2] = cos(radiansValX);
+
+	double radiansValY = Utils::ToRadians(LocalRotateVal.y);
+
+	RotateLocalY[0][0] = cos(radiansValY);
+	RotateLocalY[0][2] = sin(radiansValY);
+	RotateLocalY[2][0] = -sin(radiansValY);
+	RotateLocalY[2][2] = cos(radiansValY);
+
+	double radiansValZ = Utils::ToRadians(LocalRotateVal.z);
+
+	RotateLocalZ[0][0] = cos(radiansValZ);
+	RotateLocalZ[1][0] = -sin(radiansValZ);
+	RotateLocalZ[0][1] = sin(radiansValZ);
+	RotateLocalZ[1][1] = cos(radiansValZ);
+
+	RotateLocal = RotateLocalZ * RotateLocalY * RotateLocalX;
+}
+
+void Camera::ApplyLocalTranslate(double transX, double transY, double transZ)
+{
+	// Add current translation parameters (in last column) by new parameters
+	TranslateLocal[3][0] += transX;
+	TranslateLocal[3][1] += transY;
+	TranslateLocal[3][2] += transZ;
+}
+
+void Camera::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
+{
+	// Multiply current scale parameters (in diagonal) by new parameters
+	ScaleWorld[0][0] *= scaleX;
+	ScaleWorld[1][1] *= scaleY;
+	ScaleWorld[2][2] *= scaleZ;
+}
+
+void Camera::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
+{
+	WorldRotateVal.x += rotateX;
+	WorldRotateVal.y += rotateY;
+	WorldRotateVal.z += rotateZ;
+
+	double radiansValX = Utils::ToRadians(WorldRotateVal.x);
+
+	RotateWorldX[1][1] = cos(radiansValX);
+	RotateWorldX[1][2] = -sin(radiansValX);
+	RotateWorldX[2][1] = sin(radiansValX);
+	RotateWorldX[2][2] = cos(radiansValX);
+
+	double radiansValY = Utils::ToRadians(WorldRotateVal.y);
+
+	RotateWorldY[0][0] = cos(radiansValY);
+	RotateWorldY[0][2] = sin(radiansValY);
+	RotateWorldY[2][0] = -sin(radiansValY);
+	RotateWorldY[2][2] = cos(radiansValY);
+
+	double radiansValZ = Utils::ToRadians(WorldRotateVal.z);
+
+	RotateWorldZ[0][0] = cos(radiansValZ);
+	RotateWorldZ[1][0] = -sin(radiansValZ);
+	RotateWorldZ[0][1] = sin(radiansValZ);
+	RotateWorldZ[1][1] = cos(radiansValZ);
+
+	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+}
+
+void Camera::ApplyWorldTranslate(double transX, double transY, double transZ)
+{
+	// Add current translation parameters (in last column) by new parameters
+	TranslateLocal[3][0] += transX;
+	TranslateLocal[3][1] += transY;
+	TranslateLocal[3][2] += transZ;
+}
+
+void Camera::SetLocalScale(double scaleX, double scaleY, double scaleZ)
+{
+	// Set current scale parameters (in diagonal) to be new parameters
+	ScaleLocal[0][0] = scaleX;
+	ScaleLocal[1][1] = scaleY;
+	ScaleLocal[2][2] = scaleZ;
+}
+
+void Camera::SetLocalRotate(double rotateX, double rotateY, double rotateZ)
+{
+	LocalRotateVal.x = rotateX;
+	LocalRotateVal.y = rotateY;
+	LocalRotateVal.z = rotateZ;
+
+	double radiansValX = Utils::ToRadians(LocalRotateVal.x);
+
+	RotateLocalX[1][1] = cos(radiansValX);
+	RotateLocalX[1][2] = -sin(radiansValX);
+	RotateLocalX[2][1] = sin(radiansValX);
+	RotateLocalX[2][2] = cos(radiansValX);
+
+	double radiansValY = Utils::ToRadians(LocalRotateVal.y);
+
+	RotateLocalY[0][0] = cos(radiansValY);
+	RotateLocalY[0][2] = sin(radiansValY);
+	RotateLocalY[2][0] = -sin(radiansValY);
+	RotateLocalY[2][2] = cos(radiansValY);
+
+	double radiansValZ = Utils::ToRadians(LocalRotateVal.z);
+
+	RotateLocalZ[0][0] = cos(radiansValZ);
+	RotateLocalZ[1][0] = -sin(radiansValZ);
+	RotateLocalZ[0][1] = sin(radiansValZ);
+	RotateLocalZ[1][1] = cos(radiansValZ);
+
+	RotateLocal = RotateLocalZ * RotateLocalY * RotateLocalX;
+}
+
+void Camera::SetLocalTranslate(double transX, double transY, double transZ)
+{
+	// Set current translation parameters (in last column) to be new parameters
+	TranslateLocal[3][0] = transX;
+	TranslateLocal[3][1] = transY;
+	TranslateLocal[3][2] = transZ;
+}
+
+void Camera::SetWorldScale(double scaleX, double scaleY, double scaleZ)
+{
+	// Set current scale parameters (in diagonal) to be new parameters
+	ScaleWorld[0][0] = scaleX;
+	ScaleWorld[1][1] = scaleY;
+	ScaleWorld[2][2] = scaleZ;
+}
+
+void Camera::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
+{
+	WorldRotateVal.x = rotateX;
+	WorldRotateVal.y = rotateY;
+	WorldRotateVal.z = rotateZ;
+
+	double radiansValX = Utils::ToRadians(WorldRotateVal.x);
+
+	RotateWorldX[1][1] = cos(radiansValX);
+	RotateWorldX[1][2] = -sin(radiansValX);
+	RotateWorldX[2][1] = sin(radiansValX);
+	RotateWorldX[2][2] = cos(radiansValX);
+
+	double radiansValY = Utils::ToRadians(WorldRotateVal.y);
+
+	RotateWorldY[0][0] = cos(radiansValY);
+	RotateWorldY[0][2] = sin(radiansValY);
+	RotateWorldY[2][0] = -sin(radiansValY);
+	RotateWorldY[2][2] = cos(radiansValY);
+
+	double radiansValZ = Utils::ToRadians(WorldRotateVal.z);
+
+	RotateWorldZ[0][0] = cos(radiansValZ);
+	RotateWorldZ[1][0] = -sin(radiansValZ);
+	RotateWorldZ[0][1] = sin(radiansValZ);
+	RotateWorldZ[1][1] = cos(radiansValZ);
+
+	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+}
+
+void Camera::SetWorldTranslate(double transX, double transY, double transZ)
+{
+	// Set current translation parameters (in last column) to be new parameters
+	TranslateWorld[3][0] = transX;
+	TranslateWorld[3][1] = transY;
+	TranslateWorld[3][2] = transZ;
+}
+
+/**
+ * @brief Sets the look-at of a camera given the 3 vectors.
+ * @param eye The position of the camera
+ * @param at The direction the camera is looking to
+ * @param up The direction of the Y coordinate
+*/
+void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up)
+{
+	Eye = eye;
+	At = at;
+	Up = up;
+
+	glm::vec4 z = glm::normalize(at - eye);
+	glm::vec4 x = glm::normalize(glm::vec4(glm::cross(glm::vec3(up), glm::vec3(z)), 1.0f));
+	glm::vec4 y = glm::normalize(glm::vec4(glm::cross(glm::vec3(z), glm::vec3(x)), 1.0f));
+
+	camera = glm::mat4x4(x, y, z, glm::vec4(0, 0, 0, 1));
+	SetLocalTranslate(-eye.x, -eye.y, -eye.z);
+	camera = camera * TranslateLocal;
+	camera_inverse = camera_inverse * glm::inverse(TranslateLocal);
+}
+
+void Camera::OrthographicProj(float left, float right, float top, float bottom)
+{
+
+}
+
+void Camera::CalcViewTrans()
+{
+
+}
+
+const glm::vec3& Camera::getEye() const
+{
+    return Eye;
+}
+
+const glm::vec3& Camera::getAt() const
+{
+    return At;
+}
+
+const glm::vec3& Camera::getUp() const
+{
+    return Up;
+}

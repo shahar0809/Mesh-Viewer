@@ -207,8 +207,6 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model)
 		transformedVecs.push_back(Utils::FromHomogCoords(res));
 	}
 
-	//std::cout << model.GetVertice(face.GetVertexIndex(0) - 1).x << "," << model.GetVertice(face.GetVertexIndex(0) - 1).y << std::endl;
-	//std::cout << transformedVecs[0].x << "," << transformedVecs[0].y << std::endl;
 	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
 	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);

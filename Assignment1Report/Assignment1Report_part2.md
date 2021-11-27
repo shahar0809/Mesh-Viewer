@@ -834,17 +834,17 @@ for (int i = 0; i < 3; i++)
 ## 3 - Display model
 Firstly, we pass the model to the renderer, through the scene object:
 ```cpp
-std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(path);
-scene.AddModel(model);
+std::shared_ptr<MeshLocal> model = Utils::LoadMeshLocal(path);
+scene.AddLocal(model);
 ```
 
 Now, we go through all models in the scene:
 ```cpp
 // Draw mesh triangles
-for (int i = 0; i < scene.GetModelCount(); i++)
+for (int i = 0; i < scene.GetLocalCount(); i++)
 {
-	MeshModel currModel = scene.GetModel(i);
-	DrawModel(currModel);
+	MeshLocal currLocal = scene.GetLocal(i);
+	DrawLocal(currLocal);
 }
 ```
 And through all faces:
@@ -895,10 +895,10 @@ Therefore, We created 9 sliders to control each transformation on each exis.
 
 ## 5 - Apply transformations on model
 Firstly, we wanted to be able to apply local and world transformation on the model.
-So, we added to `MeshModel` six matrices (TRS):
-- Scale Model
-- Rotation Model
-- Translation Model
+So, we added to `MeshLocal` six matrices (TRS):
+- Scale Local
+- Rotation Local
+- Translation Local
 - Scale World
 - Rotation World
 - Translation World
@@ -907,9 +907,9 @@ Each one describes the matching transformation.
 We added methods to set and apply SRT transformations:
 
 ```cpp
-	void ApplyModelScale(double scaleX, double scaleY, double scaleZ);
-	void ApplyModelRotate(double rotateVal);
-	void ApplyModelTranslate(double transX, double transY, double transZ);
+	void ApplyLocalScale(double scaleX, double scaleY, double scaleZ);
+	void ApplyLocalRotate(double rotateVal);
+	void ApplyLocalTranslate(double transX, double transY, double transZ);
 
 	void ApplyWorldScale(double scaleX, double scaleY, double scaleZ);
 	void ApplyWorldRotate(double rotateVal);
@@ -917,9 +917,9 @@ We added methods to set and apply SRT transformations:
 ```
 These methods apply the parameters without depending on the previous values:
 ```cpp
-	void SetModelScale(double scaleX, double scaleY, double scaleZ);
-	void SetModelRotate(double rotateVal);
-	void SetModelTranslate(double transX, double transY, double transZ);
+	void SetLocalScale(double scaleX, double scaleY, double scaleZ);
+	void SetLocalRotate(double rotateVal);
+	void SetLocalTranslate(double transX, double transY, double transZ);
 
 	void SetWorldScale(double scaleX, double scaleY, double scaleZ);
 	void SetWorldRotate(double rotateVal);
@@ -942,10 +942,10 @@ for (int i = 0; i < 3; i++)
 }
 ```
 Translating in the model frame, and then rotating in the world frame:
-![Trans Model Rot World](part2_images/trans_model_rot_world.png)
+![Trans Local Rot World](part2_images/trans_model_rot_world.png)
 
 Rotating in world frame, and then translating in the model frame:
-![Trans World Rot Model](part2_images/trans_world_rot_model.png)
+![Trans World Rot Local](part2_images/trans_world_rot_model.png)
 
 ## 6 - Load several models
 Each new model is added to the scene, while we only control the active one.

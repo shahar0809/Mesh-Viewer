@@ -165,3 +165,13 @@ std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>
 
 	return std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>>(std::make_tuple(minX, minY, minZ), std::make_tuple(maxX, maxY, maxZ));
 }
+
+double Utils::ToRadians(double value)
+{
+	return value * (M_PI / 180);
+}
+
+double Utils::ToDegrees(double value)
+{
+	return value * (180 / M_PI);
+}
