@@ -34,7 +34,7 @@ private:
 	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
 
 	void DrawBoundingBox(const MeshModel& model);
-	//void DrawAxis(glm::vec3 center);
+	void DrawAxis(glm::vec3 center, std::tuple<float, float, float> max, float c);
 
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();

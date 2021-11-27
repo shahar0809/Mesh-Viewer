@@ -156,6 +156,16 @@ void Renderer::DrawLineSanityCheck()
 	}
 }
 
+void Renderer::DrawAxis(glm::vec3 center, std::tuple<float, float, float> max, float c)
+{
+	// Axis X
+	DrawLine(center, glm::vec3(std::get<0>(max) + c, center.y, center.z), { 1, 0, 0 });
+	// Axis Y
+	DrawLine(center, glm::vec3(center.x, std::get<1>(max) + c, center.z), { 1, 0, 0 });
+
+	//DrawLine(center, glm::vec3(std::get<0>(max) + c, center.y, center.z), { 1, 0, 0 });
+}
+
 void Renderer::DrawBoundingBox(const MeshModel& model)
 {
 	const glm::vec3* boundingBox = model.getBoundingBox();
@@ -390,6 +400,11 @@ void Renderer::Render(const Scene& scene)
 		if (currModel.IsOnScreen)
 			DrawModel(currModel, camera);
 	}
+
+	// World axis X
+	DrawLine(glm::vec3(0, 0, 0), glm::vec3(50, 0, 0), { 1, 0, 0 });
+	// World axis X
+	DrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 50, 0), { 1, 0, 0 });
 }
 
 int Renderer::GetViewportWidth() const
