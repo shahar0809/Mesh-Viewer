@@ -22,20 +22,16 @@ public:
 	const glm::mat4x4& GetCameraInverse() const;
 
 	// Apply transformations on both model and world (dependant on previous values)
-	void ApplyLocalScale(double scaleX, double scaleY, double scaleZ);
 	void ApplyLocalRotate(double rotateX, double rotateY, double rotateZ);
 	void ApplyLocalTranslate(double transX, double transY, double transZ);
 
-	void ApplyWorldScale(double scaleX, double scaleY, double scaleZ);
 	void ApplyWorldRotate(double rotateX, double rotateY, double rotateZ);
 	void ApplyWorldTranslate(double transX, double transY, double transZ);
 
 	// Set transformations - without depending on previous values
-	void SetLocalScale(double scaleX, double scaleY, double scaleZ);
 	void SetLocalRotate(double rotateX, double rotateY, double rotateZ);
 	void SetLocalTranslate(double transX, double transY, double transZ);
 
-	void SetWorldScale(double scaleX, double scaleY, double scaleZ);
 	void SetWorldRotate(double rotateX, double rotateY, double rotateZ);
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
@@ -47,8 +43,9 @@ private:
 
 	glm::vec4 Eye, At, Up;
 
-	glm::mat4x4 ScaleLocal, TranslateLocal, RotateLocal, RotateLocalX, RotateLocalY, RotateLocalZ;
-	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld, RotateWorldX, RotateWorldY, RotateWorldZ;
+	// Attributes to keep translate and rotation values
+	glm::mat4x4 TranslateLocal, RotateLocal, RotateLocalX, RotateLocalY, RotateLocalZ;
+	glm::mat4x4 TranslateWorld, RotateWorld, RotateWorldX, RotateWorldY, RotateWorldZ;
 
 	glm::mat4x4 WorldTrans, LocalTrans;
 
