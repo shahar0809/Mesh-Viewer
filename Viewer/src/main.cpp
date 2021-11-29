@@ -326,6 +326,18 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						}
 					}
 
+					if (ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().IsBoundingBoxOnScreen))
+					{
+						if (scene.GetActiveModel().IsBoundingBoxOnScreen)
+						{
+							scene.GetActiveModel().BoundingBoxColor = bounding_box_color;
+						}
+						else
+						{
+							scene.GetActiveModel().BoundingBoxColor = clear_color;
+						}
+					}
+
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
 					{

@@ -295,7 +295,6 @@ glm::mat4x4 Camera::GetTransformation() const
 	return WorldTrans * LocalTrans;
 }
 
-
 const glm::mat4x4& Camera::GetCameraInverse() const
 {
 	//return glm::inverse(projection_transformation) * camera_inverse;

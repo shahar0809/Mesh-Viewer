@@ -447,6 +447,8 @@ const glm::vec3& MeshModel::GetAxisZ() const
 void MeshModel::CalcBoundingBox()
 {
 	auto minMax = GetMinMax(vertices);
+	std::cout << "min max" << std::endl;
+	std::cout << std::get<0>(minMax.first) << std::endl;
 
 	// (minX, minY, minZ)
 	boundingBox[0] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first));
@@ -485,9 +487,30 @@ void MeshModel::InitLocalFrame()
 		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
 }
 
-const glm::vec3* MeshModel::getBoundingBox() const
+const std::vector<glm::vec3> MeshModel::getBoundingBox() const
 {
-	return boundingBox;
+	auto minMax = GetMinMax(vertices);
+	std::cout << "min max" << std::endl;
+	std::cout << std::get<0>(minMax.first) << std::endl;
+	std::vector< glm::vec3> box;;
+
+	// (minX, minY, minZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first)));
+	// (minX, minY, maxZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.second)));
+	// (minX, maxY, minZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.first)));
+	// (minX, maxY, maxZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.second)));
+	// (maxX, minY, minZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.first)));
+	// (maxX, minY, maxZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.second)));
+	// (maxX, maxY, minZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.first)));
+	// (maxX, maxY, maxZ)
+	box.push_back(glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.second)));
+	return box;
 }
 
 void MeshModel::TransformModelFrame(glm::mat4x4 trans)

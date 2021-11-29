@@ -190,33 +190,41 @@ void Renderer::DrawWorldFrame()
 
 void Renderer::DrawBoundingBox(const MeshModel& model)
 {
-	const glm::vec3* boundingBox = model.getBoundingBox();
+	const std::vector<glm::vec3> boundingBox = model.getBoundingBox();
+
+	std::cout << "bounding box" << std::endl;
+	for (int i = 0; i < 8; i++)
+	{
+		std::cout << glm::to_string(boundingBox[i]) << std::endl;
+	}
+
 	//const glm::vec3 bb[8] = boundingBox;
 
-	//DrawLine(*boundingBox, *(boundingBox + 1), model.color);
-	//DrawLine(*boundingBox, *(boundingBox + 2), model.color);
-	//DrawLine(*boundingBox, *(boundingBox + 4), model.color);
+	DrawLine(boundingBox[0], boundingBox[1], model.BoundingBoxColor);
+	DrawLine(boundingBox[0], boundingBox[2], model.BoundingBoxColor);
+	DrawLine(boundingBox[0], boundingBox[4], model.BoundingBoxColor);
 
-	//DrawLine(*boundingBox[1], boundingBox[3], model.color);
-	//DrawLine(*boundingBox[1], boundingBox[5], model.color);
+	DrawLine(boundingBox[1], boundingBox[3], model.color);
+	DrawLine(boundingBox[1], boundingBox[5], model.color);
 
-	//DrawLine(boundingBox[2], boundingBox[3], model.color);
-	//DrawLine(boundingBox[2], boundingBox[6], model.color);
+	DrawLine(boundingBox[2], boundingBox[3], model.color);
+	DrawLine(boundingBox[2], boundingBox[6], model.color);
 
-	//DrawLine(boundingBox[3], boundingBox[7], model.color);
+	DrawLine(boundingBox[3], boundingBox[7], model.color);
 
-	//DrawLine(boundingBox[4], boundingBox[6], model.color);
-	//DrawLine(boundingBox[4], boundingBox[5], model.color);
+	DrawLine(boundingBox[4], boundingBox[6], model.color);
+	DrawLine(boundingBox[4], boundingBox[5], model.color);
 
-	//DrawLine(boundingBox[5], boundingBox[7], model.color);
+	DrawLine(boundingBox[5], boundingBox[7], model.color);
 
-	//DrawLine(boundingBox[6], boundingBox[7], model.color);
+	DrawLine(boundingBox[6], boundingBox[7], model.color);
 }
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
 	std::cout << "*************************" << std::endl;
 	DrawModelFrame(model, camera);
+	DrawBoundingBox(model);
 	std::cout << "*************************" << std::endl;
 
 	for (int i = 0; i < model.GetFacesCount(); i++)

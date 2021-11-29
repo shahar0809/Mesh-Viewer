@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/euler_angles.hpp>
+#include <glad/glad.h>
 #include <string>
 #include <tuple>
 #include <memory>
@@ -21,7 +22,7 @@ public:
 	const std::string& GetModelName() const;
 	const std::vector<glm::vec3> GetVertices() const;
 
-	const glm::vec3* getBoundingBox() const;
+	const std::vector<glm::vec3> getBoundingBox() const;
 
 	const glm::vec3& GetOrigin() const;
 	const glm::vec3& GetAxisX() const;
@@ -61,7 +62,11 @@ public:
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 
 	glm::vec3 color;
+	glm::vec3 BoundingBoxColor;
+
+	/* Fields to draw attributes on Mesh Viewer */
 	bool IsOnScreen = false;
+	bool IsBoundingBoxOnScreen = false;
 
 
 private:
