@@ -4,6 +4,7 @@
 
 #include "Renderer.h"
 #include "InitShader.h"
+#include <glm/gtx/string_cast.hpp>
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
@@ -231,17 +232,55 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	glm::mat4x4 modelTrans = model.GetTransformation();
+	int FaceCount = model.GetFacesCount();
+	//std::vector<glm::vec3> verticeMesh = model.getVertices();
+
+	//glm::mat4x4 scale = { { (viewport_width / 2.0f), 0, 0, 0},{0, (viewport_height / 2.0f), 0, 0},{ 0, 0, (500 / 2.0f),0}, {0,0,0,1} };
+	//glm::mat4x4 translate = { {1,0,0,0},{0,1,0,0},{0,0,1,0},{1,1,1,1} };
+	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
+	glm::mat4x4 inverseCameraTransformation = glm::inverse(camera.GetTransformation());
+	//glm::mat4x4 transform = scale * translate * camera->GetProjectionTransformation() * inverseCameraTransformation * meshModel->getTransform();
+	//glm::mat4x4 transform = scale * translate * camera->GetProjectionTransformation() * inverseCameraTransformation * meshModel->getTransform();
+	//glm::mat4x4 transform = camera->GetProjectionTransformation() * inverseCameraTransformation * meshModel->getTransform();
+	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
+
+	glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
+
+	std::cout << glm::to_string(modelTrans) << std::endl;
+	// cout << camera.GetCameraInverse()[0][0] << " " << camera.GetCameraInverse()[1][1] << " " << camera.GetCameraInverse()[2][2] << " " << camera.GetCameraInverse()[3][3] << " " << endl;
+
 	std::vector<glm::vec3> transformedVecs;
 
 	// Apply transformation on vertices
 	for (int i = 0; i < 3; i++)
 	{
+		std::cout << glm::to_string(model.GetVertice(face.GetVertexIndex(i) - 1)) << std::endl;
 		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
-		glm::vec4 res = modelTrans * homVec;
-		transformedVecs.push_back(Utils::FromHomogCoords(res));
+		std::cout << glm::to_string(homVec) << std::endl;
+		//getchar();
+		glm::vec4 res = transform * homVec;
+		std::cout << "res" << std::endl;
+		std::cout << glm::to_string(res) << std::endl;
+		//res[0] = (res[0] + 1) / 2 * viewport_width;
+		//res[1] = (res[1] + 1) / 2 * viewport_height;
+		res[3] = 1;
+		std::cout << "res" << std::endl;
+		std::cout << glm::to_string(res) << std::endl;
+		/*cout << res[3] << endl;*/
+		/*res[3] = 1;*/
+		/*cout << res[0] << endl;
+		cout << res[1] << endl;*/
+		glm::vec3 temp = Utils::FromHomogCoords(res);
+		temp = camera.GetViewportTrans(temp, viewport_width, viewport_height);
+		std::cout << "temp" << std::endl;
+		std::cout << glm::to_string(temp) << std::endl;
+		transformedVecs.push_back(temp);
 	}
+	std::cout << "trans vecs" << std::endl;
+	std::cout << glm::to_string(transformedVecs[0]) << std::endl;
+	std::cout << glm::to_string(transformedVecs[1]) << std::endl << std::endl;
 
+	
 	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
 	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);

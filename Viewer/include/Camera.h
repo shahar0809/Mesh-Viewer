@@ -18,6 +18,8 @@ public:
 	const glm::vec4& getAt() const;
 	const glm::vec4& getUp() const;
 
+	glm::vec3 GetViewportTrans(glm::vec3 vec, unsigned int width, unsigned int height) const;
+
 	void SetOrthoTrans(float left, float right, float bottum, float top, float nearParameter, float farParameter);
 	glm::mat4x4 GetOrthoTrans() const;
 

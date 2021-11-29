@@ -28,7 +28,7 @@ float scaleMax = 1000.0f, scaleMin = -1000.0f;
 float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
 float translateMax = 1000.0f, translateMin = -1000.0f;
 float rotateMax = 360.0f, rotateMin = 0;
-float cameraMax = 30.0f, cameraMin = 0;
+float cameraMax = 1500.0f, cameraMin = -1500.0f;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
@@ -47,7 +47,7 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraControler[6] = { 1, 1, 1, 1, 1, 1 };
+static float CameraControler[6] = { -10, 10, -10, 10, -10, 10 };
 
 /**
  * Function declarations
@@ -374,7 +374,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::SliderFloat("Near", &CameraControler[4], cameraMin, cameraMax);
 		ImGui::SliderFloat("Far", &CameraControler[5], cameraMin, cameraMax);
 
-		scene.GetActiveCamera().SetOrthoTransformation(CameraControler[0], CameraControler[1], CameraControler[2], CameraControler[3], CameraControler[4], CameraControler[5]);
+		scene.GetActiveCamera().SetOrthoTrans(CameraControler[0], CameraControler[1], CameraControler[2], CameraControler[3], CameraControler[4], CameraControler[5]);
 
 		ImGui::End();
 		
