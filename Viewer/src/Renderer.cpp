@@ -4,6 +4,7 @@
 
 #include "Renderer.h"
 #include "InitShader.h"
+#include <glm/gtx/string_cast.hpp>
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
 #define Z_INDEX(width,x,y) ((x)+(y)*(width))
@@ -232,6 +233,8 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
 {
 	glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
+	/*std::cout << glm::to_string(modelTrans) << std::endl;*/
+	// cout << camera.GetCameraInverse()[0][0] << " " << camera.GetCameraInverse()[1][1] << " " << camera.GetCameraInverse()[2][2] << " " << camera.GetCameraInverse()[3][3] << " " << endl;
 	std::vector<glm::vec3> transformedVecs;
 
 	// Apply transformation on vertices
@@ -239,9 +242,19 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	{
 		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
 		glm::vec4 res = modelTrans * homVec;
+		res[0] = (res[0] + 1) / 2 * viewport_width;
+		res[1] = (res[1] + 1) / 2 * viewport_height;
+		res[3] = 1;
+		/*cout << res[3] << endl;*/
+		/*res[3] = 1;*/
+		/*cout << res[0] << endl;
+		cout << res[1] << endl;*/
 		transformedVecs.push_back(Utils::FromHomogCoords(res));
 	}
+	//std::cout << glm::to_string(transformedVecs[0]) << std::endl;
+	//std::cout << glm::to_string(transformedVecs[1]) << std::endl << std::endl;
 
+	
 	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
 	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);

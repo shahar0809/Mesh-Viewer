@@ -28,7 +28,7 @@ float scaleMax = 1000.0f, scaleMin = -1000.0f;
 float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
 float translateMax = 1000.0f, translateMin = -1000.0f;
 float rotateMax = 360.0f, rotateMin = 0;
-float cameraMax = 30.0f, cameraMin = 0;
+float cameraMax = 1500.0f, cameraMin = -1500.0f;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
@@ -47,7 +47,7 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraControler[6] = { 1, 1, 1, 1, 1, 1 };
+static float CameraControler[6] = { -1500, 1500, -1500, 1500, -1500, 1500 };
 
 /**
  * Function declarations
@@ -72,8 +72,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	//const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
-	const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	//const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
