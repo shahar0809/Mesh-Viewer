@@ -13,11 +13,13 @@ public:
 	glm::mat4x4 GetTransformation() const;
 	const glm::mat4x4& GetProjectionTransformation() const;
 	const glm::mat4x4& GetViewTransformation() const;
-	void SetOrthoTransformation(float left, float right, float bottum, float top, float nearParameter, float farParameter);
 
 	const glm::vec4& getEye() const;
 	const glm::vec4& getAt() const;
 	const glm::vec4& getUp() const;
+
+	void SetOrthoTrans(float left, float right, float bottum, float top, float nearParameter, float farParameter);
+	glm::mat4x4 GetOrthoTrans() const;
 
 	const glm::mat4x4& GetCameraInverse() const;
 

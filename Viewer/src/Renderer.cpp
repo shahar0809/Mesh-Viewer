@@ -231,7 +231,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
+	glm::mat4x4 modelTrans = model.GetTransformation();
 	std::vector<glm::vec3> transformedVecs;
 
 	// Apply transformation on vertices
