@@ -24,11 +24,14 @@ bool show_another_window = true;
 */
 int mouse_offset = 5;
 
-float scaleMax = 1000.0f, scaleMin = -1000.0f;
+float scaleMax = 50.0f, scaleMin = -50.0f;
 float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
-float translateMax = 1000.0f, translateMin = -1000.0f;
+float translateMax = 50.0f, translateMin = -50.0f;
 float rotateMax = 360.0f, rotateMin = 0;
-float cameraMax = 1500.0f, cameraMin = -1500.0f;
+float cameraMax = 30.0f, cameraMin = -30.0f;
+
+static int SCREEN_ASPECT = 80;
+static int width = 0, height = 0;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
@@ -47,7 +50,7 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraControler[6] = { -10, 10, -10, 10, -10, 10 };
+static float CameraController[6] = { 0 };
 
 /**
  * Function declarations
@@ -85,6 +88,16 @@ int main(int argc, char** argv)
 
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
+
+	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
+
+	// Initialize camera controllers
+	CameraController[0] = -width / SCREEN_ASPECT;
+	CameraController[1] = width / SCREEN_ASPECT;
+	CameraController[2] = -height / SCREEN_ASPECT;
+	CameraController[3] = height / SCREEN_ASPECT;
+	CameraController[4] = width / SCREEN_ASPECT;
+	CameraController[5] = -width / SCREEN_ASPECT;
 	
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
@@ -365,16 +378,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::End();
 
 		ImGui::Begin("Camera Control");
-		
-		/* change view volume */
-		ImGui::SliderFloat("Left", &CameraControler[0], cameraMin, cameraMax);
-		ImGui::SliderFloat("Right", &CameraControler[1], cameraMin, cameraMax);
-		ImGui::SliderFloat("Bottom", &CameraControler[2], cameraMin, cameraMax);
-		ImGui::SliderFloat("Top", &CameraControler[3], cameraMin, cameraMax);
-		ImGui::SliderFloat("Near", &CameraControler[4], cameraMin, cameraMax);
-		ImGui::SliderFloat("Far", &CameraControler[5], cameraMin, cameraMax);
 
-		scene.GetActiveCamera().SetOrthoTrans(CameraControler[0], CameraControler[1], CameraControler[2], CameraControler[3], CameraControler[4], CameraControler[5]);
+		/* change view volume */
+		ImGui::SliderFloat("Left", &CameraController[0], cameraMin, cameraMax);
+		ImGui::SliderFloat("Right", &CameraController[1], cameraMin, cameraMax);
+		ImGui::SliderFloat("Bottom", &CameraController[2], cameraMin, cameraMax);
+		ImGui::SliderFloat("Top", &CameraController[3], cameraMin, cameraMax);
+		ImGui::SliderFloat("Near", &CameraController[4], cameraMin, cameraMax);
+		ImGui::SliderFloat("Far", &CameraController[5], cameraMin, cameraMax);
+
+		scene.GetActiveCamera().SetOrthoTrans(CameraController[0] / 2, CameraController[1] / 2,
+			CameraController[2] / 2, CameraController[3] / 2, CameraController[4] / 2, CameraController[5] / 2);
 
 		ImGui::End();
 		
