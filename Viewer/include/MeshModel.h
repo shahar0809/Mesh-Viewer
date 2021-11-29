@@ -19,10 +19,14 @@ public:
 	const glm::vec3& GetVertice(int index) const;
 	int GetVerticesCount() const;
 	const std::string& GetModelName() const;
+	const std::vector<glm::vec3> GetVertices() const;
 
 	const glm::vec3* getBoundingBox() const;
 
-	const std::vector<glm::vec3> GetVertices() const;
+	const glm::vec3& GetOrigin() const;
+	const glm::vec3& GetAxisX() const;
+	const glm::vec3& GetAxisY() const;
+	const glm::vec3& GetAxisZ() const;
 
 	// Apply transformations on both model and world (dependant on previous values)
 	void ApplyModelScale(double scaleX, double scaleY, double scaleZ);
@@ -52,7 +56,7 @@ public:
 	void SetFirstTransValueY(float TransValueY);
 
 	void CalcBoundingBox();
-	glm::vec3 GetCenter();
+	void InitLocalFrame();
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 
@@ -65,6 +69,9 @@ private:
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
 	std::string model_name;
+
+	// Keep the frame of the model
+	glm::vec3 Origin, AxisX, AxisY, AxisZ;
 
 	glm::vec3 boundingBox[8];
 
@@ -82,4 +89,9 @@ private:
 
 	static double ToRadians(double value);
 	static double ToDegrees(double value);
+
+	static glm::vec4 ToHomogCoords(glm::vec3 vec);
+	static glm::vec3 FromHomogCoords(glm::vec4 vec);
+
+	void TransformModelFrame(glm::mat4x4 trans);
 };

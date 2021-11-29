@@ -246,22 +246,13 @@ void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const gl
 
 void Camera::SetOrthoTrans(float left, float right, float bottom, float top, float nearParameter, float farParameter) 
 {
-	std::cout << "left:" << left << " right:" << right << "  bottom:" << bottom << " top:" << top << std::endl;
-	//glm::ortho(left, right, bottom, top, nearParameter, farParameter);
 	projection_transformation[0][0] = 2 / (right - left);
-	projection_transformation[0][3] = -(right + left) / (right - left);
+	projection_transformation[3][0] = -(right + left) / (right - left);
 	projection_transformation[1][1] = 2 / (top - bottom);
-	std::cout << 2 / (top - bottom) << std::endl;
-	projection_transformation[1][3] = -(top + bottom) / (top - bottom);
+	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
 	projection_transformation[2][2] = 2 / (nearParameter - farParameter);
-	projection_transformation[2][3] = -(farParameter + nearParameter) / (farParameter - nearParameter);
+	projection_transformation[3][2] = -(farParameter + nearParameter) / (farParameter - nearParameter);
 	projection_transformation[3][3] = 1;
-	std::cout << glm::to_string(projection_transformation) << std::endl;
-	/*std::cout << projection_transformation[0][0] << projection_transformation[0][1] << projection_transformation[0][2] << projection_transformation[0][3] << std::endl;
-	std::cout << projection_transformation[1][0] << projection_transformation[1][1] << projection_transformation[1][2] << projection_transformation[1][3] << std::endl;
-	std::cout << projection_transformation[2][0] << projection_transformation[2][1] << projection_transformation[2][2] << projection_transformation[2][3] << std::endl;
-	std::cout << projection_transformation[3][0] << projection_transformation[3][1] << projection_transformation[3][2] << projection_transformation[3][3] << std::endl << std::endl;*/
-
 }
 
 glm::mat4x4 Camera::GetOrthoTrans() const

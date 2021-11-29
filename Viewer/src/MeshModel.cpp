@@ -93,6 +93,8 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
+	
+	InitLocalFrame();
 }
 
 MeshModel::~MeshModel()
@@ -165,6 +167,11 @@ void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 	ScaleModel[0][0] *= scaleX;
 	ScaleModel[1][1] *= scaleY;
 	ScaleModel[2][2] *= scaleZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::ApplyModelRotate(double rotateX, double rotateY, double rotateZ)
@@ -195,6 +202,11 @@ void MeshModel::ApplyModelRotate(double rotateX, double rotateY, double rotateZ)
 	RotateModelZ[1][1] = cos(radiansValZ);
 
 	RotateModel = RotateModelZ * RotateModelY * RotateModelX;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::ApplyModelTranslate(double transX, double transY, double transZ)
@@ -203,6 +215,11 @@ void MeshModel::ApplyModelTranslate(double transX, double transY, double transZ)
 	TranslateModel[3][0] += transX;
 	TranslateModel[3][1] += transY;
 	TranslateModel[3][2] += transZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
@@ -211,6 +228,11 @@ void MeshModel::ApplyWorldScale(double scaleX, double scaleY, double scaleZ)
 	ScaleWorld[0][0] *= scaleX;
 	ScaleWorld[1][1] *= scaleY;
 	ScaleWorld[2][2] *= scaleZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
@@ -241,6 +263,11 @@ void MeshModel::ApplyWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::ApplyWorldTranslate(double transX, double transY, double transZ)
@@ -249,6 +276,11 @@ void MeshModel::ApplyWorldTranslate(double transX, double transY, double transZ)
 	TranslateModel[3][0] += transX;
 	TranslateModel[3][1] += transY;
 	TranslateModel[3][2] += transZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
@@ -257,6 +289,11 @@ void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
 	ScaleModel[0][0] = scaleX + FirstScaleValue;
 	ScaleModel[1][1] = scaleY + FirstScaleValue;
 	ScaleModel[2][2] = scaleZ + FirstScaleValue;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::SetModelRotate(double rotateX, double rotateY, double rotateZ)
@@ -287,6 +324,11 @@ void MeshModel::SetModelRotate(double rotateX, double rotateY, double rotateZ)
 	RotateModelZ[1][1] = cos(radiansValZ);
 
 	RotateModel = RotateModelZ * RotateModelY * RotateModelX;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::SetModelTranslate(double transX, double transY, double transZ)
@@ -295,6 +337,11 @@ void MeshModel::SetModelTranslate(double transX, double transY, double transZ)
 	TranslateModel[3][0] = transX + FirstTransValueX;
 	TranslateModel[3][1] = transY + FirstTransValueY;
 	TranslateModel[3][2] = transZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::SetWorldScale(double scaleX, double scaleY, double scaleZ)
@@ -303,6 +350,11 @@ void MeshModel::SetWorldScale(double scaleX, double scaleY, double scaleZ)
 	ScaleWorld[0][0] = scaleX;
 	ScaleWorld[1][1] = scaleY;
 	ScaleWorld[2][2] = scaleZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
@@ -333,6 +385,11 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
@@ -341,6 +398,11 @@ void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
 	TranslateWorld[3][0] = transX;
 	TranslateWorld[3][1] = transY;
 	TranslateWorld[3][2] = transZ;
+
+	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisZ));
 }
 
 glm::mat4x4 MeshModel::GetTransformation() const
@@ -349,6 +411,26 @@ glm::mat4x4 MeshModel::GetTransformation() const
 	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld * ScaleWorld;
 	
 	return WorldTrans * ModelTrans;
+}
+
+const glm::vec3& MeshModel::GetOrigin() const
+{
+	return Origin;
+}
+
+const glm::vec3& MeshModel::GetAxisX() const
+{
+	return AxisX;
+}
+
+const glm::vec3& MeshModel::GetAxisY() const
+{
+	return AxisY;
+}
+
+const glm::vec3& MeshModel::GetAxisZ() const
+{
+	return AxisZ;
 }
 
 /**
@@ -384,6 +466,39 @@ void MeshModel::CalcBoundingBox()
 	boundingBox[7] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.second));
 }
 
+void MeshModel::InitLocalFrame()
+{
+	auto minMax = GetMinMax(vertices);
+
+	Origin = glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2, 
+		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
+		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
+
+	AxisX = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first));
+
+	AxisY = glm::vec3(std::get<0>(minMax.second),
+		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
+		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
+
+	AxisZ = glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2,
+		std::get<1>(minMax.second),
+		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
+}
+
+const glm::vec3* MeshModel::getBoundingBox() const
+{
+	return boundingBox;
+}
+
+void MeshModel::TransformModelFrame(glm::mat4x4 trans)
+{
+	Origin = FromHomogCoords(trans * ToHomogCoords(Origin));
+	AxisX = FromHomogCoords(trans * ToHomogCoords(AxisX));
+	AxisY = FromHomogCoords(trans * ToHomogCoords(AxisY));
+	AxisZ = FromHomogCoords(trans * ToHomogCoords(AxisZ));
+}
+
+/* Utils */
 /**
  * @brief Calculates the minimum and maximum values of X,Y,Z axises.
  * @param vertices The vertices of the model
@@ -429,20 +544,6 @@ std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>
 	return std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>>(std::make_tuple(minX, minY, minZ), std::make_tuple(maxX, maxY, maxZ));
 }
 
-glm::vec3 MeshModel::GetCenter()
-{
-	auto minMax = GetMinMax(vertices);
-
-	return glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2, 
-		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
-		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
-}
-
-const glm::vec3* MeshModel::getBoundingBox() const
-{
-	return boundingBox;
-}
-
 double MeshModel::ToRadians(double value)
 {
 	return value * (M_PI / 180);
@@ -451,4 +552,14 @@ double MeshModel::ToRadians(double value)
 double MeshModel::ToDegrees(double value)
 {
 	return value * (180 / M_PI);
+}
+
+glm::vec4 MeshModel::ToHomogCoords(glm::vec3 vec)
+{
+	return glm::vec4(vec, 1.0f);
+}
+
+glm::vec3 MeshModel::FromHomogCoords(glm::vec4 vec)
+{
+	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
 }

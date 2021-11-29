@@ -157,14 +157,35 @@ void Renderer::DrawLineSanityCheck()
 	}
 }
 
-void Renderer::DrawAxis(glm::vec3 center, std::tuple<float, float, float> max, float c)
+void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 {
-	// Axis X
-	DrawLine(center, glm::vec3(std::get<0>(max) + c, center.y, center.z), { 1, 0, 0 });
-	// Axis Y
-	DrawLine(center, glm::vec3(center.x, std::get<1>(max) + c, center.z), { 1, 0, 0 });
+	std::cout << "Model Frame " << std::endl;
 
-	//DrawLine(center, glm::vec3(std::get<0>(max) + c, center.y, center.z), { 1, 0, 0 });
+	glm::vec3 ModelOrigin = camera.GetViewportTrans(model.GetOrigin(), GetViewportWidth(), GetViewportHeight());
+	glm::vec3 AxisX = camera.GetViewportTrans(model.GetAxisX(), GetViewportWidth(), GetViewportHeight());
+	glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
+	glm::vec3 AxisZ = camera.GetViewportTrans(model.GetAxisZ(), GetViewportWidth(), GetViewportHeight());
+
+	std::cout << glm::to_string(ModelOrigin) << std::endl;
+	std::cout << glm::to_string(AxisX) << std::endl;
+	std::cout << glm::to_string(AxisY) << std::endl;
+	std::cout << glm::to_string(AxisZ) << std::endl;
+
+	DrawLine(ModelOrigin, AxisX, { 0, 0, 0 });
+	DrawLine(ModelOrigin, AxisY, { 0, 0, 0 });
+	DrawLine(ModelOrigin, AxisZ, { 0, 0, 0 });
+}
+
+void Renderer::DrawWorldFrame()
+{
+	glm::vec3 WorldOrigin(GetViewportWidth() / 2, GetViewportHeight() / 2, 1);
+	glm::vec3 AxisX(0, 0, 1);
+	glm::vec3 AxisY(GetViewportWidth(), GetViewportHeight() / 2, 1);
+	glm::vec3 AxisZ(GetViewportWidth() / 2, GetViewportHeight(), 1);
+
+	DrawLine(WorldOrigin, AxisX, { 1, 0, 0 });
+	DrawLine(WorldOrigin, AxisY, { 1, 0, 0 });
+	DrawLine(WorldOrigin, AxisZ, { 1, 0, 0 });
 }
 
 void Renderer::DrawBoundingBox(const MeshModel& model)
@@ -194,6 +215,10 @@ void Renderer::DrawBoundingBox(const MeshModel& model)
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
+	std::cout << "*************************" << std::endl;
+	DrawModelFrame(model, camera);
+	std::cout << "*************************" << std::endl;
+
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
 		Face currFace = model.GetFace(i);
@@ -235,18 +260,14 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	int FaceCount = model.GetFacesCount();
 	//std::vector<glm::vec3> verticeMesh = model.getVertices();
 
-	//glm::mat4x4 scale = { { (viewport_width / 2.0f), 0, 0, 0},{0, (viewport_height / 2.0f), 0, 0},{ 0, 0, (500 / 2.0f),0}, {0,0,0,1} };
-	//glm::mat4x4 translate = { {1,0,0,0},{0,1,0,0},{0,0,1,0},{1,1,1,1} };
 	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
 	glm::mat4x4 inverseCameraTransformation = glm::inverse(camera.GetTransformation());
-	//glm::mat4x4 transform = scale * translate * camera->GetProjectionTransformation() * inverseCameraTransformation * meshModel->getTransform();
-	//glm::mat4x4 transform = scale * translate * camera->GetProjectionTransformation() * inverseCameraTransformation * meshModel->getTransform();
-	//glm::mat4x4 transform = camera->GetProjectionTransformation() * inverseCameraTransformation * meshModel->getTransform();
+
 	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
 
-	glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
+	//glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
 
-	std::cout << glm::to_string(modelTrans) << std::endl;
+	//std::cout << glm::to_string(modelTrans) << std::endl;
 	// cout << camera.GetCameraInverse()[0][0] << " " << camera.GetCameraInverse()[1][1] << " " << camera.GetCameraInverse()[2][2] << " " << camera.GetCameraInverse()[3][3] << " " << endl;
 
 	std::vector<glm::vec3> transformedVecs;
@@ -257,7 +278,6 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		std::cout << glm::to_string(model.GetVertice(face.GetVertexIndex(i) - 1)) << std::endl;
 		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
 		std::cout << glm::to_string(homVec) << std::endl;
-		//getchar();
 		glm::vec4 res = transform * homVec;
 		std::cout << "res" << std::endl;
 		std::cout << glm::to_string(res) << std::endl;
@@ -424,6 +444,7 @@ void Renderer::Render(const Scene& scene)
 	int half_height = viewport_height / 2;
 
 	const Camera &camera = scene.GetCamera(scene.GetActiveCameraIndex());
+	
 
 	// Draw mesh triangles
 	for (int i = 0; i < scene.GetModelCount(); i++)
@@ -440,10 +461,7 @@ void Renderer::Render(const Scene& scene)
 			DrawModel(currModel, camera);
 	}
 
-	// World axis X
-	DrawLine(glm::vec3(0, 0, 0), glm::vec3(50, 0, 0), { 1, 0, 0 });
-	// World axis X
-	DrawLine(glm::vec3(0, 0, 0), glm::vec3(0, 50, 0), { 1, 0, 0 });
+	DrawWorldFrame();
 }
 
 int Renderer::GetViewportWidth() const
