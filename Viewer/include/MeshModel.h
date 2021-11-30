@@ -18,6 +18,7 @@ public:
 	const Face& GetFace(int index) const;
 	int GetFacesCount() const;
 	const glm::vec3& GetVertice(int index) const;
+	const glm::vec3& GetNormal(int index) const;
 	int GetVerticesCount() const;
 	int GetNormalsCount() const;
 	const std::string& GetModelName() const;
@@ -51,6 +52,7 @@ public:
 	glm::mat4x4 GetTransformation() const;
 
 	void InitLocalFrame();
+	glm::vec3 GetFaceCenter(const Face& face) const;
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 

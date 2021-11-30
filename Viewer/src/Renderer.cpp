@@ -236,6 +236,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 	{
 		Face currFace = model.GetFace(i);
 		DrawFace(currFace, model, camera);
+		DrawFaceNormals(currFace, model, camera);
 	}
 }
 
@@ -275,7 +276,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	std::cout << glm::to_string(transformedVecs[0]) << std::endl;
 	std::cout << glm::to_string(transformedVecs[1]) << std::endl << std::endl;
 
-	
+
 	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
 	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
@@ -283,7 +284,13 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 void Renderer::DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	std::cout << "TBC" << std::endl;
+	for (int i = 0; i < face.GetNormalsCount(); i++)
+	{
+		DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), TransfVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), normals_color);
+		std::cout << "normals" << std::endl;
+		std::cout << glm::to_string(model.GetFaceCenter(face)) << std::endl;
+		std::cout << glm::to_string(model.GetNormal(face.GetNormalIndex(i) - 1)) << std::endl;
+	}
 }
 
 glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)
@@ -295,7 +302,7 @@ glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, c
 	glm::vec4 res = transform * homVec;
 
 	// Apply camera viewport transformation
-	 return camera.GetViewportTrans(Utils::FromHomogCoords(res), viewport_width, viewport_height);
+	return camera.GetViewportTrans(Utils::FromHomogCoords(res), viewport_width, viewport_height);
 }
 
 
@@ -436,8 +443,8 @@ void Renderer::Render(const Scene& scene)
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 
-	const Camera &camera = scene.GetCamera(scene.GetActiveCameraIndex());
-	
+	const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
+
 
 	// Draw mesh triangles
 	for (int i = 0; i < scene.GetModelCount(); i++)

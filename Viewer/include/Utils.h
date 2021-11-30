@@ -10,6 +10,7 @@ static glm::vec3 model_color = glm::vec3{ 0, 0, 1 };
 static glm::vec3 bounding_box_color = glm::vec3{ 0, 0, 0 };
 static glm::vec3 normals_color = glm::vec3{ 0, 0, 0 };
 
+
 class Utils
 {
 public:

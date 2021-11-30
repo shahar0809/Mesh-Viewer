@@ -80,8 +80,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	//const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
-	const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	//const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
