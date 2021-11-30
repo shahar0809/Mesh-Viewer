@@ -228,7 +228,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		// Zoom out on model
 		else if (io.KeysDown[ZOOM_OUT_KEY_ASCII])
 		{
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] > scaleMin - 2 * scene.GetModel(scene.GetActiveModelIndex()).GetFirstScaleValue()) 
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax) 
 			{
 				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
 				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
@@ -319,10 +319,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						if (scene.GetActiveModel().IsOnScreen)
 						{
 							scene.GetActiveModel().color = model_color;
+
+							if (scene.GetActiveModel().IsBoundingBoxOnScreen)
+							{
+								scene.GetActiveModel().BoundingBoxColor = bounding_box_color;
+							}
 						}
 						else
 						{
 							scene.GetActiveModel().color = clear_color;
+							scene.GetActiveModel().BoundingBoxColor = clear_color;
 						}
 					}
 
@@ -339,7 +345,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					}
 
 					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin - 2 * scene.GetModel(i).GetFirstScaleValue(), scaleMax))
+					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin, scaleMax))
 					{
 						if (ModelScaleValue_array[i][0] == 0.0)
 							ModelScaleValue_array[i][0] = 1;

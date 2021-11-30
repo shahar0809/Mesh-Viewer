@@ -188,43 +188,48 @@ void Renderer::DrawWorldFrame()
 	DrawLine(WorldOrigin, AxisZ, { 1, 0, 0 });
 }
 
-void Renderer::DrawBoundingBox(const MeshModel& model)
+void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 {
-	const std::vector<glm::vec3> boundingBox = model.getBoundingBox();
+	std::vector<glm::vec3> boundingBox = model.getBoundingBox();
+
+	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
+	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
 
 	std::cout << "bounding box" << std::endl;
 	for (int i = 0; i < 8; i++)
 	{
+		glm::vec4 homVec = Utils::ToHomogCoords(boundingBox[i]);
+		homVec = transform * homVec;
+		boundingBox[i] = camera.GetViewportTrans(Utils::FromHomogCoords(homVec), viewport_width, viewport_height);
 		std::cout << glm::to_string(boundingBox[i]) << std::endl;
 	}
-
-	//const glm::vec3 bb[8] = boundingBox;
+	std::cout << "end bounding box" << std::endl;
 
 	DrawLine(boundingBox[0], boundingBox[1], model.BoundingBoxColor);
 	DrawLine(boundingBox[0], boundingBox[2], model.BoundingBoxColor);
 	DrawLine(boundingBox[0], boundingBox[4], model.BoundingBoxColor);
 
-	DrawLine(boundingBox[1], boundingBox[3], model.color);
-	DrawLine(boundingBox[1], boundingBox[5], model.color);
+	DrawLine(boundingBox[1], boundingBox[3], model.BoundingBoxColor);
+	DrawLine(boundingBox[1], boundingBox[5], model.BoundingBoxColor);
 
-	DrawLine(boundingBox[2], boundingBox[3], model.color);
-	DrawLine(boundingBox[2], boundingBox[6], model.color);
+	DrawLine(boundingBox[2], boundingBox[3], model.BoundingBoxColor);
+	DrawLine(boundingBox[2], boundingBox[6], model.BoundingBoxColor);
 
-	DrawLine(boundingBox[3], boundingBox[7], model.color);
+	DrawLine(boundingBox[3], boundingBox[7], model.BoundingBoxColor);
 
-	DrawLine(boundingBox[4], boundingBox[6], model.color);
-	DrawLine(boundingBox[4], boundingBox[5], model.color);
+	DrawLine(boundingBox[4], boundingBox[6], model.BoundingBoxColor);
+	DrawLine(boundingBox[4], boundingBox[5], model.BoundingBoxColor);
 
-	DrawLine(boundingBox[5], boundingBox[7], model.color);
+	DrawLine(boundingBox[5], boundingBox[7], model.BoundingBoxColor);
 
-	DrawLine(boundingBox[6], boundingBox[7], model.color);
+	DrawLine(boundingBox[6], boundingBox[7], model.BoundingBoxColor);
 }
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
 	std::cout << "*************************" << std::endl;
 	DrawModelFrame(model, camera);
-	DrawBoundingBox(model);
+	DrawBoundingBox(model, camera);
 	std::cout << "*************************" << std::endl;
 
 	for (int i = 0; i < model.GetFacesCount(); i++)
@@ -234,43 +239,11 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 	}
 }
 
-//void Renderer::fitInScreen(MeshModel& model)
-//{
-//	auto result = Utils::GetMinMax(model.GetVertices());
-//	double avgX = (std::get<0>(result.second) + std::get<0>(result.first)) / 2,
-//		avgY = (std::get<1>(result.second) + std::get<1>(result.first)) / 2,
-//		avgZ = (std::get<2>(result.second) + std::get<2>(result.first)) / 2;
-//
-//	double scaleVal = (viewport_height / 3) / (std::get<1>(result.second) - std::get<1>(result.first));
-//	double transX = (viewport_width / 2) - int(avgX - int(avgX) * scaleVal),
-//		transY = (viewport_height / 2) - int(avgY - int(avgY) * scaleVal);
-//
-//	glm::mat4x4 transZero{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { -int(avgX), -int(avgY), -int(avgZ), 1} };
-//	glm::mat4x4 scale{ {scaleVal, 0, 0, 0}, {0, scaleVal, 0, 0}, {0, 0, scaleVal, 0}, {0, 0, 0, 1} };
-//	glm::mat4x4 transCenter{ {1, 0, 0, 0}, {0, 1, 0, 0 }, {0, 0, 1, 0}, { transX, transY, 0, 1} };
-//
-//	//glm::mat4x4 transf = transCenter * scale * transZero;
-//	//std::cout << "Scale value:" << scaleVal << std::endl;
-//	//std::cout << "Trans X value:" << transX << std::endl;
-//	//std::cout << "Trans Y value:" << transY << std::endl;
-//
-//	model.ApplyModelTranslate(transX, transY, 0);
-//	model.SetModelScale(scaleVal, scaleVal, scaleVal);
-//	model.ApplyModelTranslate(-int(avgX), -int(avgY), -int(avgZ));
-//
-//	model.SetFirstScaleValue(scaleVal);
-//	model.SetFirstTransValueX(transX);
-//	model.SetFirstTransValueY(transY);
-//}
-
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	int FaceCount = model.GetFacesCount();
 	//std::vector<glm::vec3> verticeMesh = model.getVertices();
 
 	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
-	glm::mat4x4 inverseCameraTransformation = glm::inverse(camera.GetTransformation());
-
 	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
 
 	//glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
@@ -284,25 +257,19 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	for (int i = 0; i < 3; i++)
 	{
 		std::cout << glm::to_string(model.GetVertice(face.GetVertexIndex(i) - 1)) << std::endl;
+
 		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
+
 		std::cout << glm::to_string(homVec) << std::endl;
 		glm::vec4 res = transform * homVec;
+
 		std::cout << "res" << std::endl;
 		std::cout << glm::to_string(res) << std::endl;
-		//res[0] = (res[0] + 1) / 2 * viewport_width;
-		//res[1] = (res[1] + 1) / 2 * viewport_height;
+
 		res[3] = 1;
-		std::cout << "res" << std::endl;
-		std::cout << glm::to_string(res) << std::endl;
-		/*cout << res[3] << endl;*/
-		/*res[3] = 1;*/
-		/*cout << res[0] << endl;
-		cout << res[1] << endl;*/
-		glm::vec3 temp = Utils::FromHomogCoords(res);
-		temp = camera.GetViewportTrans(temp, viewport_width, viewport_height);
-		std::cout << "temp" << std::endl;
-		std::cout << glm::to_string(temp) << std::endl;
-		transformedVecs.push_back(temp);
+
+		// Apply camera viewport transformation
+		transformedVecs.push_back(camera.GetViewportTrans(Utils::FromHomogCoords(res), viewport_width, viewport_height));
 	}
 	std::cout << "trans vecs" << std::endl;
 	std::cout << glm::to_string(transformedVecs[0]) << std::endl;

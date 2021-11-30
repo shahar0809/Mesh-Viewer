@@ -131,36 +131,6 @@ const std::vector<glm::vec3> MeshModel::GetVertices() const
 	return vertices;
 }
 
-float MeshModel::GetFirstScaleValue() const
-{
-	return FirstScaleValue;
-}
-
-float MeshModel::GetFirstTransValueX() const
-{
-	return FirstTransValueX;
-}
-
-float MeshModel::GetFirstTransValueY() const
-{
-	return FirstTransValueY;
-}
-
-void MeshModel::SetFirstScaleValue(float ScaleValue)
-{
-	FirstScaleValue = ScaleValue;
-}
-
-void MeshModel::SetFirstTransValueX(float TransValueX)
-{
-	FirstTransValueX = TransValueX;
-}
-
-void MeshModel::SetFirstTransValueY(float TransValueY)
-{
-	FirstTransValueY = TransValueY;
-}
-
 void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 {
 	// Multiply current scale parameters (in diagonal) by new parameters
@@ -286,9 +256,9 @@ void MeshModel::ApplyWorldTranslate(double transX, double transY, double transZ)
 void MeshModel::SetModelScale(double scaleX, double scaleY, double scaleZ)
 {
 	// Set current scale parameters (in diagonal) to be new parameters
-	ScaleModel[0][0] = scaleX + FirstScaleValue;
-	ScaleModel[1][1] = scaleY + FirstScaleValue;
-	ScaleModel[2][2] = scaleZ + FirstScaleValue;
+	ScaleModel[0][0] = scaleX;
+	ScaleModel[1][1] = scaleY;
+	ScaleModel[2][2] = scaleZ;
 
 	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
 	AxisX = FromHomogCoords(GetTransformation() * ToHomogCoords(AxisX));
@@ -334,8 +304,8 @@ void MeshModel::SetModelRotate(double rotateX, double rotateY, double rotateZ)
 void MeshModel::SetModelTranslate(double transX, double transY, double transZ)
 {
 	// Set current translation parameters (in last column) to be new parameters
-	TranslateModel[3][0] = transX + FirstTransValueX;
-	TranslateModel[3][1] = transY + FirstTransValueY;
+	TranslateModel[3][0] = transX;
+	TranslateModel[3][1] = transY;
 	TranslateModel[3][2] = transZ;
 
 	Origin = FromHomogCoords(GetTransformation() * ToHomogCoords(Origin));
@@ -433,41 +403,6 @@ const glm::vec3& MeshModel::GetAxisZ() const
 	return AxisZ;
 }
 
-/**
- * @brief Calculates the 8 points of the model's bounding box.
-	1. (minX, minY, minZ)
-	2. (minX, minY, maxZ)
-	3. (minX, maxY, minZ)
-	4. (minX, maxY, maxZ)
-	5. (maxX, minY, minZ)
-	6. (maxX, minY, maxZ)
-	7. (maxX, maxY, minZ)
-	8. (maxX, maxY, maxZ)
-*/
-void MeshModel::CalcBoundingBox()
-{
-	auto minMax = GetMinMax(vertices);
-	std::cout << "min max" << std::endl;
-	std::cout << std::get<0>(minMax.first) << std::endl;
-
-	// (minX, minY, minZ)
-	boundingBox[0] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first));
-	// (minX, minY, maxZ)
-	boundingBox[1] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.second));
-	// (minX, maxY, minZ)
-	boundingBox[2] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.first));
-	// (minX, maxY, maxZ)
-	boundingBox[3] = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.second));
-	// (maxX, minY, minZ)
-	boundingBox[4] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.first));
-	// (maxX, minY, maxZ)
-	boundingBox[5] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.second));
-	// (maxX, maxY, minZ)
-	boundingBox[6] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.first));
-	// (maxX, maxY, maxZ)
-	boundingBox[7] = glm::vec3(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.second));
-}
-
 void MeshModel::InitLocalFrame()
 {
 	auto minMax = GetMinMax(vertices);
@@ -487,12 +422,29 @@ void MeshModel::InitLocalFrame()
 		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
 }
 
-const std::vector<glm::vec3> MeshModel::getBoundingBox() const
+/**
+ * @brief Calculates the 8 points of the model's bounding box.
+	1. (minX, minY, minZ)
+	2. (minX, minY, maxZ)
+	3. (minX, maxY, minZ)
+	4. (minX, maxY, maxZ)
+	5. (maxX, minY, minZ)
+	6. (maxX, minY, maxZ)
+	7. (maxX, maxY, minZ)
+	8. (maxX, maxY, maxZ)
+*/
+std::vector<glm::vec3> MeshModel::getBoundingBox() const
 {
 	auto minMax = GetMinMax(vertices);
-	std::cout << "min max" << std::endl;
+	std::cout << "========================\nmin max" << std::endl;
 	std::cout << std::get<0>(minMax.first) << std::endl;
-	std::vector< glm::vec3> box;;
+	std::cout << std::get<1>(minMax.first) << std::endl;
+	std::cout << std::get<2>(minMax.first) << std::endl;
+	std::cout << std::get<0>(minMax.second) << std::endl;
+	std::cout << std::get<1>(minMax.second) << std::endl;
+	std::cout << std::get<2>(minMax.second) << std::endl;
+
+	std::vector< glm::vec3> box;
 
 	// (minX, minY, minZ)
 	box.push_back(glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first)));

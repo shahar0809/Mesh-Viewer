@@ -33,7 +33,7 @@ private:
 	void DrawModel(const MeshModel& model, const Camera& camera);
 	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
 
-	void DrawBoundingBox(const MeshModel& model);
+	void DrawBoundingBox(const MeshModel& model, const Camera& camera);
 
 	void DrawModelFrame(const MeshModel& model, const Camera& camera);
 	void DrawWorldFrame();

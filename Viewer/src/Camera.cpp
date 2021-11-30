@@ -262,8 +262,6 @@ glm::mat4x4 Camera::GetOrthoTrans() const
 
 glm::vec3 Camera::GetViewportTrans(glm::vec3 vec, unsigned int width, unsigned int height) const
 {
-	std::cout << "witdth height" << width << ", " << height << std::endl;
-	std::cout << glm::to_string(vec) << std::endl;
 	return glm::vec3((vec.x + 1.0f) * (width / 2), (vec.y + 1.0f) * (height / 2), vec.z);
 }
 

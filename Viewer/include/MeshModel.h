@@ -22,7 +22,7 @@ public:
 	const std::string& GetModelName() const;
 	const std::vector<glm::vec3> GetVertices() const;
 
-	const std::vector<glm::vec3> getBoundingBox() const;
+	std::vector<glm::vec3> getBoundingBox() const;
 
 	const glm::vec3& GetOrigin() const;
 	const glm::vec3& GetAxisX() const;
@@ -49,14 +49,6 @@ public:
 
 	glm::mat4x4 GetTransformation() const;
 
-	float GetFirstScaleValue() const;
-	float GetFirstTransValueX() const;
-	float GetFirstTransValueY() const;
-	void SetFirstScaleValue(float ScaleValue);
-	void SetFirstTransValueX(float TransValueX);
-	void SetFirstTransValueY(float TransValueY);
-
-	void CalcBoundingBox();
 	void InitLocalFrame();
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
@@ -78,8 +70,6 @@ private:
 	// Keep the frame of the model
 	glm::vec3 Origin, AxisX, AxisY, AxisZ;
 
-	glm::vec3 boundingBox[8];
-
 	glm::mat4x4 ScaleModel, TranslateModel, RotateModel, RotateModelX, RotateModelY, RotateModelZ;
 	glm::mat4x4 ScaleWorld, TranslateWorld, RotateWorld, RotateWorldX, RotateWorldY, RotateWorldZ;
 
@@ -87,10 +77,6 @@ private:
 
 	// Store current rotate values (to avoid using arcsin, arccos)
 	glm::vec3 ModelRotateVal, WorldRotateVal;
-
-	float FirstScaleValue;
-	float FirstTransValueX;
-	float FirstTransValueY;
 
 	static double ToRadians(double value);
 	static double ToDegrees(double value);
