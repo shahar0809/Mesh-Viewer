@@ -283,10 +283,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 void Renderer::DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	for (int i = 0; i < model.GetNormalsCount(); i++)
-	{
-		D
-	}
+	std::cout << "TBC" << std::endl;
 }
 
 glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)

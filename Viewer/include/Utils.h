@@ -4,10 +4,11 @@
 #include <tuple>
 #include "MeshModel.h"
 
-static glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
+/* Initial values for colors */
+static glm::vec3 clear_color = glm::vec3(0.8f, 0.8f, 0.8f);
 static glm::vec3 model_color = glm::vec3{ 0, 0, 1 };
 static glm::vec3 bounding_box_color = glm::vec3{ 0, 0, 0 };
-
+static glm::vec3 normals_color = glm::vec3{ 0, 0, 0 };
 
 class Utils
 {

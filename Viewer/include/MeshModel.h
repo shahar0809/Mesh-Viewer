@@ -54,8 +54,10 @@ public:
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 
+	// Colors
 	glm::vec3 color;
 	glm::vec3 BoundingBoxColor;
+	glm::vec3 NormalsColor;
 
 	/* Fields to draw attributes on Mesh Viewer */
 	bool IsOnScreen = false;

@@ -33,6 +33,11 @@ float cameraMax = 30.0f, cameraMin = -30.0f;
 static int SCREEN_ASPECT = 80;
 static int width = 0, height = 0;
 
+/**
+* Colors
+*/
+static glm::vec3 backgroundColor = clear_color;
+
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
 				 W_KEY_ASCII = int('W'),
@@ -102,15 +107,6 @@ int main(int argc, char** argv)
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
-	//renderer.fitInScreen(scene.GetModel(0));
-
-	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "bunny.obj");
-	//scene.AddModel(model2);
-	////renderer.fitInScreen(scene.GetModel(1));
-
-	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "pawn.obj");
-	//scene.AddModel(model3);
-	////renderer.fitInScreen(scene.GetModel(2));
 
 	/* Load a camera */
 	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();;
@@ -205,36 +201,36 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		// The key is left (A)
 		else if (io.KeysDown[A_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
-		// The key is right (D)
+// The key is right (D)
 		else if (io.KeysDown[D_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// Zoom in on model
 		else if (io.KeysDown[ZOOM_IN_KEY_ASCII])
 		{
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax) 
-			{
-				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
-			}
-			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+		{
+			ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
+		}
+		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// Zoom out on model
 		else if (io.KeysDown[ZOOM_OUT_KEY_ASCII])
 		{
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax) 
-			{
-				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
-			}
-			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+		{
+			ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
+		}
+		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 	}
 
@@ -294,7 +290,25 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	// Controls
-	ImGui::ColorEdit3("Clear Color", (float*)&clear_color);
+	if (ImGui::ColorEdit3("Background Color", (float*)&backgroundColor))
+	{
+		clear_color = backgroundColor;
+	}
+
+	if (ImGui::ColorEdit3("Model Color", (float*)&scene.GetActiveModel().color))
+	{
+		model_color = scene.GetActiveModel().color;
+	}
+
+	if (ImGui::ColorEdit3("Bounding Box Color", (float*)&scene.GetActiveModel().BoundingBoxColor))
+	{
+		bounding_box_color = scene.GetActiveModel().BoundingBoxColor;
+	}
+
+	if (ImGui::ColorEdit3("Normals Color", (float*)&scene.GetActiveModel().NormalsColor))
+	{
+		normals_color = scene.GetActiveModel().NormalsColor;
+	}
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
