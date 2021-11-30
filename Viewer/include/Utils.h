@@ -7,6 +7,8 @@
 static glm::vec4 clear_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.00f);
 static glm::vec3 model_color = glm::vec3{ 0, 0, 1 };
 static glm::vec3 bounding_box_color = glm::vec3{ 0, 0, 0 };
+static glm::vec3 normal_color = glm::vec3{ 1, 1, 0 };
+
 
 
 class Utils

@@ -121,6 +121,11 @@ const glm::vec3& MeshModel::GetVertice(int index) const
 	return vertices[index];
 }
 
+const glm::vec3& MeshModel::GetNormal(int index) const
+{
+	return normals[index];
+}
+
 int MeshModel::GetVerticesCount() const
 {
 	return vertices.size();
@@ -426,6 +431,16 @@ void MeshModel::InitLocalFrame()
 		std::get<1>(minMax.second),
 		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
 }
+
+glm::vec3 MeshModel::GetFaceCenter(const Face& face) const
+{
+	glm::vec3 p1 = GetVertice(face.GetVertexIndex(0) - 1),
+			p2 = GetVertice(face.GetVertexIndex(1) - 1),
+			p3 = GetVertice(face.GetVertexIndex(2) - 1);
+
+	return glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3);
+}
+
 
 /**
  * @brief Calculates the 8 points of the model's bounding box.
