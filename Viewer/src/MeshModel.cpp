@@ -111,6 +111,11 @@ int MeshModel::GetFacesCount() const
 	return faces.size();
 }
 
+int MeshModel::GetNormalsCount() const
+{
+	return normals.size();
+}
+
 const glm::vec3& MeshModel::GetVertice(int index) const
 {
 	return vertices[index];

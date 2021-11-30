@@ -281,6 +281,27 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
 }
 
+void Renderer::DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera)
+{
+	for (int i = 0; i < model.GetNormalsCount(); i++)
+	{
+		D
+	}
+}
+
+glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)
+{
+	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
+	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
+
+	glm::vec4 homVec = Utils::ToHomogCoords(vec);
+	glm::vec4 res = transform * homVec;
+
+	// Apply camera viewport transformation
+	 return camera.GetViewportTrans(Utils::FromHomogCoords(res), viewport_width, viewport_height);
+}
+
+
 void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.

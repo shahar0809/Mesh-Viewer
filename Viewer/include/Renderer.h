@@ -16,22 +16,20 @@ public:
 	void Render(const Scene& scene);
 	void SwapBuffers();
 	void ClearColorBuffer(const glm::vec3& color);
+
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;
-
-	//void fitInScreen(MeshLocal& model);
 	
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);
-	//void DrawingRectangle(int length, int width, int bold, glm::ivec2& startingPoint);
-	//void DrawingCandle(const glm::ivec2& startPoint, const glm::ivec2& point1, const glm::ivec2& point2, const glm::ivec2& point3, const glm::ivec2& point4, const glm::ivec2& point5, const glm::ivec2& point6);
-	//void Draw();
 
 	void DrawLineSanityCheck();
 
 	void DrawModel(const MeshModel& model, const Camera& camera);
 	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
+	void DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera);
+	glm::vec3 TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera);
 
 	void DrawBoundingBox(const MeshModel& model, const Camera& camera);
 

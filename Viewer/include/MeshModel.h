@@ -19,6 +19,7 @@ public:
 	int GetFacesCount() const;
 	const glm::vec3& GetVertice(int index) const;
 	int GetVerticesCount() const;
+	int GetNormalsCount() const;
 	const std::string& GetModelName() const;
 	const std::vector<glm::vec3> GetVertices() const;
 
