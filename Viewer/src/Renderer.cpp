@@ -284,13 +284,16 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 void Renderer::DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	for (int i = 0; i < face.GetNormalsCount(); i++)
-	{
-		DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), TransfVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), normals_color);
-		std::cout << "normals" << std::endl;
-		std::cout << glm::to_string(model.GetFaceCenter(face)) << std::endl;
-		std::cout << glm::to_string(model.GetNormal(face.GetNormalIndex(i) - 1)) << std::endl;
-	}
+
+	glm::vec3 point1 = TransfVector(model.GetVertice(face.GetVertexIndex(1) - 1), model, camera) - TransfVector(model.GetVertice(face.GetVertexIndex(0) - 1), model, camera);
+	glm::vec3 point2 = TransfVector(model.GetVertice(face.GetVertexIndex(2) - 1), model, camera) - TransfVector(model.GetVertice(face.GetVertexIndex(0) - 1), model, camera);
+
+	glm::vec3 normal = glm::normalize(cross(point1, point2)) * glm::vec3(60);
+
+	std::cout << "normals- Again" << std::endl;
+	DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), normal + TransfVector(model.GetFaceCenter(face), model, camera), normals_color);
+	std::cout << "normals" << std::endl;
+	std::cout << glm::to_string(model.GetNormal(face.GetNormalIndex(0) - 1)) << std::endl;
 }
 
 glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)
