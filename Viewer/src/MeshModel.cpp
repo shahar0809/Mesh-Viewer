@@ -1,5 +1,6 @@
 #include "MeshModel.h"
 #include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name) :
 	faces(faces),
@@ -437,6 +438,9 @@ glm::vec3 MeshModel::GetFaceCenter(const Face& face) const
 	glm::vec3 p1 = GetVertice(face.GetVertexIndex(0) - 1),
 			p2 = GetVertice(face.GetVertexIndex(1) - 1),
 			p3 = GetVertice(face.GetVertexIndex(2) - 1);
+
+	std::cout << "center" << std::endl;
+	std::cout << glm::to_string(glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3)) << std::endl;
 
 	return glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3);
 }
