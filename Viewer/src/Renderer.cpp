@@ -286,7 +286,10 @@ void Renderer::DrawFaceNormals(const Face& face, const MeshModel& model, const C
 {
 	for (int i = 0; i < face.GetNormalsCount(); i++)
 	{
-		DrawLine(model.GetFaceCenter(face), model.GetNormal(face.GetNormalIndex(i) - 1), normal_color);
+		DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), TransfVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), normal_color);
+		std::cout << "normals" << std::endl;
+		std::cout << glm::to_string(model.GetFaceCenter(face)) << std::endl;
+		std::cout << glm::to_string(model.GetNormal(face.GetNormalIndex(i) - 1)) << std::endl;
 	}
 }
 
