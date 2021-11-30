@@ -225,6 +225,18 @@ void Camera::SetWorldTranslate(double transX, double transY, double transZ)
 	//camera_inverse = camera_inverse * glm::inverse(TranslateWorld);
 }
 
+void Camera::SetOrthoCamera()
+{
+	mode = CameraMode::Orthographic;
+	projection_transformation = OrthoTrans;
+}
+
+void Camera::SetPerspectiveCamera()
+{
+	mode = CameraMode::Perspective;
+	projection_transformation = PerspectiveTrans;
+}
+
 /**
  * @brief Sets the look-at of a camera given the 3 vectors.
  * @param eye The position of the camera
@@ -244,30 +256,56 @@ void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const gl
 	SetLocalTranslate(-eye.x, -eye.y, -eye.z);
 }
 
-void Camera::SetOrthoTrans(float left, float right, float bottom, float top, float nearParameter, float farParameter) 
+void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top)
 {
-	projection_transformation[0][0] = 2 / (right - left);
-	projection_transformation[3][0] = -(right + left) / (right - left);
-	projection_transformation[1][1] = 2 / (top - bottom);
-	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
-	projection_transformation[2][2] = 2 / (nearParameter - farParameter);
-	projection_transformation[3][2] = -(farParameter + nearParameter) / (farParameter - nearParameter);
-	projection_transformation[3][3] = 1;
+	this->right = right;
+	this->left = left;
+	this->top = top;
+	this->bottom = bottom;	
+
+	CalcOrthoTrans();
 }
 
-glm::mat4x4 Camera::GetOrthoTrans() const
+void Camera::SetDepth(float nearParameter, float farParameter)
 {
-	return projection_transformation;
+	this->nearParam = nearParameter;
+	this->farParam = farParameter;
+}
+
+void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
+{
+	this->fovy = fovy;
+	this->aspect = aspect;
+	CalcPerspectiveTrans();
+}
+
+void Camera::CalcOrthoTrans()
+{
+	OrthoTrans[0][0] = 2 / (right - left);
+	OrthoTrans[3][0] = -(right + left) / (right - left);
+	OrthoTrans[1][1] = 2 / (top - bottom);
+	OrthoTrans[3][1] = -(top + bottom) / (top - bottom);
+	OrthoTrans[2][2] = 2 / (nearParam - farParam);
+	OrthoTrans[3][2] = -(farParam + nearParam) / (farParam - nearParam);
+	OrthoTrans[3][3] = 1;
+}
+
+void Camera::CalcPerspectiveTrans()
+{
+	float alpha = (nearParam + farParam) / (nearParam - farParam),
+		beta = (2 * nearParam * farParam) / (nearParam - farParam);
+
+	PerspectiveTrans = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, alpha, -1,
+		0, 0, beta, 0
+	};
 }
 
 glm::vec3 Camera::GetViewportTrans(glm::vec3 vec, unsigned int width, unsigned int height) const
 {
 	return glm::vec3((vec.x + 1.0f) * (width / 2), (vec.y + 1.0f) * (height / 2), vec.z);
-}
-
-void Camera::CalcViewTrans()
-{
-
 }
 
 const glm::vec4& Camera::getEye() const

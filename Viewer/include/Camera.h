@@ -2,6 +2,12 @@
 #include <glm/glm.hpp>
 #include "Utils.h"
 
+enum class CameraMode
+{
+	Orthographic,
+	Perspective
+};
+
 class Camera
 {
 public:
@@ -20,8 +26,12 @@ public:
 
 	glm::vec3 GetViewportTrans(glm::vec3 vec, unsigned int width, unsigned int height) const;
 
-	void SetOrthoTrans(float left, float right, float bottum, float top, float nearParameter, float farParameter);
-	glm::mat4x4 GetOrthoTrans() const;
+	void SetOrthoViewVolume(float left, float right, float bottom, float top);
+	void SetDepth(float nearParameter, float farParameter);
+	void SetPerspectiveViewVolume(float fovy, float aspect);
+
+	void SetOrthoCamera();
+	void SetPerspectiveCamera();
 
 	const glm::mat4x4& GetCameraInverse() const;
 
@@ -40,12 +50,21 @@ public:
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
 private:
+	CameraMode mode;
+
 	glm::mat4x4 view_transformation;			// Orthographic transf
 	glm::mat4x4 projection_transformation;		// Projection tranformation
 	glm::mat4x4 camera;							// C
 	glm::mat4x4 camera_inverse;					// Cinv
 
+	glm::mat4x4 OrthoTrans, PerspectiveTrans;
+
 	glm::vec4 Eye, At, Up;
+
+	// View volume
+	float nearParam, farParam;
+	float left, right, top, bottom;
+	float fovy, aspect;
 
 	// Attributes to keep translate and rotation values
 	glm::mat4x4 TranslateLocal, RotateLocal, RotateLocalX, RotateLocalY, RotateLocalZ;
@@ -56,5 +75,6 @@ private:
 	// Store current rotate values (to avoid using arcsin, arccos)
 	glm::vec3 LocalRotateVal, WorldRotateVal;
 
-	void CalcViewTrans();
+	void CalcOrthoTrans();
+	void CalcPerspectiveTrans();
 };
