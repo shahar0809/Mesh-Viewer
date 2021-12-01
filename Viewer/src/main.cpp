@@ -61,7 +61,7 @@ static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {
 
 static float CameraController[3] = { 30, 30, 30 };
 static int cameraMode = ORTHO;
-static float Fovy = 0;
+static float Fovy = 30;
 static float OrthoWidth = 1;
 
 /**
@@ -422,13 +422,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		if (ImGui::RadioButton("Orthographic", &cameraMode, ORTHO))
 		{
 			scene.GetActiveCamera().SetOrthoCamera();
-			ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 		}
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Perspective", &cameraMode, PERSPECTIVE))
 		{
 			scene.GetActiveCamera().SetPerspectiveCamera();
-			ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
 		}
 
 		/* Sliders to change view volume of projection */
@@ -439,12 +437,15 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		if (cameraMode == ORTHO)
 		{
 			std::cout << "ortho mode " << std::endl;
+			ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
+
 			scene.GetActiveCamera().SetDepth(CameraController[2] / 2, -CameraController[2] / 2);
 			scene.GetActiveCamera().SetOrthoViewVolume(CameraController[0] / 2, -CameraController[0] / 2,
 						CameraController[1] / 2, -CameraController[1] / 2);
 		}
 		else if (cameraMode == PERSPECTIVE)
 		{
+			ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
 			std::cout << "perspective mode " << std::endl;
 			scene.GetActiveCamera().SetDepth(CameraController[2] / 2, -CameraController[2] / 2);
 			scene.GetActiveCamera().SetPerspectiveViewVolume(Fovy, width / height);

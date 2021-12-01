@@ -6,8 +6,8 @@ Camera::Camera()
 {
 	mode = CameraMode::Orthographic;
 
-	aspect = 1;
-	fovy = 0;
+	aspect = 1.0f;
+	fovy = 30.0f;
 
 	projection_transformation = glm::mat4x4{
 		1, 0, 0, 0,
@@ -311,11 +311,19 @@ void Camera::CalcOrthoTrans()
 
 void Camera::CalcPerspectiveTrans()
 {
+	std::cout << "arg " << (fovy * M_PI / 180) / 2.0f << std::endl;
+	std::cout << "angle " << tan((fovy * M_PI / 180) / 2.0f) << std::endl;
 	float scale = 1.0f / tan((fovy * M_PI / 180) / 2.0f);
+	std::cout << "scale " << scale << std::endl;
 	float rangeInv = 1 / (nearParam - farParam);
+	std::cout << "range " << rangeInv << std::endl;
 
 	float alpha = (nearParam + farParam) * rangeInv,
 		beta = 2 * nearParam * farParam * rangeInv;
+
+	std::cout << "alpha " << alpha << std::endl;
+	std::cout << "beta " << beta << std::endl;
+
 
 	projection_transformation = glm::mat4x4{
 		scale / aspect, 0, 0, 0,
