@@ -32,6 +32,7 @@ public:
 
 	void SetOrthoCamera();
 	void SetPerspectiveCamera();
+	const CameraMode& GetCameraMode() const;
 
 	const glm::mat4x4& GetCameraInverse() const;
 
@@ -57,13 +58,11 @@ private:
 	glm::mat4x4 camera;							// C
 	glm::mat4x4 camera_inverse;					// Cinv
 
-	glm::mat4x4 OrthoTrans, PerspectiveTrans;
-
 	glm::vec4 Eye, At, Up;
 
 	// View volume
-	float nearParam, farParam;
-	float left, right, top, bottom;
+	float nearParam = 0, farParam = 0;
+	float left = 0, right = 0, top = 0, bottom = 0;
 	float fovy, aspect;
 
 	// Attributes to keep translate and rotation values

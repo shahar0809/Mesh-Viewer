@@ -28,7 +28,7 @@ private:
 
 	void DrawModel(const MeshModel& model, const Camera& camera);
 	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
-	void DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera);
+	void DrawNormals(const Face& face, const MeshModel& model, const Camera& camera);
 	glm::vec3 TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera);
 
 	void DrawBoundingBox(const MeshModel& model, const Camera& camera);

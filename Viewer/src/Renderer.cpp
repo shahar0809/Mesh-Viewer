@@ -236,7 +236,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 	{
 		Face currFace = model.GetFace(i);
 		DrawFace(currFace, model, camera);
-		DrawFaceNormals(currFace, model, camera);
+		//DrawNormals(currFace, model, camera);
 	}
 }
 
@@ -245,12 +245,12 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	//std::vector<glm::vec3> verticeMesh = model.getVertices();
 
 	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
+	std::cout << "camera proj " << std::endl;
+	std::cout << glm::to_string(camera.GetProjectionTransformation()) << std::endl;
+
 	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
 
 	//glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
-
-	//std::cout << glm::to_string(modelTrans) << std::endl;
-	// cout << camera.GetCameraInverse()[0][0] << " " << camera.GetCameraInverse()[1][1] << " " << camera.GetCameraInverse()[2][2] << " " << camera.GetCameraInverse()[3][3] << " " << endl;
 
 	std::vector<glm::vec3> transformedVecs;
 
@@ -282,7 +282,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
 }
 
-void Renderer::DrawFaceNormals(const Face& face, const MeshModel& model, const Camera& camera)
+void Renderer::DrawNormals(const Face& face, const MeshModel& model, const Camera& camera)
 {
 
 	glm::vec3 point1 = TransfVector(model.GetVertice(face.GetVertexIndex(1) - 1), model, camera) - TransfVector(model.GetVertice(face.GetVertexIndex(0) - 1), model, camera);

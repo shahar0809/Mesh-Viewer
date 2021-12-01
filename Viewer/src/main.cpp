@@ -22,13 +22,17 @@ bool show_another_window = true;
 /**
 * Constants
 */
-int mouse_offset = 5;
+const int mouse_offset = 5;
 
-float scaleMax = 50.0f, scaleMin = -50.0f;
-float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
-float translateMax = 50.0f, translateMin = -50.0f;
-float rotateMax = 360.0f, rotateMin = 0;
-float cameraMax = 30.0f, cameraMin = -30.0f;
+const float scaleMax = 50.0f, scaleMin = -50.0f;
+const float scaleMaxWorld = 5.0f, scaleMinWorld = -5.0;
+const float translateMax = 50.0f, translateMin = -50.0f;
+const float rotateMax = 360.0f, rotateMin = 0;
+const float cameraMax = 30.0f, cameraMin = -30.0f;
+const float widthMin = 1.0f, widthMax = 30.0f;
+const float FovMin = 0.0f, FovMax = 60.0f;
+
+const int ORTHO = 0, PERSPECTIVE = 1;
 
 static int SCREEN_ASPECT = 80;
 static int width = 0, height = 0;
@@ -36,7 +40,7 @@ static int width = 0, height = 0;
 /**
 * Colors
 */
-static glm::vec3 backgroundColor = clear_color;
+static const glm::vec3 backgroundColor = clear_color;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
@@ -55,7 +59,10 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraController[6] = { 0 };
+static float CameraController[3] = { 30, 30, 30 };
+static int cameraMode = ORTHO;
+static float Fovy = 0;
+static float OrthoWidth = 1;
 
 /**
  * Function declarations
@@ -80,8 +87,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
-	//const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	//const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -204,7 +211,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
 		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
-// The key is right (D)
+		// The key is right (D)
 		else if (io.KeysDown[D_KEY_ASCII])
 		{
 		ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
@@ -258,7 +265,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	/**
 	 * MeshViewer menu
 	 */
-	ImGui::Begin("MeshViewer Menu");
+	ImGui::Begin("Color Menu");
 
 	// Menu Bar
 	if (ImGui::BeginMainMenuBar())
@@ -411,16 +418,37 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		ImGui::Begin("Camera Control");
 
-		/* change view volume */
-		ImGui::SliderFloat("Left", &CameraController[0], cameraMin, cameraMax);
-		ImGui::SliderFloat("Right", &CameraController[1], cameraMin, cameraMax);
-		ImGui::SliderFloat("Bottom", &CameraController[2], cameraMin, cameraMax);
-		ImGui::SliderFloat("Top", &CameraController[3], cameraMin, cameraMax);
-		ImGui::SliderFloat("Near", &CameraController[4], cameraMin, cameraMax);
-		ImGui::SliderFloat("Far", &CameraController[5], cameraMin, cameraMax);
+		// Radio buttons for camera projection modes
+		if (ImGui::RadioButton("Orthographic", &cameraMode, ORTHO))
+		{
+			scene.GetActiveCamera().SetOrthoCamera();
+			ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
+		}
+		ImGui::SameLine();
+		if (ImGui::RadioButton("Perspective", &cameraMode, PERSPECTIVE))
+		{
+			scene.GetActiveCamera().SetPerspectiveCamera();
+			ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
+		}
 
-		scene.GetActiveCamera().SetOrthoTrans(CameraController[0] / 2, CameraController[1] / 2,
-			CameraController[2] / 2, CameraController[3] / 2, CameraController[4] / 2, CameraController[5] / 2);
+		/* Sliders to change view volume of projection */
+		ImGui::SliderFloat("Camera X", &CameraController[0], cameraMin, cameraMax);
+		ImGui::SliderFloat("Camera Y", &CameraController[1], cameraMin, cameraMax);
+		ImGui::SliderFloat("Distance", &CameraController[2], cameraMin, cameraMax);
+
+		if (cameraMode == ORTHO)
+		{
+			std::cout << "ortho mode " << std::endl;
+			scene.GetActiveCamera().SetDepth(CameraController[2] / 2, -CameraController[2] / 2);
+			scene.GetActiveCamera().SetOrthoViewVolume(CameraController[0] / 2, -CameraController[0] / 2,
+						CameraController[1] / 2, -CameraController[1] / 2);
+		}
+		else if (cameraMode == PERSPECTIVE)
+		{
+			std::cout << "perspective mode " << std::endl;
+			scene.GetActiveCamera().SetDepth(CameraController[2] / 2, -CameraController[2] / 2);
+			scene.GetActiveCamera().SetPerspectiveViewVolume(Fovy, width / height);
+		}
 
 		ImGui::End();
 		

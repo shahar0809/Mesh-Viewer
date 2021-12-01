@@ -4,6 +4,11 @@
 
 Camera::Camera()
 {
+	mode = CameraMode::Orthographic;
+
+	aspect = 1;
+	fovy = 0;
+
 	projection_transformation = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -32,7 +37,9 @@ Camera::Camera()
 		0, 0, 0, 1
 	};
 
-	// TODO: Set eye, at, up
+	Eye = glm::vec4(0, 0, 0, 1);
+	At = glm::vec4(0, 0, 1, 0);
+	Up = glm::vec4(0, 1, 0, 1);
 }
 
 Camera::~Camera()
@@ -228,13 +235,16 @@ void Camera::SetWorldTranslate(double transX, double transY, double transZ)
 void Camera::SetOrthoCamera()
 {
 	mode = CameraMode::Orthographic;
-	projection_transformation = OrthoTrans;
 }
 
 void Camera::SetPerspectiveCamera()
 {
 	mode = CameraMode::Perspective;
-	projection_transformation = PerspectiveTrans;
+}
+
+const CameraMode& Camera::GetCameraMode() const
+{
+	return mode;
 }
 
 /**
@@ -281,23 +291,35 @@ void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
 
 void Camera::CalcOrthoTrans()
 {
-	OrthoTrans[0][0] = 2 / (right - left);
-	OrthoTrans[3][0] = -(right + left) / (right - left);
-	OrthoTrans[1][1] = 2 / (top - bottom);
-	OrthoTrans[3][1] = -(top + bottom) / (top - bottom);
-	OrthoTrans[2][2] = 2 / (nearParam - farParam);
-	OrthoTrans[3][2] = -(farParam + nearParam) / (farParam - nearParam);
-	OrthoTrans[3][3] = 1;
+	std::cout << "right ledt etc" << std::endl;
+	std::cout << left << std::endl;
+	std::cout << right << std::endl;
+	std::cout << top << std::endl;
+	std::cout << bottom << std::endl;
+	std::cout << nearParam << std::endl;
+	std::cout << farParam << std::endl;
+
+
+	projection_transformation[0][0] = 2 / (right - left);
+	projection_transformation[3][0] = -(right + left) / (right - left);
+	projection_transformation[1][1] = 2 / (top - bottom);
+	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
+	projection_transformation[2][2] = 2 / (nearParam - farParam);
+	projection_transformation[3][2] = -(farParam + nearParam) / (farParam - nearParam);
+	projection_transformation[3][3] = 1;
 }
 
 void Camera::CalcPerspectiveTrans()
 {
-	float alpha = (nearParam + farParam) / (nearParam - farParam),
-		beta = (2 * nearParam * farParam) / (nearParam - farParam);
+	float scale = 1.0f / tan((fovy * M_PI / 180) / 2.0f);
+	float rangeInv = 1 / (nearParam - farParam);
 
-	PerspectiveTrans = glm::mat4x4{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
+	float alpha = (nearParam + farParam) * rangeInv,
+		beta = 2 * nearParam * farParam * rangeInv;
+
+	projection_transformation = glm::mat4x4{
+		scale / aspect, 0, 0, 0,
+		0, scale, 0, 0,
 		0, 0, alpha, -1,
 		0, 0, beta, 0
 	};
