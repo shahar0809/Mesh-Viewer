@@ -96,6 +96,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	};
 	
 	InitLocalFrame();
+	InitverticesFacesNeighbors();
 }
 
 MeshModel::~MeshModel()
@@ -431,6 +432,48 @@ void MeshModel::InitLocalFrame()
 	AxisZ = glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2,
 		std::get<1>(minMax.second),
 		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
+}
+
+void MeshModel::InitverticesFacesNeighbors()
+{
+	for (int i = 0; i < GetVerticesCount(); i++)
+	{
+		verticesFacesNeighbors.push_back(std::vector<int>());
+		for (int j = 0; j < GetFacesCount(); j++)
+		{
+			for (int k = 0; k < 3; k++) 
+			{
+				if (GetFace(j).GetVertexIndex(k) == i) {
+					verticesFacesNeighbors.back().push_back(j);
+				}
+			}
+		}
+	}
+}
+
+glm::vec3 MeshModel::GetNormalVertix(int index) const
+{
+	glm::vec3 sum(0.0f);
+	int face_count = 0;
+	for (int j : verticesFacesNeighbors.at(index))
+	{
+		sum += GetFaceNormal(j);
+		face_count++;
+	}
+	if (face_count == 0)
+	{
+		sum /= face_count;
+	}
+	return sum;
+}
+
+glm::vec3 MeshModel::GetFaceNormal(int index) const
+{
+	glm::vec3 point1 = GetVertice(GetFace(index).GetVertexIndex(1) - 1) - GetVertice(GetFace(index).GetVertexIndex(0) - 1);
+	glm::vec3 point2 = GetVertice(GetFace(index).GetVertexIndex(2) - 1) - GetVertice(GetFace(index).GetVertexIndex(0) - 1);
+
+	glm::vec3 normal = glm::normalize(glm::cross(point1, point2));
+	return normal;
 }
 
 glm::vec3 MeshModel::GetFaceCenter(const Face& face) const

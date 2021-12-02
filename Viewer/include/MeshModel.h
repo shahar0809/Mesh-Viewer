@@ -52,6 +52,11 @@ public:
 	glm::mat4x4 GetTransformation() const;
 
 	void InitLocalFrame();
+	void InitverticesFacesNeighbors();
+	
+	glm::vec3 GetNormalVertix(int index) const;
+	glm::vec3 GetFaceNormal(int index) const;
+
 	glm::vec3 GetFaceCenter(const Face& face) const;
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
@@ -73,6 +78,7 @@ private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
+	std::vector<std::vector<int>> verticesFacesNeighbors;
 	std::string model_name;
 
 	// Keep the frame of the model
@@ -93,4 +99,5 @@ private:
 	static glm::vec3 FromHomogCoords(glm::vec4 vec);
 
 	void TransformModelFrame(glm::mat4x4 trans);
+
 };

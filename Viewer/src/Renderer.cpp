@@ -236,7 +236,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 	{
 		Face currFace = model.GetFace(i);
 		DrawFace(currFace, model, camera);
-		DrawNormals(currFace, model, camera);
+		DrawNormals(i, currFace, model, camera);
 		DrawNormalsVertics(model, camera);
 	}
 }
@@ -283,28 +283,21 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
 }
 
-void Renderer::DrawNormals(const Face& face, const MeshModel& model, const Camera& camera)
+void Renderer::DrawNormals(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
 {
-
-	glm::vec3 point1 = TransfVector(model.GetVertice(face.GetVertexIndex(1) - 1), model, camera) - TransfVector(model.GetVertice(face.GetVertexIndex(0) - 1), model, camera);
-	glm::vec3 point2 = TransfVector(model.GetVertice(face.GetVertexIndex(2) - 1), model, camera) - TransfVector(model.GetVertice(face.GetVertexIndex(0) - 1), model, camera);
-
-	glm::vec3 normal = glm::normalize(cross(point1, point2)) * glm::vec3(60);
-
-	std::cout << "normals- Again" << std::endl;
-	DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), normal + TransfVector(model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
-	std::cout << "normals" << std::endl;
-	std::cout << glm::to_string(model.GetNormal(face.GetNormalIndex(0) - 1)) << std::endl;
+	DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), TransfVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
 }
 
 void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
 {
-	std::cout << "normals- Vertics" << std::endl;
-	for (int i = 0; i < model.GetVerticesCount(); i++) {
-		std::cout << glm::to_string(TransfVector(model.GetNormal(i), model, camera)) << std::endl;
-		std::cout << glm::to_string(model.GetNormal(i)) << std::endl;
-		std::cout << glm::to_string(TransfVector(model.GetVertice(i), model, camera)) << std::endl;
-		DrawLine(TransfVector(model.GetNormal(i), model, camera), TransfVector(model.GetVertice(i), model, camera), model.VerticsNormalsColor);
+	/*for (int i = 0; i < 3; i++) {
+		DrawLine(TransfVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), TransfVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera), model.VerticsNormalsColor);
+	}*/
+
+	for (int i = 0; i < model.GetVerticesCount(); i++)
+	{
+		glm::vec3 normal = model.GetNormalVertix(i);
+		DrawLine(TransfVector(normal, model, camera), TransfVector(model.GetVertice(i), model, camera), model.VerticsNormalsColor);
 	}
 }
 
