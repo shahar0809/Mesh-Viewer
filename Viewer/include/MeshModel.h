@@ -64,6 +64,7 @@ public:
 	/* Fields to draw attributes on Mesh Viewer */
 	bool IsOnScreen = false;
 	bool IsBoundingBoxOnScreen = false;
+	bool IsNormalsOnScreen = false;
 
 
 private:

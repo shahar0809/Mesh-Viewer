@@ -166,10 +166,10 @@ void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 	glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
 	glm::vec3 AxisZ = camera.GetViewportTrans(model.GetAxisZ(), GetViewportWidth(), GetViewportHeight());
 
-	std::cout << glm::to_string(ModelOrigin) << std::endl;
-	std::cout << glm::to_string(AxisX) << std::endl;
-	std::cout << glm::to_string(AxisY) << std::endl;
-	std::cout << glm::to_string(AxisZ) << std::endl;
+	//std::cout << glm::to_string(ModelOrigin) << std::endl;
+	//std::cout << glm::to_string(AxisX) << std::endl;
+	//std::cout << glm::to_string(AxisY) << std::endl;
+	//std::cout << glm::to_string(AxisZ) << std::endl;
 
 	DrawLine(ModelOrigin, AxisX, { 0, 0, 0 });
 	DrawLine(ModelOrigin, AxisY, { 0, 0, 0 });
@@ -201,9 +201,9 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 		glm::vec4 homVec = Utils::ToHomogCoords(boundingBox[i]);
 		homVec = transform * homVec;
 		boundingBox[i] = camera.GetViewportTrans(Utils::FromHomogCoords(homVec), viewport_width, viewport_height);
-		std::cout << glm::to_string(boundingBox[i]) << std::endl;
+		//std::cout << glm::to_string(boundingBox[i]) << std::endl;
 	}
-	std::cout << "end bounding box" << std::endl;
+	//std::cout << "end bounding box" << std::endl;
 
 	DrawLine(boundingBox[0], boundingBox[1], model.BoundingBoxColor);
 	DrawLine(boundingBox[0], boundingBox[2], model.BoundingBoxColor);
@@ -227,16 +227,17 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
-	std::cout << "*************************" << std::endl;
+	//std::cout << "*************************" << std::endl;
 	DrawModelFrame(model, camera);
 	DrawBoundingBox(model, camera);
-	std::cout << "*************************" << std::endl;
+	//std::cout << "*************************" << std::endl;
 
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
 		Face currFace = model.GetFace(i);
 		DrawFace(currFace, model, camera);
-		//DrawNormals(currFace, model, camera);
+		DrawNormals(currFace, model, camera);
+		DrawNormalsVertics(model, camera);
 	}
 }
 
@@ -245,8 +246,8 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	//std::vector<glm::vec3> verticeMesh = model.getVertices();
 
 	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
-	std::cout << "camera proj " << std::endl;
-	std::cout << glm::to_string(camera.GetProjectionTransformation()) << std::endl;
+	//std::cout << "camera proj " << std::endl;
+	//std::cout << glm::to_string(camera.GetProjectionTransformation()) << std::endl;
 
 	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
 
@@ -257,15 +258,15 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	// Apply transformation on vertices
 	for (int i = 0; i < 3; i++)
 	{
-		std::cout << glm::to_string(model.GetVertice(face.GetVertexIndex(i) - 1)) << std::endl;
+		//std::cout << glm::to_string(model.GetVertice(face.GetVertexIndex(i) - 1)) << std::endl;
 
 		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
 
-		std::cout << glm::to_string(homVec) << std::endl;
+		//std::cout << glm::to_string(homVec) << std::endl;
 		glm::vec4 res = transform * homVec;
 
-		std::cout << "res" << std::endl;
-		std::cout << glm::to_string(res) << std::endl;
+		//std::cout << "res" << std::endl;
+		//std::cout << glm::to_string(res) << std::endl;
 
 		res[3] = 1;
 
@@ -291,9 +292,20 @@ void Renderer::DrawNormals(const Face& face, const MeshModel& model, const Camer
 	glm::vec3 normal = glm::normalize(cross(point1, point2)) * glm::vec3(60);
 
 	std::cout << "normals- Again" << std::endl;
-	DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), normal + TransfVector(model.GetFaceCenter(face), model, camera), normals_color);
+	DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), normal + TransfVector(model.GetFaceCenter(face), model, camera), model.NormalsColor);
 	std::cout << "normals" << std::endl;
 	std::cout << glm::to_string(model.GetNormal(face.GetNormalIndex(0) - 1)) << std::endl;
+}
+
+void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
+{
+	std::cout << "normals- Vertics" << std::endl;
+	for (int i = 0; i < model.GetVerticesCount(); i++) {
+		std::cout << glm::to_string(TransfVector(model.GetNormal(i), model, camera)) << std::endl;
+		std::cout << glm::to_string(model.GetNormal(i)) << std::endl;
+		std::cout << glm::to_string(TransfVector(model.GetVertice(i), model, camera)) << std::endl;
+		DrawLine(TransfVector(model.GetNormal(i), model, camera), TransfVector(model.GetVertice(i), model, camera), model.NormalsColor);
+	}
 }
 
 glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)

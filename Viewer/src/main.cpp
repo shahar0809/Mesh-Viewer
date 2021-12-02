@@ -87,8 +87,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	//const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
-	const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	//const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -345,11 +345,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 							{
 								scene.GetActiveModel().BoundingBoxColor = bounding_box_color;
 							}
+							if (scene.GetActiveModel().IsNormalsOnScreen)
+							{
+								scene.GetActiveModel().NormalsColor = normals_color;
+							}
 						}
 						else
 						{
 							scene.GetActiveModel().color = clear_color;
 							scene.GetActiveModel().BoundingBoxColor = clear_color;
+							scene.GetActiveModel().NormalsColor = clear_color;
 						}
 					}
 
@@ -365,6 +370,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						}
 					}
 
+					if (ImGui::Checkbox("Normals", &scene.GetActiveModel().IsNormalsOnScreen))
+					{
+						if (scene.GetActiveModel().IsNormalsOnScreen)
+						{
+							scene.GetActiveModel().NormalsColor = normals_color;
+						}
+						else
+						{
+							scene.GetActiveModel().NormalsColor = clear_color;
+						}
+					}
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin, scaleMax))
 					{
@@ -452,19 +468,5 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 
 		ImGui::End();
-		
-
-		//if (ImGui::SliderFloat("Left", CameraControler[i], cameraMin, cameraMax))
-		//{
-		//	
-		//}
-		//if (ImGui::SliderFloat("Right", CameraControler[i], cameraMin, cameraMax))
-		//{
-
-		//}
-		//if (ImGui::SliderFloat("Bottom", CameraControler[i], cameraMin, cameraMax))
-		//{
-	
-		//}
 	}
 }
