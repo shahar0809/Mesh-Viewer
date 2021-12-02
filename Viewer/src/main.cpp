@@ -59,7 +59,8 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraController[3] = { 30, 30, 30 };
+static float CameraController_array[5][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}, {30, 30, 30}, {30, 30, 30} };
+
 static int cameraMode = ORTHO;
 static float Fovy = 30;
 static float OrthoWidth = 1;
@@ -104,12 +105,14 @@ int main(int argc, char** argv)
 	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
 
 	// Initialize camera controllers
-	CameraController[0] = -width / SCREEN_ASPECT;
-	CameraController[1] = width / SCREEN_ASPECT;
-	CameraController[2] = -height / SCREEN_ASPECT;
-	CameraController[3] = height / SCREEN_ASPECT;
-	CameraController[4] = width / SCREEN_ASPECT;
-	CameraController[5] = -width / SCREEN_ASPECT;
+	for (int i = 0; i < 5; i++) {
+		CameraController_array[i][0] = -width / SCREEN_ASPECT;
+		CameraController_array[i][1] = width / SCREEN_ASPECT;
+		CameraController_array[i][2] = -height / SCREEN_ASPECT;
+		CameraController_array[i][3] = height / SCREEN_ASPECT;
+		CameraController_array[i][4] = width / SCREEN_ASPECT;
+		CameraController_array[i][5] = -width / SCREEN_ASPECT;
+	}
 	
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
@@ -118,6 +121,8 @@ int main(int argc, char** argv)
 	/* Load a camera */
 	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();;
 	scene.AddCamera(camera1);
+	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();;
+	scene.AddCamera(camera2);
 	
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -312,14 +317,20 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		bounding_box_color = scene.GetActiveModel().BoundingBoxColor;
 	}
 
-	if (ImGui::ColorEdit3("Normals Color", (float*)&scene.GetActiveModel().NormalsColor))
+	if (ImGui::ColorEdit3("Faces Normals Color", (float*)&scene.GetActiveModel().FaceNormalsColor))
 	{
-		normals_color = scene.GetActiveModel().NormalsColor;
+		face_normals_color = scene.GetActiveModel().FaceNormalsColor;
+	}
+
+	if (ImGui::ColorEdit3("Vertics Normals Color", (float*)&scene.GetActiveModel().VerticsNormalsColor))
+	{
+		vertics_normals_color = scene.GetActiveModel().VerticsNormalsColor;
 	}
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
 	static int numberOfModels = scene.GetModelCount();
+	static int numberOfCameras = scene.GetCameraCount();
 
 	{
 		ImGui::Begin("Model and World Transformation");
@@ -345,16 +356,21 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 							{
 								scene.GetActiveModel().BoundingBoxColor = bounding_box_color;
 							}
-							if (scene.GetActiveModel().IsNormalsOnScreen)
+							if (scene.GetActiveModel().IsFaceNormalsOnScreen)
 							{
-								scene.GetActiveModel().NormalsColor = normals_color;
+								scene.GetActiveModel().FaceNormalsColor = face_normals_color;
+							}
+							if (scene.GetActiveModel().IsVerticsNormalsOnScreen)
+							{
+								scene.GetActiveModel().VerticsNormalsColor = vertics_normals_color;
 							}
 						}
 						else
 						{
 							scene.GetActiveModel().color = clear_color;
 							scene.GetActiveModel().BoundingBoxColor = clear_color;
-							scene.GetActiveModel().NormalsColor = clear_color;
+							scene.GetActiveModel().FaceNormalsColor = clear_color;
+							scene.GetActiveModel().VerticsNormalsColor = clear_color;
 						}
 					}
 
@@ -370,15 +386,26 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						}
 					}
 
-					if (ImGui::Checkbox("Normals", &scene.GetActiveModel().IsNormalsOnScreen))
+					if (ImGui::Checkbox("Face Normals", &scene.GetActiveModel().IsFaceNormalsOnScreen))
 					{
-						if (scene.GetActiveModel().IsNormalsOnScreen)
+						if (scene.GetActiveModel().IsFaceNormalsOnScreen)
 						{
-							scene.GetActiveModel().NormalsColor = normals_color;
+							scene.GetActiveModel().FaceNormalsColor = face_normals_color;
 						}
 						else
 						{
-							scene.GetActiveModel().NormalsColor = clear_color;
+							scene.GetActiveModel().FaceNormalsColor = clear_color;
+						}
+					}
+					if (ImGui::Checkbox("Vertics Normals", &scene.GetActiveModel().IsVerticsNormalsOnScreen))
+					{
+						if (scene.GetActiveModel().IsVerticsNormalsOnScreen)
+						{
+							scene.GetActiveModel().VerticsNormalsColor = vertics_normals_color;
+						}
+						else
+						{
+							scene.GetActiveModel().VerticsNormalsColor = clear_color;
 						}
 					}
 					/* Set new parameters for each transformation when the slider is changed [Model] */
@@ -431,42 +458,56 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 
 		ImGui::End();
-
+	
 		ImGui::Begin("Camera Control");
 
-		// Radio buttons for camera projection modes
-		if (ImGui::RadioButton("Orthographic", &cameraMode, ORTHO))
+		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 		{
-			scene.GetActiveCamera().SetOrthoCamera();
-		}
-		ImGui::SameLine();
-		if (ImGui::RadioButton("Perspective", &cameraMode, PERSPECTIVE))
-		{
-			scene.GetActiveCamera().SetPerspectiveCamera();
-		}
+			for (int i = 0; i < numberOfCameras; i++)
+			{
+				string str = "Camera " + std::to_string(i);
+				char* camera = &str[0];
 
-		/* Sliders to change view volume of projection */
-		ImGui::SliderFloat("Camera X", &CameraController[0], cameraMin, cameraMax);
-		ImGui::SliderFloat("Camera Y", &CameraController[1], cameraMin, cameraMax);
-		ImGui::SliderFloat("Distance", &CameraController[2], cameraMin, cameraMax);
+				if (ImGui::BeginTabItem(camera))
+				{
+					scene.SetActiveCameraIndex(i);
 
-		if (cameraMode == ORTHO)
-		{
-			std::cout << "ortho mode " << std::endl;
-			ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
+					// Radio buttons for camera projection modes
+					if (ImGui::RadioButton("Orthographic", &cameraMode, ORTHO))
+					{
+						scene.GetActiveCamera().SetOrthoCamera();
+					}
+					ImGui::SameLine();
+					if (ImGui::RadioButton("Perspective", &cameraMode, PERSPECTIVE))
+					{
+						scene.GetActiveCamera().SetPerspectiveCamera();
+					}
 
-			scene.GetActiveCamera().SetDepth(CameraController[2] / 2, -CameraController[2] / 2);
-			scene.GetActiveCamera().SetOrthoViewVolume(CameraController[0] / 2, -CameraController[0] / 2,
-						CameraController[1] / 2, -CameraController[1] / 2);
+					/* Sliders to change view volume of projection */
+					ImGui::SliderFloat("Camera X", &CameraController_array[i][0], cameraMin, cameraMax);
+					ImGui::SliderFloat("Camera Y", &CameraController_array[i][1], cameraMin, cameraMax);
+					ImGui::SliderFloat("Distance", &CameraController_array[i][2], cameraMin, cameraMax);
+
+					if (cameraMode == ORTHO)
+					{
+						std::cout << "ortho mode " << std::endl;
+						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
+
+						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
+						scene.GetActiveCamera().SetOrthoViewVolume(CameraController_array[i][0] / 2, -CameraController_array[i][0] / 2,
+							CameraController_array[i][1] / 2, -CameraController_array[i][1] / 2);
+					}
+					else if (cameraMode == PERSPECTIVE)
+					{
+						ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
+						std::cout << "perspective mode " << std::endl;
+						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
+						scene.GetActiveCamera().SetPerspectiveViewVolume(Fovy, width / height);
+					}
+
+					ImGui::EndTabItem();
+				}
+			}
 		}
-		else if (cameraMode == PERSPECTIVE)
-		{
-			ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
-			std::cout << "perspective mode " << std::endl;
-			scene.GetActiveCamera().SetDepth(CameraController[2] / 2, -CameraController[2] / 2);
-			scene.GetActiveCamera().SetPerspectiveViewVolume(Fovy, width / height);
-		}
-
-		ImGui::End();
 	}
 }

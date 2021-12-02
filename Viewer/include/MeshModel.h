@@ -59,12 +59,14 @@ public:
 	// Colors
 	glm::vec3 color;
 	glm::vec3 BoundingBoxColor;
-	glm::vec3 NormalsColor;
+	glm::vec3 FaceNormalsColor;
+	glm::vec3 VerticsNormalsColor;
 
 	/* Fields to draw attributes on Mesh Viewer */
 	bool IsOnScreen = false;
 	bool IsBoundingBoxOnScreen = false;
-	bool IsNormalsOnScreen = false;
+	bool IsFaceNormalsOnScreen = false;
+	bool IsVerticsNormalsOnScreen = false;
 
 
 private:
