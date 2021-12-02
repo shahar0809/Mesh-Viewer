@@ -63,10 +63,11 @@ public:
 	glm::vec3 VerticsNormalsColor;
 
 	/* Fields to draw attributes on Mesh Viewer */
-	bool IsOnScreen = false;
+	bool IsOnScreen = true;
 	bool IsBoundingBoxOnScreen = false;
-	bool IsFaceNormalsOnScreen = false;
-	bool IsVerticsNormalsOnScreen = false;
+	bool IsFrameOnScreen = false;
+	bool AreFaceNormalsOnScreen = false;
+	bool AreVerticesNormalsOnScreen = false;
 
 
 private:

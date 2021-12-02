@@ -24,7 +24,7 @@ public:
 	const glm::vec4& getAt() const;
 	const glm::vec4& getUp() const;
 
-	glm::vec3 GetViewportTrans(glm::vec3 vec, unsigned int width, unsigned int height) const;
+	glm::mat4x4 GetViewportTrans(unsigned int width, unsigned int height) const;
 
 	void SetOrthoViewVolume(float left, float right, float bottom, float top);
 	void SetDepth(float nearParameter, float farParameter);
@@ -61,7 +61,7 @@ private:
 	glm::vec4 Eye, At, Up;
 
 	// View volume
-	float nearParam = 0, farParam = 0;
+	float zNear = 0, zFar = 0;
 	float left = 0, right = 0, top = 0, bottom = 0;
 	float fovy, aspect;
 
