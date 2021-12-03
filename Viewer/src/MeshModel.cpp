@@ -443,7 +443,7 @@ void MeshModel::InitverticesFacesNeighbors()
 		{
 			for (int k = 0; k < 3; k++) 
 			{
-				if (GetFace(j).GetVertexIndex(k) == i) {
+				if (GetFace(j).GetVertexIndex(k) == i + 1) {
 					verticesFacesNeighbors.back().push_back(j);
 				}
 			}
