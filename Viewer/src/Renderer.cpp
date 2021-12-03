@@ -235,7 +235,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 		if (model.AreFaceNormalsOnScreen)
 			DrawNormal(i, currFace, model, camera);
 		if (model.AreVerticesNormalsOnScreen)
-			DrawNormalsVertics(model, camera);
+			DrawNormalsVertices(model, camera);
 		if (model.IsBoundingBoxOnScreen)
 			DrawBoundingBox(model, camera);
 
@@ -270,13 +270,26 @@ void Renderer::DrawNormal(const int& index, const Face& face, const MeshModel& m
 	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
 }
 
-void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
+void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
 {
-	for (int i = 0; i < model.GetVerticesCount(); i++)
+	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
-		glm::vec3 normal = model.GetNormalVertix(i);
-		DrawLine(TransVector(normal, model, camera), TransVector(model.GetVertice(i), model, camera), model.VerticsNormalsColor);
+		Face currFace = model.GetFace(i);
+
+		for (int j = 0; j < 3; j++)
+		{
+			glm::vec3 vertex = model.GetVertice(currFace.GetVertexIndex(j) - 1);
+			glm::vec3 normal = model.GetNormal(currFace.GetNormalIndex(j) - 1) + vertex;
+			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.VerticsNormalsColor);
+		}
 	}
+
+	//for (int i = 0; i < model.GetVerticesCount(); i++)
+	//{
+	//	//glm::vec3 normal = model.GetNormalVertix(i);
+	//	glm::vec3 normal = model.GetNormal(model.)
+	//	DrawLine(TransVector(model.GetVertice(i), model, camera), TransVector(normal, model, camera), model.VerticsNormalsColor);
+	//}
 }
 
 /**
