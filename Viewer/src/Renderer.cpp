@@ -272,10 +272,6 @@ void Renderer::DrawNormal(const int& index, const Face& face, const MeshModel& m
 
 void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
 {
-	/*for (int i = 0; i < 3; i++) {
-		DrawLine(TransVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera), model.VerticsNormalsColor);
-	}*/
-
 	for (int i = 0; i < model.GetVerticesCount(); i++)
 	{
 		glm::vec3 normal = model.GetNormalVertix(i);
