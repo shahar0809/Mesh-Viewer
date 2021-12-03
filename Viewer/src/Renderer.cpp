@@ -160,11 +160,16 @@ void Renderer::DrawLineSanityCheck()
 void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 {
 	std::cout << "Model Frame " << std::endl;
+	glm::mat4x4 viewport_trans = camera.GetViewportTrans(viewport_width, viewport_height);
 
-	glm::vec3 ModelOrigin = camera.GetViewportTrans(model.GetOrigin(), GetViewportWidth(), GetViewportHeight());
-	glm::vec3 AxisX = camera.GetViewportTrans(model.GetAxisX(), GetViewportWidth(), GetViewportHeight());
-	glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
-	glm::vec3 AxisZ = camera.GetViewportTrans(model.GetAxisZ(), GetViewportWidth(), GetViewportHeight());
+	glm::vec3 ModelOrigin = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetOrigin()));
+	glm::vec3 AxisX = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(AxisX));
+	glm::vec3 AxisY = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(AxisY));
+	glm::vec3 AxisZ = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(AxisZ));
+
+	//glm::vec3 AxisX = camera.GetViewportTrans(model.GetAxisX(), GetViewportWidth(), GetViewportHeight());
+	//glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
+	//glm::vec3 AxisZ = camera.GetViewportTrans(model.GetAxisZ(), GetViewportWidth(), GetViewportHeight());
 
 	//std::cout << glm::to_string(ModelOrigin) << std::endl;
 	//std::cout << glm::to_string(AxisX) << std::endl;
@@ -192,18 +197,10 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 {
 	std::vector<glm::vec3> boundingBox = model.getBoundingBox();
 
-	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
-	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
-
-	std::cout << "bounding box" << std::endl;
 	for (int i = 0; i < 8; i++)
 	{
-		glm::vec4 homVec = Utils::ToHomogCoords(boundingBox[i]);
-		homVec = transform * homVec;
-		boundingBox[i] = camera.GetViewportTrans(Utils::FromHomogCoords(homVec), viewport_width, viewport_height);
-		//std::cout << glm::to_string(boundingBox[i]) << std::endl;
+		boundingBox[i] = TransVector(boundingBox[i], model, camera);
 	}
-	//std::cout << "end bounding box" << std::endl;
 
 	DrawLine(boundingBox[0], boundingBox[1], model.BoundingBoxColor);
 	DrawLine(boundingBox[0], boundingBox[2], model.BoundingBoxColor);
@@ -227,56 +224,34 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
-	//std::cout << "*************************" << std::endl;
 	DrawModelFrame(model, camera);
-	DrawBoundingBox(model, camera);
-	//std::cout << "*************************" << std::endl;
 
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
-		Face currFace = model.GetFace(i);
+		Face currFace = model.GetFace(i);		
+
+		if (model.IsFrameOnScreen)
+			DrawModelFrame(model, camera);
+		if (model.AreFaceNormalsOnScreen)	
+			DrawNormals(currFace, model, camera);
+		if (model.AreVerticesNormalsOnScreen)
+			DrawNormalsVertics(model, camera);
+		if (model.IsBoundingBoxOnScreen)
+			DrawBoundingBox(model, camera);
+
 		DrawFace(currFace, model, camera);
-		DrawNormals(i, currFace, model, camera);
-		DrawNormalsVertics(model, camera);
 	}
 }
 
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
 {
-	//std::vector<glm::vec3> verticeMesh = model.getVertices();
-
-	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
-	//std::cout << "camera proj " << std::endl;
-	//std::cout << glm::to_string(camera.GetProjectionTransformation()) << std::endl;
-
-	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
-
-	//glm::mat4x4 modelTrans = camera.GetCameraInverse() * model.GetTransformation();
-
 	std::vector<glm::vec3> transformedVecs;
 
 	// Apply transformation on vertices
 	for (int i = 0; i < 3; i++)
 	{
-		//std::cout << glm::to_string(model.GetVertice(face.GetVertexIndex(i) - 1)) << std::endl;
-
-		glm::vec4 homVec = Utils::ToHomogCoords(model.GetVertice(face.GetVertexIndex(i) - 1));
-
-		//std::cout << glm::to_string(homVec) << std::endl;
-		glm::vec4 res = transform * homVec;
-
-		//std::cout << "res" << std::endl;
-		//std::cout << glm::to_string(res) << std::endl;
-
-		res[3] = 1;
-
-		// Apply camera viewport transformation
-		transformedVecs.push_back(camera.GetViewportTrans(Utils::FromHomogCoords(res), viewport_width, viewport_height));
+		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
 	}
-	std::cout << "trans vecs" << std::endl;
-	std::cout << glm::to_string(transformedVecs[0]) << std::endl;
-	std::cout << glm::to_string(transformedVecs[1]) << std::endl << std::endl;
-
 
 	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
 	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
@@ -301,16 +276,30 @@ void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
 	}
 }
 
-glm::vec3 Renderer::TransfVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)
+/**
+ * @brief Apply renderer transformation on a vertex.
+ * @param vec The vertex
+ * @param model The model of the vertex
+ * @param camera The active camera
+ * @return The vector after applying transformation
+*/
+glm::vec3 Renderer::TransVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera)
 {
-	glm::mat4x4 inverseView = glm::inverse(camera.GetViewTransformation());
-	glm::mat4x4 transform = camera.GetProjectionTransformation() * inverseView * model.GetTransformation();
+	glm::mat4x4 transform = camera.GetViewportTrans(viewport_width, viewport_height) * camera.GetProjectionTransformation()
+		* glm::inverse(camera.GetViewTransformation()) * model.GetTransformation();
 
-	glm::vec4 homVec = Utils::ToHomogCoords(vec);
-	glm::vec4 res = transform * homVec;
+	std::cout << "transform " << std::endl;
+	std::cout << glm::to_string(transform) << std::endl;
 
-	// Apply camera viewport transformation
-	return camera.GetViewportTrans(Utils::FromHomogCoords(res), viewport_width, viewport_height);
+	std::cout << "vec " << std::endl;
+	std::cout << glm::to_string(vec) << std::endl;
+
+	glm::vec4 res = transform * Utils::ToHomogCoords(vec);
+
+	std::cout << "res " << std::endl;
+	std::cout << glm::to_string(res) << std::endl;
+
+	return Utils::FromHomogCoords(res);
 }
 
 
@@ -447,21 +436,12 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 
 void Renderer::Render(const Scene& scene)
 {
-	// TODO: Replace this code with real scene rendering code
 	int half_width = viewport_width / 2;
 	int half_height = viewport_height / 2;
 
 	const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
 
-
 	// Draw mesh triangles
-	for (int i = 0; i < scene.GetModelCount(); i++)
-	{
-		MeshModel currModel = scene.GetModel(i);
-		if (!currModel.IsOnScreen)
-			DrawModel(currModel, camera);
-	}
-
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);

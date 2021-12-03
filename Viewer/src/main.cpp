@@ -59,9 +59,9 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraController_array[5][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}, {30, 30, 30}, {30, 30, 30} };
+static float CameraController_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
 
-static int cameraMode = ORTHO;
+static int cameraMode = PERSPECTIVE;
 static float Fovy = 30;
 static float OrthoWidth = 1;
 
@@ -88,8 +88,8 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	// TODO: Need to use relative path
-	const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
-	//const std::string base_path = "C:\\Users\\משתמש\\Documents\\University\\Computerized Graphics\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	//const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
+	const std::string base_path = "C: ../../../Data/";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
@@ -105,13 +105,11 @@ int main(int argc, char** argv)
 	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
 
 	// Initialize camera controllers
-	for (int i = 0; i < 5; i++) {
-		CameraController_array[i][0] = -width / SCREEN_ASPECT;
-		CameraController_array[i][1] = width / SCREEN_ASPECT;
-		CameraController_array[i][2] = -height / SCREEN_ASPECT;
-		CameraController_array[i][3] = height / SCREEN_ASPECT;
-		CameraController_array[i][4] = width / SCREEN_ASPECT;
-		CameraController_array[i][5] = -width / SCREEN_ASPECT;
+	for (int i = 0; i < 3; i++) 
+	{
+		CameraController_array[i][0] = width / SCREEN_ASPECT;
+		CameraController_array[i][1] = height / SCREEN_ASPECT;
+		CameraController_array[i][2] = width / SCREEN_ASPECT;
 	}
 	
 	/* Load a few models */
@@ -346,68 +344,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 					scene.SetActiveModelIndex(i);
 
-					if (ImGui::Checkbox("Show on screen", &scene.GetActiveModel().IsOnScreen))
-					{
-						if (scene.GetActiveModel().IsOnScreen)
-						{
-							scene.GetActiveModel().color = model_color;
+					ImGui::Checkbox("Show on screen", &scene.GetActiveModel().IsOnScreen);
+					ImGui::SameLine();
+					ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().IsBoundingBoxOnScreen);
+					ImGui::SameLine();
+					ImGui::Checkbox("Model Frame", &scene.GetActiveModel().IsFrameOnScreen);
 
-							if (scene.GetActiveModel().IsBoundingBoxOnScreen)
-							{
-								scene.GetActiveModel().BoundingBoxColor = bounding_box_color;
-							}
-							if (scene.GetActiveModel().IsFaceNormalsOnScreen)
-							{
-								scene.GetActiveModel().FaceNormalsColor = face_normals_color;
-							}
-							if (scene.GetActiveModel().IsVerticsNormalsOnScreen)
-							{
-								scene.GetActiveModel().VerticsNormalsColor = vertics_normals_color;
-							}
-						}
-						else
-						{
-							scene.GetActiveModel().color = clear_color;
-							scene.GetActiveModel().BoundingBoxColor = clear_color;
-							scene.GetActiveModel().FaceNormalsColor = clear_color;
-							scene.GetActiveModel().VerticsNormalsColor = clear_color;
-						}
-					}
+					ImGui::Checkbox("Face Normals", &scene.GetActiveModel().AreFaceNormalsOnScreen);
+					ImGui::SameLine();
+					ImGui::Checkbox("Vertices Normals", &scene.GetActiveModel().AreVerticesNormalsOnScreen);
 
-					if (ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().IsBoundingBoxOnScreen))
-					{
-						if (scene.GetActiveModel().IsBoundingBoxOnScreen)
-						{
-							scene.GetActiveModel().BoundingBoxColor = bounding_box_color;
-						}
-						else
-						{
-							scene.GetActiveModel().BoundingBoxColor = clear_color;
-						}
-					}
-
-					if (ImGui::Checkbox("Face Normals", &scene.GetActiveModel().IsFaceNormalsOnScreen))
-					{
-						if (scene.GetActiveModel().IsFaceNormalsOnScreen)
-						{
-							scene.GetActiveModel().FaceNormalsColor = face_normals_color;
-						}
-						else
-						{
-							scene.GetActiveModel().FaceNormalsColor = clear_color;
-						}
-					}
-					if (ImGui::Checkbox("Vertics Normals", &scene.GetActiveModel().IsVerticsNormalsOnScreen))
-					{
-						if (scene.GetActiveModel().IsVerticsNormalsOnScreen)
-						{
-							scene.GetActiveModel().VerticsNormalsColor = vertics_normals_color;
-						}
-						else
-						{
-							scene.GetActiveModel().VerticsNormalsColor = clear_color;
-						}
-					}
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin, scaleMax))
 					{

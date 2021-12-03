@@ -4,7 +4,7 @@
 
 Camera::Camera()
 {
-	mode = CameraMode::Orthographic;
+	mode = CameraMode::Perspective;
 
 	aspect = 1.0f;
 	fovy = 30.0f;
@@ -49,11 +49,15 @@ Camera::~Camera()
 
 const glm::mat4x4& Camera::GetProjectionTransformation() const
 {
+	//std::cout << "projection camera " << std::endl;
+	//std::cout << glm::to_string(projection_transformation) << std::endl;
 	return projection_transformation;
 }
 
 const glm::mat4x4& Camera::GetViewTransformation() const
 {
+	//std::cout << "view trans " << std::endl;
+	//std::cout << glm::to_string(view_transformation) << std::endl;
 	return view_transformation;
 }
 
@@ -278,8 +282,8 @@ void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top
 
 void Camera::SetDepth(float nearParameter, float farParameter)
 {
-	this->nearParam = nearParameter;
-	this->farParam = farParameter;
+	this->zNear = nearParameter;
+	this->zFar = farParameter;
 }
 
 void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
@@ -291,51 +295,59 @@ void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
 
 void Camera::CalcOrthoTrans()
 {
-	std::cout << "right ledt etc" << std::endl;
-	std::cout << left << std::endl;
-	std::cout << right << std::endl;
-	std::cout << top << std::endl;
-	std::cout << bottom << std::endl;
-	std::cout << nearParam << std::endl;
-	std::cout << farParam << std::endl;
-
-
-	projection_transformation[0][0] = 2 / (right - left);
-	projection_transformation[3][0] = -(right + left) / (right - left);
+	projection_transformation[0][0] = 2 / (right - left);	
 	projection_transformation[1][1] = 2 / (top - bottom);
-	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
-	projection_transformation[2][2] = 2 / (nearParam - farParam);
-	projection_transformation[3][2] = -(farParam + nearParam) / (farParam - nearParam);
+	projection_transformation[2][2] = 2 / (zNear - zFar);
 	projection_transformation[3][3] = 1;
+	projection_transformation[3][0] = -(right + left) / (right - left);
+	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
+	projection_transformation[3][2] = -(zFar + zNear) / (zFar - zNear);
 }
 
 void Camera::CalcPerspectiveTrans()
 {
-	std::cout << "arg " << (fovy * M_PI / 180) / 2.0f << std::endl;
-	std::cout << "angle " << tan((fovy * M_PI / 180) / 2.0f) << std::endl;
-	float scale = 1.0f / tan((fovy * M_PI / 180) / 2.0f);
-	std::cout << "scale " << scale << std::endl;
-	float rangeInv = 1 / (nearParam - farParam);
-	std::cout << "range " << rangeInv << std::endl;
+	//std::cout << "arg " << (fovy * M_PI / 180) / 2.0f << std::endl;
+	//std::cout << "angle " << tan((fovy * M_PI / 180) / 2.0f) << std::endl;
+	//float scale = 1.0f / tan((fovy * M_PI / 180) / 2.0f);
+	//std::cout << "scale " << scale << std::endl;
+	//float rangeInv = 1 / (zNear - zFar);
+	//std::cout << "range " << rangeInv << std::endl;
 
-	float alpha = (nearParam + farParam) * rangeInv,
-		beta = 2 * nearParam * farParam * rangeInv;
+	//float alpha = (zNear + zFar) * rangeInv,
+	//	beta = 2 * zNear * zFar * rangeInv;
 
-	std::cout << "alpha " << alpha << std::endl;
-	std::cout << "beta " << beta << std::endl;
+	//std::cout << "alpha " << alpha << std::endl;
+	//std::cout << "beta " << beta << std::endl;
 
 
-	projection_transformation = glm::mat4x4{
-		scale / aspect, 0, 0, 0,
-		0, scale, 0, 0,
-		0, 0, alpha, -1,
-		0, 0, beta, 0
-	};
+	//projection_transformation = glm::mat4x4{
+	//	scale / aspect, 0, 0, 0,
+	//	0, scale, 0, 0,
+	//	0, 0, alpha, -1,
+	//	0, 0, beta, 0
+	//};
+	//std::cout << "perspective trans " << std::endl;
+	//std::cout << glm::to_string(projection_transformation) << std::endl;
+	projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
 }
 
-glm::vec3 Camera::GetViewportTrans(glm::vec3 vec, unsigned int width, unsigned int height) const
+glm::mat4x4 Camera::GetViewportTrans(unsigned int width, unsigned int height) const
 {
-	return glm::vec3((vec.x + 1.0f) * (width / 2), (vec.y + 1.0f) * (height / 2), vec.z);
+	glm::mat4x4 scaleTrans {
+		width / 2.0f, 0, 0, 0,
+		0, height / 2.0f, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	glm::mat4x4 translateTran {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		1, 1, 1, 1
+	};
+
+	return scaleTrans * translateTran;
 }
 
 const glm::vec4& Camera::getEye() const
