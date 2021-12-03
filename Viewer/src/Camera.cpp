@@ -4,8 +4,6 @@
 
 Camera::Camera()
 {
-	mode = CameraMode::Perspective;
-
 	aspect = 1.0f;
 	fovy = 30.0f;
 
@@ -17,20 +15,6 @@ Camera::Camera()
 	};
 
 	view_transformation = glm::mat4x4{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
-
-	camera_inverse = glm::mat4x4{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
-
-	camera = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -266,7 +250,7 @@ void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const gl
 	glm::vec4 x = glm::normalize(glm::vec4(glm::cross(glm::vec3(up), glm::vec3(z)), 1.0f));
 	glm::vec4 y = glm::normalize(glm::vec4(glm::cross(glm::vec3(z), glm::vec3(x)), 1.0f));
 
-	camera = glm::mat4x4(x, y, z, glm::vec4(0, 0, 0, 1));
+	view_transformation = glm::mat4x4(x, y, z, glm::vec4(0, 0, 0, 1));
 	SetLocalTranslate(-eye.x, -eye.y, -eye.z);
 }
 
@@ -371,16 +355,4 @@ glm::mat4x4 Camera::GetTransformation() const
 	glm::mat4x4 WorldTrans = TranslateWorld * RotateWorld;
 
 	return WorldTrans * LocalTrans;
-}
-
-const glm::mat4x4& Camera::GetCameraInverse() const
-{
-	//return glm::inverse(projection_transformation) * camera_inverse;
-	std::cout << "proj" << std::endl;
-	std::cout << glm::to_string(projection_transformation) << std::endl;
-
-	std::cout << "cinv" << std::endl;
-	std::cout << glm::to_string(camera_inverse) << std::endl;
-
-	return projection_transformation * camera_inverse * view_transformation;
 }

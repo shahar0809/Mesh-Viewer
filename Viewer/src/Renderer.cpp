@@ -232,8 +232,8 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 
 		if (model.IsFrameOnScreen)
 			DrawModelFrame(model, camera);
-		if (model.AreFaceNormalsOnScreen)	
-			DrawNormals(i, currFace, model, camera);
+		if (model.AreFaceNormalsOnScreen)
+			DrawNormal(i, currFace, model, camera);
 		if (model.AreVerticesNormalsOnScreen)
 			DrawNormalsVertics(model, camera);
 		if (model.IsBoundingBoxOnScreen)
@@ -258,7 +258,14 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
 }
 
-void Renderer::DrawNormals(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
+/**
+ * @brief Draws normal of a face
+ * @param index The index of the face in the model	
+ * @param face The Face
+ * @param model The model
+ * @param camera The active camera
+*/
+void Renderer::DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
 {
 	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
 }
@@ -266,7 +273,7 @@ void Renderer::DrawNormals(const int& index, const Face& face, const MeshModel& 
 void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
 {
 	/*for (int i = 0; i < 3; i++) {
-		DrawLine(TransfVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), TransfVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera), model.VerticsNormalsColor);
+		DrawLine(TransVector(model.GetNormal(face.GetNormalIndex(i) - 1), model, camera), TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera), model.VerticsNormalsColor);
 	}*/
 
 	for (int i = 0; i < model.GetVerticesCount(); i++)

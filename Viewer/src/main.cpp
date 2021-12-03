@@ -30,7 +30,8 @@ const float translateMax = 50.0f, translateMin = -50.0f;
 const float rotateMax = 360.0f, rotateMin = 0;
 const float cameraMax = 30.0f, cameraMin = -30.0f;
 const float widthMin = 1.0f, widthMax = 30.0f;
-const float FovMin = 0.0f, FovMax = 60.0f;
+const float FovMin = 0.0f, FovMax = 90.0f;
+const float AspectMin = 0.0f, AspectMax = 3.0f;
 
 const int ORTHO = 0, PERSPECTIVE = 1;
 
@@ -61,8 +62,9 @@ static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {
 
 static float CameraController_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
 
-static int cameraMode = PERSPECTIVE;
+static int cameraMode = ORTHO;
 static float Fovy = 30;
+static float aspect = 1;
 static float OrthoWidth = 1;
 
 /**
@@ -87,8 +89,6 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char** argv)
 {
-	// TODO: Need to use relative path
-	//const std::string base_path = "C:\\Users\\karin\\Documents\\GitHub\\computer-graphics-2022-shahar-and-iris\\Data\\";
 	const std::string base_path = "C: ../../../Data/";
 	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
@@ -337,7 +337,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			for (int i = 0; i < numberOfModels; i++)
 			{
-				string str = "Model " + std::to_string(i);
+				string str = scene.GetModel(i).GetModelName();
 				char* model = &str[0];
 
 				if (ImGui::BeginTabItem(model))
@@ -440,15 +440,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
 						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetOrthoViewVolume(CameraController_array[i][0] / 2, -CameraController_array[i][0] / 2,
-							CameraController_array[i][1] / 2, -CameraController_array[i][1] / 2);
+						scene.GetActiveCamera().SetOrthoViewVolume(-CameraController_array[i][0] / 2, CameraController_array[i][0] / 2,
+							-CameraController_array[i][1] / 2, CameraController_array[i][1] / 2);
 					}
 					else if (cameraMode == PERSPECTIVE)
 					{
 						ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
+						ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);
 						std::cout << "perspective mode " << std::endl;
 						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(Fovy, width / height);
+						scene.GetActiveCamera().SetPerspectiveViewVolume(-Fovy, aspect);
 					}
 
 					ImGui::EndTabItem();
