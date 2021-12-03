@@ -34,8 +34,6 @@ public:
 	void SetPerspectiveCamera();
 	const CameraMode& GetCameraMode() const;
 
-	const glm::mat4x4& GetCameraInverse() const;
-
 	// Apply transformations on both model and world (dependant on previous values)
 	void ApplyLocalRotate(double rotateX, double rotateY, double rotateZ);
 	void ApplyLocalTranslate(double transX, double transY, double transZ);
@@ -55,8 +53,8 @@ private:
 
 	glm::mat4x4 view_transformation;			// Orthographic transf
 	glm::mat4x4 projection_transformation;		// Projection tranformation
-	glm::mat4x4 camera;							// C
-	glm::mat4x4 camera_inverse;					// Cinv
+	//glm::mat4x4 camera;							// C
+	//glm::mat4x4 camera_inverse;					// Cinv
 
 	glm::vec4 Eye, At, Up;
 
