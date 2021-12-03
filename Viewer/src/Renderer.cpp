@@ -233,7 +233,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 		if (model.IsFrameOnScreen)
 			DrawModelFrame(model, camera);
 		if (model.AreFaceNormalsOnScreen)	
-			DrawNormals(currFace, model, camera);
+			DrawNormals(i, currFace, model, camera);
 		if (model.AreVerticesNormalsOnScreen)
 			DrawNormalsVertics(model, camera);
 		if (model.IsBoundingBoxOnScreen)
@@ -260,7 +260,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 void Renderer::DrawNormals(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
 {
-	DrawLine(TransfVector(model.GetFaceCenter(face), model, camera), TransfVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
+	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
 }
 
 void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
@@ -272,7 +272,7 @@ void Renderer::DrawNormalsVertics(const MeshModel& model, const Camera& camera)
 	for (int i = 0; i < model.GetVerticesCount(); i++)
 	{
 		glm::vec3 normal = model.GetNormalVertix(i);
-		DrawLine(TransfVector(normal, model, camera), TransfVector(model.GetVertice(i), model, camera), model.VerticsNormalsColor);
+		DrawLine(TransVector(normal, model, camera), TransVector(model.GetVertice(i), model, camera), model.VerticsNormalsColor);
 	}
 }
 

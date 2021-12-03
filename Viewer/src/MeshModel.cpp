@@ -5,7 +5,8 @@
 MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, const std::string& model_name) :
 	faces(faces),
 	vertices(vertices),
-	normals(normals)
+	normals(normals),
+	verticesFacesNeighbors(vertices.size())
 {
 	WorldRotateVal = glm::vec3(0);
 	ModelRotateVal = glm::vec3(0);
@@ -436,16 +437,14 @@ void MeshModel::InitLocalFrame()
 
 void MeshModel::InitverticesFacesNeighbors()
 {
+	verticesFacesNeighbors.reserve(GetVerticesCount());
 	for (int i = 0; i < GetVerticesCount(); i++)
 	{
-		verticesFacesNeighbors.push_back(std::vector<int>());
 		for (int j = 0; j < GetFacesCount(); j++)
 		{
 			for (int k = 0; k < 3; k++) 
 			{
-				if (GetFace(j).GetVertexIndex(k) == i + 1) {
-					verticesFacesNeighbors.back().push_back(j);
-				}
+				verticesFacesNeighbors.at(GetFace(j).GetVertexIndex(k) - 1).push_back(j);
 			}
 		}
 	}
