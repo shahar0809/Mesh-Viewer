@@ -35,7 +35,7 @@ private:
 	void DrawBoundingBox(const MeshModel& model, const Camera& camera);
 
 	void DrawModelFrame(const MeshModel& model, const Camera& camera);
-	void DrawWorldFrame();
+	void DrawWorldFrame(const Camera& camera);
 
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();

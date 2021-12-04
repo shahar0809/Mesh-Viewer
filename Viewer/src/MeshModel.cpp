@@ -399,7 +399,6 @@ void MeshModel::InitLocalFrame()
 		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
 		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-
 	AxisY = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
 		std::get<1>(minMax.second),
 		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
