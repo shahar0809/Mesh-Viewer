@@ -179,13 +179,13 @@ void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 	//std::cout << glm::to_string(AxisY) << std::endl;
 	//std::cout << glm::to_string(AxisZ) << std::endl;
 
-	DrawLine(model.GetOrigin(), model.GetAxisX(), { 0, 0, 0 });
+	/*DrawLine(model.GetOrigin(), model.GetAxisX(), { 0, 0, 0 });
 	DrawLine(model.GetOrigin(), model.GetAxisY(), { 0, 0, 0 });
-	DrawLine(model.GetOrigin(), model.GetAxisZ(), { 0, 0, 0 });
+	DrawLine(model.GetOrigin(), model.GetAxisZ(), { 0, 0, 0 });*/
 
-	/*DrawLine(ModelOrigin, AxisX, { 0, 0, 0 });
-	DrawLine(ModelOrigin, AxisY, { 0, 0, 0 });
-	DrawLine(ModelOrigin, AxisZ, { 0, 0, 0 });*/
+	DrawLine(ModelOrigin, AxisX, { 0, 1, 0 }); // X - Green
+	DrawLine(ModelOrigin, AxisY, { 0, 0, 1 }); // Y - Blue
+	DrawLine(ModelOrigin, AxisZ, { 1, 0, 0 }); // Z - Red
 }
 
 void Renderer::DrawWorldFrame()
