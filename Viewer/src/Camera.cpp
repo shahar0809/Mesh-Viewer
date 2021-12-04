@@ -21,6 +21,79 @@ Camera::Camera()
 		0, 0, 0, 1
 	};
 
+	WorldRotateVal = glm::vec3(0);
+	LocalRotateVal = glm::vec3(0);
+
+	TranslateLocal = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	TranslateWorld = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateLocalX = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateLocalY = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateLocalZ = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateLocal = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateLocalX = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateWorldY = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateWorldZ = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
+	RotateWorld = glm::mat4x4{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+
 	Eye = glm::vec3(0, 0, 0);
 	At = glm::vec3(0, 0, 1);
 	Up = glm::vec3(0, 1, 0);
@@ -273,7 +346,7 @@ void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const gl
 	lookAt[3][3] = 1;
 
 
-	view_transformation = lookAt;
+	view_transformation = GetTransformation() * lookAt;
 	//view_transformation = lookAt;
 
 	//chack that z translation is no 0 (can't divide by zero)
@@ -299,6 +372,9 @@ void Camera::SetDepth(float nearParameter, float farParameter)
 
 void Camera::SetPerspectiveViewVolume(float left, float right, float bottom, float top)
 {
+	//this->fovy = fovy;
+	//this->aspect = aspect;
+
 	this->right = right;
 	this->left = left;
 	this->top = top;

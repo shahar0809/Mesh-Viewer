@@ -12,11 +12,11 @@ class Renderer
 {
 public:
 	Renderer(int viewportWidth, int viewportHeight);
-	void SetViewport(const int width, const int height);
 	virtual ~Renderer();
 	void Render(const Scene& scene);
 	void SwapBuffers();
 	void ClearColorBuffer(const glm::vec3& color);
+	void SetViewport(const int width, const int height);
 
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;

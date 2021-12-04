@@ -326,7 +326,6 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	WorldRotateVal.y = rotateY;
 	WorldRotateVal.z = rotateZ;
 
-	std::cout << rotateX << std::endl;
 	double radiansValX = ToRadians(WorldRotateVal.x);
 
 	RotateWorldX[1][1] = cos(radiansValX);
@@ -349,7 +348,6 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
-	std::cout << glm::to_string(RotateWorld) << std::endl;
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
@@ -358,11 +356,6 @@ void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)
 	TranslateWorld[3][0] = transX;
 	TranslateWorld[3][1] = transY;
 	TranslateWorld[3][2] = transZ;
-}
-
-glm::mat4x4 MeshModel::GetWorldTransform() const
-{
-	return TranslateWorld * RotateWorld * ScaleWorld;
 }
 
 glm::mat4x4 MeshModel::GetTransformation() const
@@ -402,17 +395,14 @@ void MeshModel::InitLocalFrame()
 		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
 		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-	// (maxX, (maxY - minxX) / 2, (maxZ - minxZ) / 2)
 	AxisX = glm::vec3(std::get<0>(minMax.second),
 		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
 		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-	// ((maxX - minxX) / 2, maxY, (maxZ - minxZ) / 2)
 	AxisY = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
 		std::get<1>(minMax.second),
 		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-	// ((maxX - minxX) / 2, (maxY - minxX) / 2, maxZ)
 	AxisZ = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
 		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
 		std::get<2>(minMax.second));

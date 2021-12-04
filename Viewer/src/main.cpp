@@ -46,12 +46,12 @@ static const glm::vec3 backgroundColor = clear_color;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
-W_KEY_ASCII = int('W'),
-A_KEY_ASCII = int('A'),
-D_KEY_ASCII = int('D');
+				 W_KEY_ASCII = int('W'),
+				 A_KEY_ASCII = int('A'),
+				 D_KEY_ASCII = int('D');
 
 static const int ZOOM_IN_KEY_ASCII = int('['),
-ZOOM_OUT_KEY_ASCII = int(']');
+				 ZOOM_OUT_KEY_ASCII = int(']');
 
 static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
@@ -60,6 +60,12 @@ static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {
 static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+
+static float CameraTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+static float CameraRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+
+static float CameraWorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
+static float CameraWorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
 //static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
 static float ortho_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
@@ -97,6 +103,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	const std::string base_path = "C: ../../../Data/";
+	
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -111,7 +118,7 @@ int main(int argc, char** argv)
 	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
 
 	// Initialize camera controllers
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++) 
 	{
 		ortho_array[i][0] = width / SCREEN_ASPECT;
 		ortho_array[i][1] = height / SCREEN_ASPECT;
@@ -121,17 +128,23 @@ int main(int argc, char** argv)
 		perspective_array[i][1] = height / SCREEN_ASPECT;
 		perspective_array[i][2] = 15;
 	}
-
+	
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
+	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
+	//scene.AddModel(model2);
+	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "camera.obj");
+	//scene.AddModel(model3);
+	//std::shared_ptr<MeshModel> model4 = Utils::LoadMeshModel(base_path + "camera.obj");
+	//scene.AddModel(model4);
 
 	/* Load a camera */
 	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();;
 	scene.AddCamera(camera1);
 	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();;
 	scene.AddCamera(camera2);
-
+	
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
 	while (!glfwWindowShouldClose(window))
@@ -230,36 +243,36 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		// The key is left (A)
 		else if (io.KeysDown[A_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// The key is right (D)
 		else if (io.KeysDown[D_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// Zoom in on model
 		else if (io.KeysDown[ZOOM_IN_KEY_ASCII])
 		{
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
-			{
-				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
-			}
-			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+		{
+			ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
+		}
+		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// Zoom out on model
 		else if (io.KeysDown[ZOOM_OUT_KEY_ASCII])
 		{
-			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
-			{
-				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
-				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
-			}
-			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+		{
+			ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
+			ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
+		}
+		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 	}
 
@@ -425,7 +438,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 
 		ImGui::End();
-
+	
 		ImGui::Begin("Camera Control");
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
@@ -450,20 +463,39 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						scene.GetActiveCamera().SetPerspectiveCamera();
 					}
 
+					if (ImGui::SliderFloat3("Camera Translate", CameraTransValue_array[i], translateMin, translateMax))
+					{
+						scene.GetActiveCamera().SetLocalTranslate(CameraTransValue_array[i][0], CameraTransValue_array[i][1], CameraTransValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("Camera Rotate", CameraRotateValue_array[i], rotateMin, rotateMax))
+					{
+						scene.GetActiveCamera().SetLocalRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+					}
 
+					//ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					/* Set new parameters for each transformation when the slider is changed [World] */
+					if (ImGui::SliderFloat3("World Translate", CameraWorldTransValue_array[i], translateMin, translateMax))
+					{
+						scene.GetActiveCamera().SetWorldTranslate(CameraWorldTransValue_array[i][0], CameraWorldTransValue_array[i][1], CameraWorldTransValue_array[i][2]);
+					}
+					if (ImGui::SliderFloat3("World Rotate", CameraWorldRotateValue_array[i], rotateMin, rotateMax))
+					{
+						scene.GetActiveCamera().SetWorldRotate(CameraWorldRotateValue_array[i][0], CameraWorldRotateValue_array[i][1], CameraWorldRotateValue_array[i][2]);
+					}
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					if (cameraMode == ORTHO)
-
 					{
 						/* Sliders to change view volume of projection */
 						ImGui::SliderFloat("Camera X", &ortho_array[i][0], cameraMin, cameraMax);
 						ImGui::SliderFloat("Camera Y", &ortho_array[i][1], cameraMin, cameraMax);
 						ImGui::SliderFloat("Distance", &ortho_array[i][2], cameraMin, cameraMax);
-
+						
 						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
 						scene.GetActiveCamera().SetDepth(ortho_array[i][2] / 2, -ortho_array[i][2] / 2);
-						scene.GetActiveCamera().SetOrthoViewVolume(ortho_array[i][0] / 2, -ortho_array[i][0] / 2,
+						scene.GetActiveCamera().SetOrthoViewVolume(-ortho_array[i][0] / 2, ortho_array[i][0] / 2,
 							-ortho_array[i][1] / 2, ortho_array[i][1] / 2);
 					}
 					else if (cameraMode == PERSPECTIVE)
@@ -473,12 +505,12 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						ImGui::SliderFloat("Camera Y", &perspective_array[i][1], cameraMin, cameraMax);
 						ImGui::SliderFloat("Distance", &perspective_array[i][2], cameraMin, cameraMax);
 
-						/*		ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
-								ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);*/
 						scene.GetActiveCamera().SetDepth(perspective_array[i][2] / 2, -perspective_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(perspective_array[i][0] / 2, -perspective_array[i][0] / 2,
+						scene.GetActiveCamera().SetPerspectiveViewVolume(-perspective_array[i][0] / 2, perspective_array[i][0] / 2,
 							-perspective_array[i][1] / 2, perspective_array[i][1] / 2);
 					}
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					glm::vec3 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
 					glm::vec3 at(at_array[i][0], at_array[i][1], at_array[i][2]);
