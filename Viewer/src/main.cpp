@@ -337,7 +337,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			for (int i = 0; i < numberOfModels; i++)
 			{
-				string str = scene.GetModel(i).GetModelName();
+				string str = "hhh";
 				char* model = &str[0];
 
 				if (ImGui::BeginTabItem(model))
@@ -401,6 +401,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::EndTabItem();
 				}
 			}
+			ImGui::EndTabItem();
 		}
 
 		ImGui::End();
@@ -455,6 +456,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::EndTabItem();
 				}
 			}
+			ImGui::EndTabItem();
 		}
+		ImGui::End();
 	}
 }

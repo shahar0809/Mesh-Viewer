@@ -313,6 +313,8 @@ void Camera::CalcPerspectiveTrans()
 	//std::cout << "perspective trans " << std::endl;
 	//std::cout << glm::to_string(projection_transformation) << std::endl;
 	projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
+	//projection_transformation = glm::ortho(left, right, bottom, top, zNear, zFar);
+
 }
 
 glm::mat4x4 Camera::GetViewportTrans(unsigned int width, unsigned int height) const

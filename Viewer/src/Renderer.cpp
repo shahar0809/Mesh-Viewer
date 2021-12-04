@@ -163,9 +163,9 @@ void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 	glm::mat4x4 viewport_trans = camera.GetViewportTrans(viewport_width, viewport_height);
 
 	glm::vec3 ModelOrigin = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetOrigin()));
-	glm::vec3 AxisX = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(AxisX));
-	glm::vec3 AxisY = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(AxisY));
-	glm::vec3 AxisZ = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(AxisZ));
+	glm::vec3 AxisX = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetAxisX()));
+	glm::vec3 AxisY = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetAxisY()));
+	glm::vec3 AxisZ = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetAxisZ()));
 
 	//glm::vec3 AxisX = camera.GetViewportTrans(model.GetAxisX(), GetViewportWidth(), GetViewportHeight());
 	//glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
@@ -283,7 +283,7 @@ void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
 			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.VerticsNormalsColor);
 		}
 	}
-
+	
 	//for (int i = 0; i < model.GetVerticesCount(); i++)
 	//{
 	//	//glm::vec3 normal = model.GetNormalVertix(i);
