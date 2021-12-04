@@ -14,15 +14,15 @@ public:
 	Camera();
 	virtual ~Camera();
 
-	void SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up);
+	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
 
 	glm::mat4x4 GetTransformation() const;
 	const glm::mat4x4& GetProjectionTransformation() const;
 	const glm::mat4x4& GetViewTransformation() const;
 
-	const glm::vec4& getEye() const;
-	const glm::vec4& getAt() const;
-	const glm::vec4& getUp() const;
+	const glm::vec3& getEye() const;
+	const glm::vec3& getAt() const;
+	const glm::vec3& getUp() const;
 
 	glm::mat4x4 GetViewportTrans(unsigned int width, unsigned int height) const;
 
@@ -56,7 +56,8 @@ private:
 	//glm::mat4x4 camera;							// C
 	//glm::mat4x4 camera_inverse;					// Cinv
 
-	glm::vec4 Eye, At, Up;
+	glm::vec3 Eye, At, Up;
+	glm::mat4x4 cameraAngle;
 
 	// View volume
 	float zNear = 0, zFar = 0;

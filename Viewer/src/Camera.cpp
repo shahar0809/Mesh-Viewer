@@ -21,9 +21,9 @@ Camera::Camera()
 		0, 0, 0, 1
 	};
 
-	Eye = glm::vec4(0, 0, 0, 1);
-	At = glm::vec4(0, 0, 1, 0);
-	Up = glm::vec4(0, 1, 0, 1);
+	Eye = glm::vec3(0, 0, 0);
+	At = glm::vec3(0, 0, 1);
+	Up = glm::vec3(0, 1, 0);
 }
 
 Camera::~Camera()
@@ -241,17 +241,19 @@ const CameraMode& Camera::GetCameraMode() const
  * @param at The direction the camera is looking to
  * @param up The direction of the Y coordinate
 */
-void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up)
+void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
-	//glm::lookAt(eye, at, up)
-	Eye = eye; At = at; Up = up;
+	view_transformation = glm::lookAt(eye, at, up);
+	/*Eye = eye; At = at; Up = up;*/
 
-	glm::vec4 z = glm::normalize(at - eye);
-	glm::vec4 x = glm::normalize(glm::vec4(glm::cross(glm::vec3(up), glm::vec3(z)), 1.0f));
-	glm::vec4 y = glm::normalize(glm::vec4(glm::cross(glm::vec3(z), glm::vec3(x)), 1.0f));
+	//glm::vec3 z = glm::normalize(at - eye);
+	//glm::vec3 x = glm::normalize(glm::cross(up, z));
+	//glm::vec3 y = glm::normalize(glm::cross(z ,x));
 
-	view_transformation = glm::mat4x4(x, y, z, glm::vec4(0, 0, 0, 1));
-	SetLocalTranslate(-eye.x, -eye.y, -eye.z);
+	//glm::vec4 t = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	//view_transformation = glm::mat4x4(Utils::ToHomogCoords(x), Utils::ToHomogCoords(y), Utils::ToHomogCoords(z), t);
+	//view_transformation = view_transformation * SetWorldTranslate(-eye.x, -eye.y, -eye.z);
 }
 
 void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top)
@@ -345,17 +347,17 @@ glm::mat4x4 Camera::GetViewportTrans(unsigned int width, unsigned int height) co
 	return scaleTrans * translateTran;
 }
 
-const glm::vec4& Camera::getEye() const
+const glm::vec3& Camera::getEye() const
 {
     return Eye;
 }
 
-const glm::vec4& Camera::getAt() const
+const glm::vec3& Camera::getAt() const
 {
     return At;
 }
 
-const glm::vec4& Camera::getUp() const
+const glm::vec3& Camera::getUp() const
 {
     return Up;
 }

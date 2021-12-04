@@ -62,9 +62,9 @@ static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
 static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
-static float eye_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
-static float up_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
-static float at_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
+static float eye_array[3][3] = { {0, 0, 0}, {0, 0, 0} , {0, 0, 0} };
+static float at_array[3][3] = { {0, 0, 1}, {0, 0, 1} , {0, 0, 1} };
+static float up_array[3][3] = { {0, 1, 0}, {0, 1, 0} , {0, 1, 0} };
 
 static int cameraMode = ORTHO;
 static float Fovy = -30.0f;
@@ -456,23 +456,23 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						scene.GetActiveCamera().SetPerspectiveViewVolume(-Fovy, aspect);
 					}
 
-					/*glm::vec4 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);
-					glm::vec4 at(at_array[i][0], at_array[i][1], at_array[i][2], 1);
-					glm::vec4 up(up_array[i][0], up_array[i][1], up_array[i][2], 1);
+					glm::vec3 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
+					glm::vec3 at(at_array[i][0], at_array[i][1], at_array[i][2]);
+					glm::vec3 up(up_array[i][0], up_array[i][1], up_array[i][2]);
 
 					if (ImGui::SliderFloat3("Eye", eye_array[i], LookAtMin, LookAtMax))
 					{
-						eye = glm::vec4(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);
+						eye = glm::vec3(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
 					}
 					if (ImGui::SliderFloat3("At", at_array[i], LookAtMin, LookAtMax))
 					{
-						at = glm::vec4(at_array[i][0], at_array[i][1], at_array[i][2], 1);
+						at = glm::vec3(at_array[i][0], at_array[i][1], at_array[i][2]);
 					}
 					if (ImGui::SliderFloat3("Up", up_array[i], LookAtMin, LookAtMax))
 					{
-						up = glm::vec4(up_array[i][0], up_array[i][1], up_array[i][2], 1);
+						up = glm::vec3(up_array[i][0], up_array[i][1], up_array[i][2]);
 					}
-					scene.GetActiveCamera().SetCameraLookAt(eye, at, up);*/
+					scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 
 					ImGui::EndTabItem();
 				}
