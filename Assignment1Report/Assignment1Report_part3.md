@@ -66,5 +66,7 @@ Transforming in world frame:
 
 Transforming in model frame:
 
-![World Trans](part3_images/world_trans.gif)
+![World Trans](part3_images/model_trans.gif)
+
+
 

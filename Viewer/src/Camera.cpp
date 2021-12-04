@@ -21,9 +21,9 @@ Camera::Camera()
 		0, 0, 0, 1
 	};
 
-	Eye = glm::vec4(0, 0, 0, 1);
-	At = glm::vec4(0, 0, 1, 0);
-	Up = glm::vec4(0, 1, 0, 1);
+	Eye = glm::vec3(0, 0, 0);
+	At = glm::vec3(0, 0, 1);
+	Up = glm::vec3(0, 1, 0);
 }
 
 Camera::~Camera()
@@ -241,17 +241,45 @@ const CameraMode& Camera::GetCameraMode() const
  * @param at The direction the camera is looking to
  * @param up The direction of the Y coordinate
 */
-void Camera::SetCameraLookAt(const glm::vec4& eye, const glm::vec4& at, const glm::vec4& up)
+void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
-	//glm::lookAt(eye, at, up)
-	Eye = eye; At = at; Up = up;
+	//view_transformation = glm::lookAt(eye, at, up);
+	/*Eye = eye; At = at; Up = up;*/
 
-	glm::vec4 z = glm::normalize(at - eye);
-	glm::vec4 x = glm::normalize(glm::vec4(glm::cross(glm::vec3(up), glm::vec3(z)), 1.0f));
-	glm::vec4 y = glm::normalize(glm::vec4(glm::cross(glm::vec3(z), glm::vec3(x)), 1.0f));
+	//glm::vec3 z = glm::normalize(at - eye);
+	//glm::vec3 x = glm::normalize(glm::cross(up, z));
+	//glm::vec3 y = glm::normalize(glm::cross(z ,x));
 
-	view_transformation = glm::mat4x4(x, y, z, glm::vec4(0, 0, 0, 1));
-	SetLocalTranslate(-eye.x, -eye.y, -eye.z);
+	//glm::vec4 t = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	//view_transformation = glm::mat4x4(Utils::ToHomogCoords(x), Utils::ToHomogCoords(y), Utils::ToHomogCoords(z), t);
+	//view_transformation = view_transformation * SetWorldTranslate(-eye.x, -eye.y, -eye.z);
+
+
+	glm::mat3x3 lookAtTrasform = glm::lookAt(eye, at, up);
+
+	glm::mat4x4 lookAt;
+	for (int i = 0; i < 3; i++)
+	{
+		lookAt[i][0] = lookAtTrasform[i][0];
+		lookAt[i][1] = lookAtTrasform[i][1];
+		lookAt[i][2] = lookAtTrasform[i][2];
+		lookAt[i][3] = 0; //homogeneous
+	}
+	//last colume 
+	lookAt[3][0] = 0;
+	lookAt[3][1] = 0;
+	lookAt[3][2] = 0;
+	lookAt[3][3] = 1;
+
+
+	view_transformation = lookAt;
+	//view_transformation = lookAt;
+
+	//chack that z translation is no 0 (can't divide by zero)
+	if (view_transformation[3][2] == 0)
+		view_transformation[3][2] = -10;
+
 }
 
 void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top)
@@ -279,15 +307,9 @@ void Camera::SetPerspectiveViewVolume(float left, float right, float bottom, flo
 	CalcPerspectiveTrans();
 }
 
-//void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
-//{
-//	this->fovy = fovy;
-//	this->aspect = aspect;
-//	CalcPerspectiveTrans();
-//}
-
 void Camera::CalcOrthoTrans()
 {
+	projection_transformation = glm::mat4x4(1);
 	projection_transformation[0][0] = 2 / (right - left);	
 	projection_transformation[1][1] = 2 / (top - bottom);
 	projection_transformation[2][2] = 2 / (zNear - zFar);
@@ -299,29 +321,6 @@ void Camera::CalcOrthoTrans()
 
 void Camera::CalcPerspectiveTrans()
 {
-	//std::cout << "arg " << (fovy * M_PI / 180) / 2.0f << std::endl;
-	//std::cout << "angle " << tan((fovy * M_PI / 180) / 2.0f) << std::endl;
-	//float scale = 1.0f / tan((fovy * M_PI / 180) / 2.0f);
-	//std::cout << "scale " << scale << std::endl;
-	//float rangeInv = 1 / (zNear - zFar);
-	//std::cout << "range " << rangeInv << std::endl;
-
-	//float alpha = (zNear + zFar) * rangeInv,
-	//	beta = 2 * zNear * zFar * rangeInv;
-
-	//std::cout << "alpha " << alpha << std::endl;
-	//std::cout << "beta " << beta << std::endl;
-
-	//const float zClip = zFar - zNear;
-	float fovTan = tan(Utils::ToRadians(fovy) / 2.0f);
-
-	/*projection_transformation = glm::mat4x4(1);
-	projection_transformation[0][0] = zNear / (aspect * zNear * fovTan);
-	projection_transformation[1][1] = zNear / zNear * fovTan;
-	projection_transformation[2][2] = -(zFar + zNear) / (zFar - zNear);
-	projection_transformation[2][3] = -(2.0f * zFar * zNear) / (zFar - zNear);
-	projection_transformation[3][2] = -1.0f;*/
-
 	projection_transformation = glm::mat4x4(0);
 	projection_transformation[0][0] = (2 * zNear) / (right - left);
 	projection_transformation[1][1] = (2 * zNear) / (top - bottom);
@@ -331,18 +330,6 @@ void Camera::CalcPerspectiveTrans()
 	projection_transformation[2][1] = (top + bottom) / (top - bottom);
 	projection_transformation[3][2] = (-2 * zFar * zNear) / (zFar - zNear);
 	projection_transformation[2][3] = -1;
-
-	//projection_transformation = glm::mat4x4{
-	//	scale / aspect, 0, 0, 0,
-	//	0, scale, 0, 0,
-	//	0, 0, alpha, -1,
-	//	0, 0, beta, 0
-	//};
-	//std::cout << "perspective trans " << std::endl;
-	//std::cout << glm::to_string(projection_transformation) << std::endl;
-	//projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
-	//projection_transformation = glm::ortho(left, right, bottom, top, zNear, zFar);
-	//projection_transformation = glm::frustum(left, right, bottom, top, zNear, zFar);
 }
 
 glm::mat4x4 Camera::GetViewportTrans(unsigned int width, unsigned int height) const
@@ -364,17 +351,17 @@ glm::mat4x4 Camera::GetViewportTrans(unsigned int width, unsigned int height) co
 	return scaleTrans * translateTran;
 }
 
-const glm::vec4& Camera::getEye() const
+const glm::vec3& Camera::getEye() const
 {
     return Eye;
 }
 
-const glm::vec4& Camera::getAt() const
+const glm::vec3& Camera::getAt() const
 {
     return At;
 }
 
-const glm::vec4& Camera::getUp() const
+const glm::vec3& Camera::getUp() const
 {
     return Up;
 }

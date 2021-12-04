@@ -32,7 +32,7 @@ const float cameraMax = 30.0f, cameraMin = -30.0f;
 const float widthMin = 1.0f, widthMax = 30.0f;
 const float FovMin = -90.0f, FovMax = 0.0f;
 const float AspectMin = 0.25f, AspectMax = 2.0f;
-const float LookAtMax = 10.0f, LookAtMin = -10.0f;
+const float LookAtMax = 3.0f, LookAtMin = -3.0f;
 
 const int ORTHO = 0, PERSPECTIVE = 1;
 
@@ -46,12 +46,12 @@ static const glm::vec3 backgroundColor = clear_color;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
-				 W_KEY_ASCII = int('W'),
-				 A_KEY_ASCII = int('A'),
-				 D_KEY_ASCII = int('D');
+W_KEY_ASCII = int('W'),
+A_KEY_ASCII = int('A'),
+D_KEY_ASCII = int('D');
 
 static const int ZOOM_IN_KEY_ASCII = int('['),
-				 ZOOM_OUT_KEY_ASCII = int(']');
+ZOOM_OUT_KEY_ASCII = int(']');
 
 static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
 static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
@@ -61,10 +61,12 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
-static float eye_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
-static float up_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
-static float at_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
+//static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
+static float ortho_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
+static float perspective_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
+static float eye_array[3][3] = { {0, 0, 0}, {0, 0, 0} , {0, 0, 0} };
+static float at_array[3][3] = { {0, 0, 1}, {0, 0, 1} , {0, 0, 1} };
+static float up_array[3][3] = { {0, 1, 0}, {0, 1, 0} , {0, 1, 0} };
 
 static int cameraMode = ORTHO;
 static float Fovy = -30.0f;
@@ -109,13 +111,17 @@ int main(int argc, char** argv)
 	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
 
 	// Initialize camera controllers
-	for (int i = 0; i < 3; i++) 
+	for (int i = 0; i < 3; i++)
 	{
-		CameraController_array[i][0] = width / SCREEN_ASPECT;
-		CameraController_array[i][1] = height / SCREEN_ASPECT;
-		CameraController_array[i][2] = 500;
+		ortho_array[i][0] = width / SCREEN_ASPECT;
+		ortho_array[i][1] = height / SCREEN_ASPECT;
+		ortho_array[i][2] = 15;
+
+		perspective_array[i][0] = width / SCREEN_ASPECT;
+		perspective_array[i][1] = height / SCREEN_ASPECT;
+		perspective_array[i][2] = 15;
 	}
-	
+
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
@@ -125,7 +131,7 @@ int main(int argc, char** argv)
 	scene.AddCamera(camera1);
 	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();;
 	scene.AddCamera(camera2);
-	
+
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
 	while (!glfwWindowShouldClose(window))
@@ -215,36 +221,36 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		// The key is left (A)
 		else if (io.KeysDown[A_KEY_ASCII])
 		{
-		ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// The key is right (D)
 		else if (io.KeysDown[D_KEY_ASCII])
 		{
-		ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// Zoom in on model
 		else if (io.KeysDown[ZOOM_IN_KEY_ASCII])
 		{
-		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
-		{
-			ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
-		}
-		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+			{
+				ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
+			}
+			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 		// Zoom out on model
 		else if (io.KeysDown[ZOOM_OUT_KEY_ASCII])
 		{
-		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
-		{
-			ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
-		}
-		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+			if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+			{
+				ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
+				ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
+			}
+			scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
 		}
 	}
 
@@ -410,7 +416,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 
 		ImGui::End();
-	
+
 		ImGui::Begin("Camera Control");
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
@@ -435,45 +441,53 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						scene.GetActiveCamera().SetPerspectiveCamera();
 					}
 
-					/* Sliders to change view volume of projection */
-					ImGui::SliderFloat("Camera X", &CameraController_array[i][0], cameraMin, cameraMax);
-					ImGui::SliderFloat("Camera Y", &CameraController_array[i][1], cameraMin, cameraMax);
-					ImGui::SliderFloat("Distance", &CameraController_array[i][2], cameraMin, cameraMax);
+
 
 					if (cameraMode == ORTHO)
-					{
-						//ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
-						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetOrthoViewVolume(-CameraController_array[i][0] / 2, CameraController_array[i][0] / 2,
-							-CameraController_array[i][1] / 2, CameraController_array[i][1] / 2);
+					{
+						/* Sliders to change view volume of projection */
+						ImGui::SliderFloat("Camera X", &ortho_array[i][0], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera Y", &ortho_array[i][1], cameraMin, cameraMax);
+						ImGui::SliderFloat("Distance", &ortho_array[i][2], cameraMin, cameraMax);
+
+						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
+
+						scene.GetActiveCamera().SetDepth(ortho_array[i][2] / 2, -ortho_array[i][2] / 2);
+						scene.GetActiveCamera().SetOrthoViewVolume(ortho_array[i][0] / 2, -ortho_array[i][0] / 2,
+							-ortho_array[i][1] / 2, ortho_array[i][1] / 2);
 					}
 					else if (cameraMode == PERSPECTIVE)
 					{
-						ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
-						ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);
-						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(-CameraController_array[i][0] / 2, CameraController_array[i][0] / 2,
-							-CameraController_array[i][1] / 2, CameraController_array[i][1] / 2);
+						/* Sliders to change view volume of projection */
+						ImGui::SliderFloat("Camera X", &perspective_array[i][0], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera Y", &perspective_array[i][1], cameraMin, cameraMax);
+						ImGui::SliderFloat("Distance", &perspective_array[i][2], cameraMin, cameraMax);
+
+						/*		ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
+								ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);*/
+						scene.GetActiveCamera().SetDepth(perspective_array[i][2] / 2, -perspective_array[i][2] / 2);
+						scene.GetActiveCamera().SetPerspectiveViewVolume(perspective_array[i][0] / 2, -perspective_array[i][0] / 2,
+							-perspective_array[i][1] / 2, perspective_array[i][1] / 2);
 					}
 
-					/*glm::vec4 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);
-					glm::vec4 at(at_array[i][0], at_array[i][1], at_array[i][2], 1);
-					glm::vec4 up(up_array[i][0], up_array[i][1], up_array[i][2], 1);
+					glm::vec3 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
+					glm::vec3 at(at_array[i][0], at_array[i][1], at_array[i][2]);
+					glm::vec3 up(up_array[i][0], up_array[i][1], up_array[i][2]);
 
 					if (ImGui::SliderFloat3("Eye", eye_array[i], LookAtMin, LookAtMax))
 					{
-						eye = glm::vec4(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);
+						eye = glm::vec3(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
 					}
 					if (ImGui::SliderFloat3("At", at_array[i], LookAtMin, LookAtMax))
 					{
-						at = glm::vec4(at_array[i][0], at_array[i][1], at_array[i][2], 1);
+						at = glm::vec3(at_array[i][0], at_array[i][1], at_array[i][2]);
 					}
 					if (ImGui::SliderFloat3("Up", up_array[i], LookAtMin, LookAtMax))
 					{
-						up = glm::vec4(up_array[i][0], up_array[i][1], up_array[i][2], 1);
+						up = glm::vec3(up_array[i][0], up_array[i][1], up_array[i][2]);
 					}
-					scene.GetActiveCamera().SetCameraLookAt(eye, at, up);*/
+					scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 
 					ImGui::EndTabItem();
 				}
