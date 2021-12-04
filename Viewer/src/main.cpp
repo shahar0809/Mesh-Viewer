@@ -442,7 +442,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 					if (cameraMode == ORTHO)
 					{
-						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
+						//ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
 						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
 						scene.GetActiveCamera().SetOrthoViewVolume(-CameraController_array[i][0] / 2, CameraController_array[i][0] / 2,
@@ -453,7 +453,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
 						ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);
 						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(-Fovy, aspect);
+						scene.GetActiveCamera().SetPerspectiveViewVolume(-CameraController_array[i][0] / 2, CameraController_array[i][0] / 2,
+							-CameraController_array[i][1] / 2, CameraController_array[i][1] / 2);
 					}
 
 					/*glm::vec4 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);

@@ -270,12 +270,21 @@ void Camera::SetDepth(float nearParameter, float farParameter)
 	this->zFar = farParameter;
 }
 
-void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
+void Camera::SetPerspectiveViewVolume(float left, float right, float bottom, float top)
 {
-	this->fovy = fovy;
-	this->aspect = aspect;
+	this->right = right;
+	this->left = left;
+	this->top = top;
+	this->bottom = bottom;
 	CalcPerspectiveTrans();
 }
+
+//void Camera::SetPerspectiveViewVolume(float fovy, float aspect)
+//{
+//	this->fovy = fovy;
+//	this->aspect = aspect;
+//	CalcPerspectiveTrans();
+//}
 
 void Camera::CalcOrthoTrans()
 {
@@ -306,12 +315,22 @@ void Camera::CalcPerspectiveTrans()
 	//const float zClip = zFar - zNear;
 	float fovTan = tan(Utils::ToRadians(fovy) / 2.0f);
 
-	projection_transformation = glm::mat4x4(1);
+	/*projection_transformation = glm::mat4x4(1);
 	projection_transformation[0][0] = zNear / (aspect * zNear * fovTan);
 	projection_transformation[1][1] = zNear / zNear * fovTan;
 	projection_transformation[2][2] = -(zFar + zNear) / (zFar - zNear);
 	projection_transformation[2][3] = -(2.0f * zFar * zNear) / (zFar - zNear);
-	projection_transformation[3][2] = -1.0f;
+	projection_transformation[3][2] = -1.0f;*/
+
+	projection_transformation = glm::mat4x4(0);
+	projection_transformation[0][0] = (2 * zNear) / (right - left);
+	projection_transformation[1][1] = (2 * zNear) / (top - bottom);
+	projection_transformation[2][2] = -(zFar + zNear) / (zFar - zNear);
+
+	projection_transformation[2][0] = (right + left) / (right - left);
+	projection_transformation[2][1] = (top + bottom) / (top - bottom);
+	projection_transformation[3][2] = (-2 * zFar * zNear) / (zFar - zNear);
+	projection_transformation[2][3] = -1;
 
 	//projection_transformation = glm::mat4x4{
 	//	scale / aspect, 0, 0, 0,
@@ -323,7 +342,7 @@ void Camera::CalcPerspectiveTrans()
 	//std::cout << glm::to_string(projection_transformation) << std::endl;
 	//projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
 	//projection_transformation = glm::ortho(left, right, bottom, top, zNear, zFar);
-
+	//projection_transformation = glm::frustum(left, right, bottom, top, zNear, zFar);
 }
 
 glm::mat4x4 Camera::GetViewportTrans(unsigned int width, unsigned int height) const

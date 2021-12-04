@@ -28,7 +28,8 @@ public:
 
 	void SetOrthoViewVolume(float left, float right, float bottom, float top);
 	void SetDepth(float nearParameter, float farParameter);
-	void SetPerspectiveViewVolume(float fovy, float aspect);
+	void SetPerspectiveViewVolume(float left, float right, float bottom, float top);
+	//void SetPerspectiveViewVolume(float fovy, float aspect);
 
 	void SetOrthoCamera();
 	void SetPerspectiveCamera();

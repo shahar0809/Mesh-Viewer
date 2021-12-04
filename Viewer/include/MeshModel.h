@@ -49,6 +49,7 @@ public:
 	void SetWorldRotate(double rotateX, double rotateY, double rotateZ);
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
+	glm::mat4x4 GetWorldTransform() const;
 	glm::mat4x4 GetTransformation() const;
 
 	void InitLocalFrame();
