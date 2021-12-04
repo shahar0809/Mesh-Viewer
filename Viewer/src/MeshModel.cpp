@@ -326,6 +326,7 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	WorldRotateVal.y = rotateY;
 	WorldRotateVal.z = rotateZ;
 
+	std::cout << rotateX << std::endl;
 	double radiansValX = ToRadians(WorldRotateVal.x);
 
 	RotateWorldX[1][1] = cos(radiansValX);
@@ -348,6 +349,7 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;
+	std::cout << glm::to_string(RotateWorld) << std::endl;
 }
 
 void MeshModel::SetWorldTranslate(double transX, double transY, double transZ)

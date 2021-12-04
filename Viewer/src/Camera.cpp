@@ -279,7 +279,6 @@ void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const gl
 	//chack that z translation is no 0 (can't divide by zero)
 	if (view_transformation[3][2] == 0)
 		view_transformation[3][2] = -10;
-
 }
 
 void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top)

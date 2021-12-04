@@ -12,6 +12,7 @@ class Renderer
 {
 public:
 	Renderer(int viewportWidth, int viewportHeight);
+	void SetViewport(const int width, const int height);
 	virtual ~Renderer();
 	void Render(const Scene& scene);
 	void SwapBuffers();

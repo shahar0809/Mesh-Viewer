@@ -72,6 +72,7 @@ static int cameraMode = ORTHO;
 static float Fovy = -30.0f;
 static float aspect = 1;
 static float OrthoWidth = 1;
+int windowWidth = 1280, windowHeight = 720;
 
 /**
  * Function declarations
@@ -96,7 +97,6 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 int main(int argc, char** argv)
 {
 	const std::string base_path = "C: ../../../Data/";
-	int windowWidth = 1280, windowHeight = 720;
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -192,6 +192,15 @@ void StartFrame()
 	ImGui::NewFrame();
 }
 
+void ChangeFrameSize(int width, int height, Renderer& renderer)
+{
+	windowWidth = width;
+	windowHeight = height;
+
+	glViewport(0, 0, windowWidth, windowHeight);
+	renderer.SetViewport(windowWidth, windowHeight);
+}
+
 void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& io)
 {
 	ImGui::Render();
@@ -201,7 +210,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 
 	if (frameBufferWidth != renderer.GetViewportWidth() || frameBufferHeight != renderer.GetViewportHeight())
 	{
-		// TODO: Set new aspect ratio
+		ChangeFrameSize(frameBufferWidth, frameBufferHeight, renderer);
 	}
 
 	if (!io.WantCaptureKeyboard)

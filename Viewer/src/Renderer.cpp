@@ -482,3 +482,10 @@ int Renderer::GetViewportHeight() const
 {
 	return viewport_height;
 }
+
+void Renderer::SetViewport(int width, int height)
+{
+	viewport_height = height;
+	viewport_width = width;
+	CreateBuffers(width, height);
+}
