@@ -419,20 +419,24 @@ const glm::vec3& MeshModel::GetAxisZ() const
 void MeshModel::InitLocalFrame()
 {
 	auto minMax = GetMinMax(vertices);
+	
+	// ((maxX - minxX) / 2, (maxY - minxX) / 2, (maxZ - minxZ) / 2)
+	Origin = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2, 
+		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
+		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-	Origin = glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2, 
+	AxisX = glm::vec3(std::get<0>(minMax.first),
 		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
 		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
 
-	AxisX = glm::vec3(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first));
 
-	AxisY = glm::vec3(std::get<0>(minMax.second),
-		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
+	AxisY = glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2,
+		std::get<1>(minMax.first),
 		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
 
 	AxisZ = glm::vec3((std::get<0>(minMax.second) - std::get<0>(minMax.first)) / 2,
-		std::get<1>(minMax.second),
-		(std::get<2>(minMax.second) - std::get<2>(minMax.first)) / 2);
+		(std::get<1>(minMax.second) - std::get<1>(minMax.first)) / 2,
+		std::get<2>(minMax.first));
 }
 
 void MeshModel::InitverticesFacesNeighbors()
@@ -481,9 +485,6 @@ glm::vec3 MeshModel::GetFaceCenter(const Face& face) const
 			p2 = GetVertice(face.GetVertexIndex(1) - 1),
 			p3 = GetVertice(face.GetVertexIndex(2) - 1);
 
-	std::cout << "center" << std::endl;
-	std::cout << glm::to_string(glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3)) << std::endl;
-
 	return glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3);
 }
 
@@ -502,14 +503,6 @@ glm::vec3 MeshModel::GetFaceCenter(const Face& face) const
 std::vector<glm::vec3> MeshModel::getBoundingBox() const
 {
 	auto minMax = GetMinMax(vertices);
-	std::cout << "========================\nmin max" << std::endl;
-	std::cout << std::get<0>(minMax.first) << std::endl;
-	std::cout << std::get<1>(minMax.first) << std::endl;
-	std::cout << std::get<2>(minMax.first) << std::endl;
-	std::cout << std::get<0>(minMax.second) << std::endl;
-	std::cout << std::get<1>(minMax.second) << std::endl;
-	std::cout << std::get<2>(minMax.second) << std::endl;
-
 	std::vector< glm::vec3> box;
 
 	// (minX, minY, minZ)

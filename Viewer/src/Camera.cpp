@@ -303,6 +303,15 @@ void Camera::CalcPerspectiveTrans()
 	//std::cout << "alpha " << alpha << std::endl;
 	//std::cout << "beta " << beta << std::endl;
 
+	//const float zClip = zFar - zNear;
+	float fovTan = tan(Utils::ToRadians(fovy) / 2.0f);
+
+	projection_transformation = glm::mat4x4(1);
+	projection_transformation[0][0] = zNear / (aspect * zNear * fovTan);
+	projection_transformation[1][1] = zNear / zNear * fovTan;
+	projection_transformation[2][2] = -(zFar + zNear) / (zFar - zNear);
+	projection_transformation[2][3] = -(2.0f * zFar * zNear) / (zFar - zNear);
+	projection_transformation[3][2] = -1.0f;
 
 	//projection_transformation = glm::mat4x4{
 	//	scale / aspect, 0, 0, 0,
@@ -312,7 +321,7 @@ void Camera::CalcPerspectiveTrans()
 	//};
 	//std::cout << "perspective trans " << std::endl;
 	//std::cout << glm::to_string(projection_transformation) << std::endl;
-	projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
+	//projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
 	//projection_transformation = glm::ortho(left, right, bottom, top, zNear, zFar);
 
 }

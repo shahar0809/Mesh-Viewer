@@ -45,8 +45,6 @@ std::shared_ptr<MeshModel> Utils::LoadMeshModel(const std::string& filePath)
 		{
 			// Print vertices when loading mesh model
 			glm::vec3 vertice = Utils::Vec3fFromStream(issLine);
-			std::cout << "V: (" << vertice.x << "," << vertice.y << "," << vertice.z << ")" << std::endl;
-
 			vertices.push_back(vertice);
 		}
 		else if (lineType == "vn")
@@ -60,8 +58,6 @@ std::shared_ptr<MeshModel> Utils::LoadMeshModel(const std::string& filePath)
 		else if (lineType == "f")
 		{
 			Face face(issLine);
-			std::cout << "F: (" << face.GetVertexIndex(0) << "," << face.GetVertexIndex(1) 
-				<< "," << face.GetVertexIndex(2) << ")" << std::endl;
 
 			faces.push_back(face);
 		}

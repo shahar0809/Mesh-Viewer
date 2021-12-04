@@ -60,7 +60,9 @@ private:
 
 	// View volume
 	float zNear = 0, zFar = 0;
+	// Ortho
 	float left = 0, right = 0, top = 0, bottom = 0;
+	// Perspective
 	float fovy, aspect;
 
 	// Attributes to keep translate and rotation values

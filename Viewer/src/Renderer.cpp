@@ -160,25 +160,32 @@ void Renderer::DrawLineSanityCheck()
 void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 {
 	std::cout << "Model Frame " << std::endl;
-	glm::mat4x4 viewport_trans = camera.GetViewportTrans(viewport_width, viewport_height);
 
-	glm::vec3 ModelOrigin = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetOrigin()));
-	glm::vec3 AxisX = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetAxisX()));
-	glm::vec3 AxisY = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetAxisY()));
-	glm::vec3 AxisZ = Utils::FromHomogCoords(viewport_trans * Utils::ToHomogCoords(model.GetAxisZ()));
+	glm::mat4x4 trans = camera.GetProjectionTransformation() * glm::inverse(camera.GetViewTransformation());
+
+	glm::vec3 ModelOrigin = TransVector(model.GetOrigin(), model, camera);
+	glm::vec3 AxisX = TransVector(model.GetAxisX(), model, camera);
+	glm::vec3 AxisY = TransVector(model.GetAxisY(), model, camera);
+	glm::vec3 AxisZ = TransVector(model.GetAxisZ(), model, camera);
 
 	//glm::vec3 AxisX = camera.GetViewportTrans(model.GetAxisX(), GetViewportWidth(), GetViewportHeight());
 	//glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
 	//glm::vec3 AxisZ = camera.GetViewportTrans(model.GetAxisZ(), GetViewportWidth(), GetViewportHeight());
+
+
 
 	//std::cout << glm::to_string(ModelOrigin) << std::endl;
 	//std::cout << glm::to_string(AxisX) << std::endl;
 	//std::cout << glm::to_string(AxisY) << std::endl;
 	//std::cout << glm::to_string(AxisZ) << std::endl;
 
-	DrawLine(ModelOrigin, AxisX, { 0, 0, 0 });
+	DrawLine(model.GetOrigin(), model.GetAxisX(), { 0, 0, 0 });
+	DrawLine(model.GetOrigin(), model.GetAxisY(), { 0, 0, 0 });
+	DrawLine(model.GetOrigin(), model.GetAxisZ(), { 0, 0, 0 });
+
+	/*DrawLine(ModelOrigin, AxisX, { 0, 0, 0 });
 	DrawLine(ModelOrigin, AxisY, { 0, 0, 0 });
-	DrawLine(ModelOrigin, AxisZ, { 0, 0, 0 });
+	DrawLine(ModelOrigin, AxisZ, { 0, 0, 0 });*/
 }
 
 void Renderer::DrawWorldFrame()
@@ -224,7 +231,7 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
-	DrawModelFrame(model, camera);
+	/*DrawModelFrame(model, camera);*/
 
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
@@ -304,16 +311,16 @@ glm::vec3 Renderer::TransVector(const glm::vec3& vec, const MeshModel& model, co
 	glm::mat4x4 transform = camera.GetViewportTrans(viewport_width, viewport_height) * camera.GetProjectionTransformation()
 		* glm::inverse(camera.GetViewTransformation()) * model.GetTransformation();
 
-	std::cout << "transform " << std::endl;
+	/*std::cout << "transform " << std::endl;
 	std::cout << glm::to_string(transform) << std::endl;
 
 	std::cout << "vec " << std::endl;
-	std::cout << glm::to_string(vec) << std::endl;
+	std::cout << glm::to_string(vec) << std::endl;*/
 
 	glm::vec4 res = transform * Utils::ToHomogCoords(vec);
 
-	std::cout << "res " << std::endl;
-	std::cout << glm::to_string(res) << std::endl;
+	//std::cout << "res " << std::endl;
+	//std::cout << glm::to_string(res) << std::endl;
 
 	return Utils::FromHomogCoords(res);
 }

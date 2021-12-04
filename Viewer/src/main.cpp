@@ -30,8 +30,9 @@ const float translateMax = 50.0f, translateMin = -50.0f;
 const float rotateMax = 360.0f, rotateMin = 0;
 const float cameraMax = 30.0f, cameraMin = -30.0f;
 const float widthMin = 1.0f, widthMax = 30.0f;
-const float FovMin = 0.0f, FovMax = 90.0f;
-const float AspectMin = 0.0f, AspectMax = 3.0f;
+const float FovMin = -90.0f, FovMax = 0.0f;
+const float AspectMin = 0.25f, AspectMax = 2.0f;
+const float LookAtMax = 10.0f, LookAtMin = -10.0f;
 
 const int ORTHO = 0, PERSPECTIVE = 1;
 
@@ -60,10 +61,13 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraController_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
+static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
+static float eye_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
+static float up_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
+static float at_array[3][3] = { {1, 1, 1}, {1, 1, 1} , {1, 1, 1} };
 
 static int cameraMode = ORTHO;
-static float Fovy = 30;
+static float Fovy = -30.0f;
 static float aspect = 1;
 static float OrthoWidth = 1;
 
@@ -109,7 +113,7 @@ int main(int argc, char** argv)
 	{
 		CameraController_array[i][0] = width / SCREEN_ASPECT;
 		CameraController_array[i][1] = height / SCREEN_ASPECT;
-		CameraController_array[i][2] = width / SCREEN_ASPECT;
+		CameraController_array[i][2] = 500;
 	}
 	
 	/* Load a few models */
@@ -337,7 +341,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		{
 			for (int i = 0; i < numberOfModels; i++)
 			{
-				string str = "hhh";
+				//string str = scene.GetActiveModel().GetModelName();
+				string str = "Model " + std::to_string(i);
 				char* model = &str[0];
 
 				if (ImGui::BeginTabItem(model))
@@ -437,7 +442,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 					if (cameraMode == ORTHO)
 					{
-						std::cout << "ortho mode " << std::endl;
 						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
 						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
@@ -448,10 +452,27 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					{
 						ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
 						ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);
-						std::cout << "perspective mode " << std::endl;
 						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
 						scene.GetActiveCamera().SetPerspectiveViewVolume(-Fovy, aspect);
 					}
+
+					/*glm::vec4 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);
+					glm::vec4 at(at_array[i][0], at_array[i][1], at_array[i][2], 1);
+					glm::vec4 up(up_array[i][0], up_array[i][1], up_array[i][2], 1);
+
+					if (ImGui::SliderFloat3("Eye", eye_array[i], LookAtMin, LookAtMax))
+					{
+						eye = glm::vec4(eye_array[i][0], eye_array[i][1], eye_array[i][2], 1);
+					}
+					if (ImGui::SliderFloat3("At", at_array[i], LookAtMin, LookAtMax))
+					{
+						at = glm::vec4(at_array[i][0], at_array[i][1], at_array[i][2], 1);
+					}
+					if (ImGui::SliderFloat3("Up", up_array[i], LookAtMin, LookAtMax))
+					{
+						up = glm::vec4(up_array[i][0], up_array[i][1], up_array[i][2], 1);
+					}
+					scene.GetActiveCamera().SetCameraLookAt(eye, at, up);*/
 
 					ImGui::EndTabItem();
 				}
