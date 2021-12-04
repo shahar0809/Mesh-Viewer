@@ -159,8 +159,6 @@ void Renderer::DrawLineSanityCheck()
 
 void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 {
-	std::cout << "Model Frame " << std::endl;
-
 	glm::mat4x4 trans = camera.GetProjectionTransformation() * glm::inverse(camera.GetViewTransformation());
 
 	glm::vec3 ModelOrigin = TransVector(model.GetOrigin(), model, camera);
@@ -168,35 +166,32 @@ void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 	glm::vec3 AxisY = TransVector(model.GetAxisY(), model, camera);
 	glm::vec3 AxisZ = TransVector(model.GetAxisZ(), model, camera);
 
-	//glm::vec3 AxisX = camera.GetViewportTrans(model.GetAxisX(), GetViewportWidth(), GetViewportHeight());
-	//glm::vec3 AxisY = camera.GetViewportTrans(model.GetAxisY(), GetViewportWidth(), GetViewportHeight());
-	//glm::vec3 AxisZ = camera.GetViewportTrans(model.GetAxisZ(), GetViewportWidth(), GetViewportHeight());
-
-
-
-	//std::cout << glm::to_string(ModelOrigin) << std::endl;
-	//std::cout << glm::to_string(AxisX) << std::endl;
-	//std::cout << glm::to_string(AxisY) << std::endl;
-	//std::cout << glm::to_string(AxisZ) << std::endl;
-
-	DrawLine(model.GetOrigin(), model.GetAxisX(), { 0, 0, 0 });
-	DrawLine(model.GetOrigin(), model.GetAxisY(), { 0, 0, 0 });
-	DrawLine(model.GetOrigin(), model.GetAxisZ(), { 0, 0, 0 });
-
-	/*DrawLine(ModelOrigin, AxisX, { 0, 0, 0 });
-	DrawLine(ModelOrigin, AxisY, { 0, 0, 0 });
-	DrawLine(ModelOrigin, AxisZ, { 0, 0, 0 });*/
+	DrawLine(ModelOrigin, AxisX, { 1, 0, 0 }); // X - Red
+	DrawLine(ModelOrigin, AxisY, { 0, 1, 0 }); // Y - Green
+	DrawLine(ModelOrigin, AxisZ, { 0, 0, 1 }); // Z - Blue
 }
 
-void Renderer::DrawWorldFrame()
+void Renderer::DrawWorldFrame(const Camera& camera)
 {
-	glm::vec3 WorldOrigin(GetViewportWidth() / 2, GetViewportHeight() / 2, 1);
+	/*glm::vec3 WorldOrigin(GetViewportWidth() / 2, GetViewportHeight() / 2, 1);
 	glm::vec3 AxisX(0, 0, 1);
 	glm::vec3 AxisY(GetViewportWidth(), GetViewportHeight() / 2, 1);
 	glm::vec3 AxisZ(GetViewportWidth() / 2, GetViewportHeight(), 1);
 
 	DrawLine(WorldOrigin, AxisX, { 1, 0, 0 });
 	DrawLine(WorldOrigin, AxisY, { 1, 0, 0 });
+	DrawLine(WorldOrigin, AxisZ, { 1, 0, 0 });*/
+
+	glm::mat4x4 transform = camera.GetProjectionTransformation()
+		* glm::inverse(camera.GetViewTransformation());
+
+	glm::vec3 WorldOrigin(viewport_width / 2, viewport_height / 2, 0);
+	glm::vec3 AxisX(viewport_width, viewport_height / 2, 150);
+	glm::vec3 AxisY(viewport_width / 2, viewport_height, 150);
+	glm::vec3 AxisZ(viewport_width / 2, viewport_height / 2, 300);
+
+	DrawLine(WorldOrigin, AxisX, { 1, 0, 0 });
+	DrawLine(WorldOrigin, AxisY, { 0, 1, 0 });
 	DrawLine(WorldOrigin, AxisZ, { 1, 0, 0 });
 }
 
@@ -472,7 +467,7 @@ void Renderer::Render(const Scene& scene)
 			DrawModel(currModel, camera);
 	}
 
-	DrawWorldFrame();
+	DrawWorldFrame(camera);
 }
 
 int Renderer::GetViewportWidth() const
