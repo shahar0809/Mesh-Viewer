@@ -32,7 +32,7 @@ const float cameraMax = 30.0f, cameraMin = -30.0f;
 const float widthMin = 1.0f, widthMax = 30.0f;
 const float FovMin = -90.0f, FovMax = 0.0f;
 const float AspectMin = 0.25f, AspectMax = 2.0f;
-const float LookAtMax = 10.0f, LookAtMin = -10.0f;
+const float LookAtMax = 3.0f, LookAtMin = -3.0f;
 
 const int ORTHO = 0, PERSPECTIVE = 1;
 
@@ -61,7 +61,9 @@ static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1
 static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
 
-static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
+//static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
+static float ortho_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
+static float perspective_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
 static float eye_array[3][3] = { {0, 0, 0}, {0, 0, 0} , {0, 0, 0} };
 static float at_array[3][3] = { {0, 0, 1}, {0, 0, 1} , {0, 0, 1} };
 static float up_array[3][3] = { {0, 1, 0}, {0, 1, 0} , {0, 1, 0} };
@@ -111,9 +113,13 @@ int main(int argc, char** argv)
 	// Initialize camera controllers
 	for (int i = 0; i < 3; i++) 
 	{
-		CameraController_array[i][0] = width / SCREEN_ASPECT;
-		CameraController_array[i][1] = height / SCREEN_ASPECT;
-		CameraController_array[i][2] = 500;
+		ortho_array[i][0] = width / SCREEN_ASPECT;
+		ortho_array[i][1] = height / SCREEN_ASPECT;
+		ortho_array[i][2] = 15;
+
+		perspective_array[i][0] = width / SCREEN_ASPECT;
+		perspective_array[i][1] = height / SCREEN_ASPECT;
+		perspective_array[i][2] = 15;
 	}
 	
 	/* Load a few models */
@@ -435,25 +441,34 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						scene.GetActiveCamera().SetPerspectiveCamera();
 					}
 
-					/* Sliders to change view volume of projection */
-					ImGui::SliderFloat("Camera X", &CameraController_array[i][0], cameraMin, cameraMax);
-					ImGui::SliderFloat("Camera Y", &CameraController_array[i][1], cameraMin, cameraMax);
-					ImGui::SliderFloat("Distance", &CameraController_array[i][2], cameraMin, cameraMax);
+					
 
 					if (cameraMode == ORTHO)
+						
 					{
+						/* Sliders to change view volume of projection */
+						ImGui::SliderFloat("Camera X", &ortho_array[i][0], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera Y", &ortho_array[i][1], cameraMin, cameraMax);
+						ImGui::SliderFloat("Distance", &ortho_array[i][2], cameraMin, cameraMax);
+						
 						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
-						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetOrthoViewVolume(-CameraController_array[i][0] / 2, CameraController_array[i][0] / 2,
-							-CameraController_array[i][1] / 2, CameraController_array[i][1] / 2);
+						scene.GetActiveCamera().SetDepth(ortho_array[i][2] / 2, -ortho_array[i][2] / 2);
+						scene.GetActiveCamera().SetOrthoViewVolume(-ortho_array[i][0] / 2, ortho_array[i][0] / 2,
+							-ortho_array[i][1] / 2, ortho_array[i][1] / 2);
 					}
 					else if (cameraMode == PERSPECTIVE)
 					{
-						ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
-						ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);
-						scene.GetActiveCamera().SetDepth(CameraController_array[i][2] / 2, -CameraController_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(-Fovy, aspect);
+						/* Sliders to change view volume of projection */
+						ImGui::SliderFloat("Camera X", &perspective_array[i][0], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera Y", &perspective_array[i][1], cameraMin, cameraMax);
+						ImGui::SliderFloat("Distance", &perspective_array[i][2], cameraMin, cameraMax);
+
+				/*		ImGui::SliderFloat("FOV", &Fovy, FovMin, FovMax);
+						ImGui::SliderFloat("Aspect", &aspect, AspectMin, AspectMax);*/
+						scene.GetActiveCamera().SetDepth(perspective_array[i][2] / 2, -perspective_array[i][2] / 2);
+						scene.GetActiveCamera().SetPerspectiveViewVolume(-perspective_array[i][0] / 2, perspective_array[i][0] / 2,
+							-perspective_array[i][1] / 2, perspective_array[i][1] / 2);
 					}
 
 					glm::vec3 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
