@@ -1,10 +1,10 @@
 # Assignment 1 - Part 3
 *Shahar Tefler & Iris Berger*
 
-### 1 - Orthographic Projection
+## 1 - Orthographic Projection
 We removed the centring trick implemented in the previous assignment, and used viewport transformation in order to place the model at the center of the screen.
 
-![Ortho Camera Control](part1_images/ortho_camera_control.png)
+![Ortho Camera Control](part3_images/ortho_camera_control.png)
 
 - The `CameraX` is the `left` and `right` parameters (symetrically).
 - The `CameraY` is the `bottom` and `top` parameters (symetrically).
@@ -16,7 +16,10 @@ Let's see the result using different view volumes:
 
 ![Vv2 Ortho](part3_images/vv2_ortho.png)
 
-### 3 - Axes of model and world
+## 2 - Window adjusting
+![World Trans](part3_images/resize.gif)
+
+## 3 - Axes of model and world
 - *World Axes*
 
     The origin is at the center: `(width / 2, height / 2)`
@@ -60,13 +63,134 @@ Let's see the result using different view volumes:
 			(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
 			std::get<2>(minMax.second));
 	```
-Transforming in world frame:
+	Transforming in world frame:
 
-![World Trans](part3_images/world_trans.gif)
+	![World Trans](part3_images/world_trans.gif)
 
-Transforming in model frame:
+	Transforming in model frame:
 
-![World Trans](part3_images/model_trans.gif)
+	![World Trans](part3_images/model_trans.gif)
+
+## 4 - Non-Commuting transformations
+
+We used these transformations:
+- `T1`: `ScaleX` by `2.747`
+- `T2`: `TranslateX` by `-3.846`
+
+When applying `T1` in model frame, and then `T2` in world frame:
+
+![Scale Translate](part3_images/scale_translate.jpeg)
+
+When applying `T2` in model frame, and then `T1` in world frame:
+
+![Scale Translate](part3_images/translate_scale.jpeg)
+
+## 5 - Bounding Box and Normals
+
+### Bounding Box
+In order to draw the model's bounding box, we calculated the minimum and maximum
+values of each axis in the model.
+
+Then, we can easily draw the box:
+1. `(minX, minY, minZ)`
+2. `(minX, minY, maxZ)`
+3. `(minX, maxY, minZ)`
+4. `(minX, maxY, maxZ)`
+5. `(maxX, minY, minZ)`
+6. `(maxX, minY, maxZ)`
+7. `(maxX, maxY, minZ)`
+8. `(maxX, maxY, maxZ)`
+
+![Bounding Box](part3_images/bbox.gif)
+
+### Face Normals
+We calculated the center of each face:
+```cpp
+glm::vec3 p1 = GetVertice(face.GetVertexIndex(0) - 1),
+		p2 = GetVertice(face.GetVertexIndex(1) - 1),
+		p3 = GetVertice(face.GetVertexIndex(2) - 1);
+
+return glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3);
+```
+
+And then we calculated the vector that is perpendicular to the face at the center point:
+```cpp
+glm::vec3 point1 = GetVertice(GetFace(index).GetVertexIndex(1) - 1) - GetVertice(GetFace(index).GetVertexIndex(0) - 1);
+glm::vec3 point2 = GetVertice(GetFace(index).GetVertexIndex(2) - 1) - GetVertice(GetFace(index).GetVertexIndex(0) - 1);
+glm::vec3 normal = glm::normalize(glm::cross(point1, point2));
+```
+Finally, we draw a line between those points.
+
+![World Trans](part3_images/face_norm.gif)
+
+### Vertices Normals
+We simply draw a line between each vertex and its normal on each face:
+```cpp
+for (int i = 0; i < model.GetFacesCount(); i++)
+{
+	Face currFace = model.GetFace(i);
+
+	for (int j = 0; j < 3; j++)
+	{
+		glm::vec3 vertex = model.GetVertice(currFace.GetVertexIndex(j) - 1);
+		glm::vec3 normal = model.GetNormal(currFace.GetNormalIndex(j) - 1) + vertex;
+		DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.VerticsNormalsColor);
+	}
+}
+```
+![World Trans](part3_images/vertex_norm.gif)
+
+## 6 - Perspective Projection
+We implemented a perspective projection using the normalized view volume matrix:
+
+![Canon Perspective](part3_images/canon_perspective.png)
+
+Let's compare the projections:
+
+**Orthographic projection**:
+
+![Ortho Demo](part3_images/ortho_demo.png)
+
+**Perspective projection**:
+
+![Pers Demo](part3_images/pers_demo.png)
+
+## 7 - Zoom and Distance
+
+Distance:
+
+![Zoom](part3_images/zoom.png)
+
+Frustum:
+
+![Frustum](part3_images/frustum.png)
+
+## 8 - World Frame VS Camera Frame
+**Camera Frame**
 
 
+## 9 - Set Camera position
 
+![Set Eye](part3_images/set_eye.jpeg)
+
+## 11 - Multiple models and cameras
+![Multi](part3_images/multi.png)
+
+## 13 - Additional features
+
+We added the option to choose colors for:
+- Model
+- Bounding Box
+- Faces Normals
+- Vertices Normals
+
+![Coloers Menu](part3_images/coloers_menu.png)
+
+In addition, we added checkboxes to toggle the following:
+- Show model on screen
+- Model Frame axes
+- Normlas per face
+- Normals per vertex
+- Bounding box
+
+![Checkbox](part3_images/checkbox.png)
