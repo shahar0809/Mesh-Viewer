@@ -186,15 +186,32 @@ Frustum:
 ![Frustum](part3_images/frustum.png)
 
 ## 8 - World Frame VS Camera Frame
-**Camera Frame**
-
+## Camera Frame
+![Camera](part3_images/camera_frame.jpeg)
+## World Frame
+![World](part3_images/world_frame.jpeg)
 
 ## 9 - Set Camera position
 
 ![Set Eye](part3_images/set_eye.jpeg)
 
+## 10 - Incremental tranformation
+We added keyboard control that increments the camera when pressing `'U'`
+
+![Inc](part3_images/inc.gif)
+
 ## 11 - Multiple models and cameras
 ![Multi](part3_images/multi.png)
+
+## 12 - GUI
+### Color Menu:
+![Color Menu](part3_images/color_menu.png)
+
+### Camera Control:
+![Camera Control](part3_images/camera_control.png)
+
+### Model Control
+![Model Control](part3_images/model_control.png)
 
 ## 13 - Additional features
 
@@ -214,3 +231,6 @@ In addition, we added checkboxes to toggle the following:
 - Bounding box
 
 ![Checkbox](part3_images/checkbox.png)
+
+## The E.N.D
+![End](part1_images/happy_gif.gif)
