@@ -50,6 +50,7 @@ public:
 	void SetWorldTranslate(double transX, double transY, double transZ);
 
 	glm::mat4x4 GetTransformation() const;
+	glm::mat4x4 GetWorldTransformation() const;
 
 	void InitLocalFrame();
 	void InitverticesFacesNeighbors();

@@ -16,60 +16,80 @@ Let's see the result using different view volumes:
 
 ![Vv2 Ortho](part3_images/vv2_ortho.png)
 
-## 2 - Window adjusting
+## 2 - Window Adjustment
+We added a function that updates the window size in `Renderer` when changed:
+```cpp
+void ChangeFrameSize(int width, int height, Renderer& renderer)
+{
+	windowWidth = width;
+	windowHeight = height;
+
+	glViewport(0, 0, windowWidth, windowHeight);
+	renderer.SetViewport(windowWidth, windowHeight);
+}
+```
+
+And now, the mesh viewer changes according to screen size.
+
 ![World Trans](part3_images/resize.gif)
 
 ## 3 - Axes of model and world
-- *World Axes*
+### World Axes
 
-    The origin is at the center: `(width / 2, height / 2)`
+We drew the origin and the 3 axes:
+- `Origin` is at the center: `(width / 2, height / 2, depth / 2)`
+- `AxisX` has 2 enpoints: 
+  - `(0, height / 2, depth / 2)`
+  - `(width, height / 2, depth / 2)`
+- `AxisY` has 2 enpoints: 
+  - `(width / 2, height, depth / 2)`
+  - `(width / 2, 0, depth / 2)`
+- `AxisZ` has 2 enpoints: 
+  - `(width / 2, height / 2, 0)`
+  - `(width / 2, height / 2, depth)`
 
-    The `AxisX` has 2 enpoints: 0, width
-    So does `AxisY` and `AxisZ`
+![World Axes](part3_images/world_axes.png)
 
-    ![World Axes](part3_images/world_axes.png)
-
-- *Model Axes*
+### Model Axes 
     
-    We defined each model four points to describe the local frame:
-    
-    ```cpp
-    // Keep the frame of the model
-	glm::vec3 Origin, AxisX, AxisY, AxisZ;
-    ```
+We defined each model four points to describe the local frame:
+```cpp
+// Keep the frame of the model
+glm::vec3 Origin, AxisX, AxisY, AxisZ;
+```
 
-    To draw the frame of the model, we calculates the center of the model by getting the average on each axis,
-	and calculate end points of each axis.
-	```cpp
-	auto minMax = GetMinMax(vertices);
+To draw the frame of the model, we calculates the center of the model by getting the average on each axis,
+and calculate end points of each axis.
+```cpp
+auto minMax = GetMinMax(vertices);
 	
-		// ((maxX - minxX) / 2, (maxY - minxX) / 2, (maxZ - minxZ) / 2)
-		Origin = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2, 
-			(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
-			(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
+	// ((maxX - minxX) / 2, (maxY - minxX) / 2, (maxZ - minxZ) / 2)
+	Origin = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2, 
+		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
+		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-		// (maxX, (maxY - minxX) / 2, (maxZ - minxZ) / 2)
-		AxisX = glm::vec3(std::get<0>(minMax.second),
-			(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
-			(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
+	// (maxX, (maxY - minxX) / 2, (maxZ - minxZ) / 2)
+	AxisX = glm::vec3(std::get<0>(minMax.second),
+		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
+		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-		// ((maxX - minxX) / 2, maxY, (maxZ - minxZ) / 2)
-		AxisY = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
-			std::get<1>(minMax.second),
-			(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
+	// ((maxX - minxX) / 2, maxY, (maxZ - minxZ) / 2)
+	AxisY = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
+		std::get<1>(minMax.second),
+		(std::get<2>(minMax.second) + std::get<2>(minMax.first)) / 2);
 
-		// ((maxX - minxX) / 2, (maxY - minxX) / 2, maxZ)
-		AxisZ = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
-			(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
-			std::get<2>(minMax.second));
-	```
-	Transforming in world frame:
+	// ((maxX - minxX) / 2, (maxY - minxX) / 2, maxZ)
+	AxisZ = glm::vec3((std::get<0>(minMax.second) + std::get<0>(minMax.first)) / 2,
+		(std::get<1>(minMax.second) + std::get<1>(minMax.first)) / 2,
+		std::get<2>(minMax.second));
+```
+Transforming in world frame:
 
-	![World Trans](part3_images/world_trans.gif)
+![World Trans](part3_images/world_trans.gif)
 
-	Transforming in model frame:
+Transforming in model frame:
 
-	![World Trans](part3_images/model_trans.gif)
+![World Trans](part3_images/model_trans.gif)
 
 ## 4 - Non-Commuting transformations
 

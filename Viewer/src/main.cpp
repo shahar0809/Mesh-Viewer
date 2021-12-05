@@ -492,8 +492,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						ImGui::SliderFloat("Camera Y", &ortho_array[i][1], cameraMin, cameraMax);
 						ImGui::SliderFloat("Distance", &ortho_array[i][2], cameraMin, cameraMax);
 						
-						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
-
 						scene.GetActiveCamera().SetDepth(ortho_array[i][2] / 2, -ortho_array[i][2] / 2);
 						scene.GetActiveCamera().SetOrthoViewVolume(ortho_array[i][0] / 2, -ortho_array[i][0] / 2,
 							-ortho_array[i][1] / 2, ortho_array[i][1] / 2);
