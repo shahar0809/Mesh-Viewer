@@ -68,7 +68,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 		0, 0, 0, 1
 	};
 
-	RotateModelX = glm::mat4x4{
+	RotateWorldX = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -336,15 +336,15 @@ void MeshModel::SetWorldRotate(double rotateX, double rotateY, double rotateZ)
 	double radiansValY = ToRadians(WorldRotateVal.y);
 
 	RotateWorldY[0][0] = cos(radiansValY);
-	RotateWorldY[0][2] = -sin(radiansValY);
-	RotateWorldY[2][0] = sin(radiansValY);
+	RotateWorldY[0][2] = sin(radiansValY);
+	RotateWorldY[2][0] = -sin(radiansValY);
 	RotateWorldY[2][2] = cos(radiansValY);
 
 	double radiansValZ = ToRadians(WorldRotateVal.z);
 
 	RotateWorldZ[0][0] = cos(radiansValZ);
-	RotateWorldZ[1][0] = sin(radiansValZ);
-	RotateWorldZ[0][1] = -sin(radiansValZ);
+	RotateWorldZ[1][0] = -sin(radiansValZ);
+	RotateWorldZ[0][1] = sin(radiansValZ);
 	RotateWorldZ[1][1] = cos(radiansValZ);
 
 	RotateWorld = RotateWorldZ * RotateWorldY * RotateWorldX;

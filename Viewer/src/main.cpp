@@ -469,7 +469,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					}
 					if (ImGui::SliderFloat3("Camera Rotate", CameraRotateValue_array[i], rotateMin, rotateMax))
 					{
-						scene.GetActiveCamera().SetLocalRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+						scene.GetActiveCamera().SetLocalRotate(CameraRotateValue_array[i][0], CameraRotateValue_array[i][1], CameraRotateValue_array[i][2]);
 					}
 
 					//ImGui::Dummy(ImVec2(0.0f, 20.0f));
@@ -495,7 +495,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						ImGui::SliderFloat("Width", &OrthoWidth, widthMin, widthMax);
 
 						scene.GetActiveCamera().SetDepth(ortho_array[i][2] / 2, -ortho_array[i][2] / 2);
-						scene.GetActiveCamera().SetOrthoViewVolume(-ortho_array[i][0] / 2, ortho_array[i][0] / 2,
+						scene.GetActiveCamera().SetOrthoViewVolume(ortho_array[i][0] / 2, -ortho_array[i][0] / 2,
 							-ortho_array[i][1] / 2, ortho_array[i][1] / 2);
 					}
 					else if (cameraMode == PERSPECTIVE)
@@ -506,7 +506,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						ImGui::SliderFloat("Distance", &perspective_array[i][2], cameraMin, cameraMax);
 
 						scene.GetActiveCamera().SetDepth(perspective_array[i][2] / 2, -perspective_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(-perspective_array[i][0] / 2, perspective_array[i][0] / 2,
+						scene.GetActiveCamera().SetPerspectiveViewVolume(perspective_array[i][0] / 2, -perspective_array[i][0] / 2,
 							-perspective_array[i][1] / 2, perspective_array[i][1] / 2);
 					}
 

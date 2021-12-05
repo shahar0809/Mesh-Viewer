@@ -66,7 +66,7 @@ Camera::Camera()
 		0, 0, 0, 1
 	};
 
-	RotateLocalX = glm::mat4x4{
+	RotateWorldX = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
