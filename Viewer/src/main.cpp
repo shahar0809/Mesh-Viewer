@@ -48,6 +48,7 @@ static const glm::vec3 backgroundColor = clear_color;
 static const int S_KEY_ASCII = int('S'),
 				 W_KEY_ASCII = int('W'),
 				 A_KEY_ASCII = int('A'),
+				 U_KEY_ASCII = int('U'),
 				 D_KEY_ASCII = int('D');
 
 static const int ZOOM_IN_KEY_ASCII = int('['),
@@ -130,7 +131,7 @@ int main(int argc, char** argv)
 	}
 	
 	/* Load a few models */
-	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "cow.obj");
 	scene.AddModel(model1);
 	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
 	//scene.AddModel(model2);
@@ -251,6 +252,12 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		{
 		ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
 		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+		}
+		// The key is right (U)
+		else if (io.KeysDown[U_KEY_ASCII])
+		{
+			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+			scene.GetActiveCamera().ApplyLocalTranslate(1, 0, 0);
 		}
 		// Zoom in on model
 		else if (io.KeysDown[ZOOM_IN_KEY_ASCII])
