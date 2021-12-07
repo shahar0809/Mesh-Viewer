@@ -3,6 +3,8 @@
 #include "Utils.h"
 #include <iostream>
 #include <complex>
+#include <utility>
+#include <tuple>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
@@ -35,6 +37,7 @@ private:
 	static glm::vec3 ApplyTrans(glm::vec3 vec, glm::mat4x4 trans);
 
 	void DrawBoundingBox(const MeshModel& model, const Camera& camera);
+	void DrawBoundingRectangle(const MeshModel& model, const Camera& camera, const Face& face);
 
 	void DrawModelFrame(const MeshModel& model, const Camera& camera);
 	void DrawWorldFrame(const Camera& camera);

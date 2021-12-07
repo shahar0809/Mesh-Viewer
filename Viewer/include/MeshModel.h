@@ -1,12 +1,12 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
-#include <glm/gtx/euler_angles.hpp>
 #include <glad/glad.h>
 #include <string>
 #include <tuple>
 #include <memory>
 #include "Face.h"
+#include "GUI_Attributes.h"
 
 #define M_PI 3.14159265358979323846264338327950288
 
@@ -59,22 +59,10 @@ public:
 	glm::vec3 GetFaceNormal(int index) const;
 
 	glm::vec3 GetFaceCenter(const Face& face) const;
+	std::vector<glm::vec3> GetBoundingRectangle(const Face& face) const;
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
-
-	// Colors
-	glm::vec3 color;
-	glm::vec3 BoundingBoxColor;
-	glm::vec3 FaceNormalsColor;
-	glm::vec3 VerticsNormalsColor;
-
-	/* Fields to draw attributes on Mesh Viewer */
-	bool IsOnScreen = true;
-	bool IsBoundingBoxOnScreen = false;
-	bool IsFrameOnScreen = false;
-	bool AreFaceNormalsOnScreen = false;
-	bool AreVerticesNormalsOnScreen = false;
-
+	GUI_Attributes gui;
 
 private:
 	std::vector<Face> faces;

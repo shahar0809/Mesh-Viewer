@@ -72,10 +72,11 @@ std::shared_ptr<MeshModel> Utils::LoadMeshModel(const std::string& filePath)
 	}
 	std::shared_ptr<MeshModel> model = std::make_shared<MeshModel>(faces, vertices, normals, Utils::GetFileName(filePath));
 
-	model->color = model_color;
-	model->BoundingBoxColor = bounding_box_color;
-	model->FaceNormalsColor = face_normals_color;
-	model->VerticsNormalsColor = vertics_normals_color;
+	model->gui.color = model_color;
+	model->gui.BoundingBoxColor = bounding_box_color;
+	model->gui.FaceNormalsColor = face_normals_color;
+	model->gui.VerticsNormalsColor = vertics_normals_color;
+	model->gui.BoundingRectColor = bounding_rect_color;
 
 	return model;
 }

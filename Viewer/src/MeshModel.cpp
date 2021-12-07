@@ -432,6 +432,29 @@ glm::vec3 MeshModel::GetFaceCenter(const Face& face) const
 	return glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3);
 }
 
+std::vector<glm::vec3> MeshModel::GetBoundingRectangle(const Face& face) const
+{
+	std::vector<glm::vec3> faceVertices;
+	for (int i = 0; i < 3; i++)
+	{
+		faceVertices.push_back(GetVertice(face.GetVertexIndex(i) - 1));
+	}
+
+	auto minMax = GetMinMax(faceVertices);
+	std::vector<glm::vec3> points;
+
+	glm::vec3 p1(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.first));
+	glm::vec3 p2(std::get<0>(minMax.second), std::get<1>(minMax.second), std::get<2>(minMax.first));
+	glm::vec3 p3(std::get<0>(minMax.second), std::get<1>(minMax.first), std::get<2>(minMax.first));
+	glm::vec3 p4(std::get<0>(minMax.first), std::get<1>(minMax.first), std::get<2>(minMax.first));
+
+	points.push_back(p1);
+	points.push_back(p2);
+	points.push_back(p3);
+	points.push_back(p4);
+
+	return points;
+}
 
 /**
  * @brief Calculates the 8 points of the model's bounding box.

@@ -344,24 +344,29 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		clear_color = backgroundColor;
 	}
 
-	if (ImGui::ColorEdit3("Model Color", (float*)&scene.GetActiveModel().color))
+	if (ImGui::ColorEdit3("Model Color", (float*)&scene.GetActiveModel().gui.color))
 	{
-		model_color = scene.GetActiveModel().color;
+		model_color = scene.GetActiveModel().gui.color;
 	}
 
-	if (ImGui::ColorEdit3("Bounding Box Color", (float*)&scene.GetActiveModel().BoundingBoxColor))
+	if (ImGui::ColorEdit3("Bounding Box Color", (float*)&scene.GetActiveModel().gui.BoundingBoxColor))
 	{
-		bounding_box_color = scene.GetActiveModel().BoundingBoxColor;
+		bounding_box_color = scene.GetActiveModel().gui.BoundingBoxColor;
 	}
 
-	if (ImGui::ColorEdit3("Faces Normals Color", (float*)&scene.GetActiveModel().FaceNormalsColor))
+	if (ImGui::ColorEdit3("Faces Normals Color", (float*)&scene.GetActiveModel().gui.FaceNormalsColor))
 	{
-		face_normals_color = scene.GetActiveModel().FaceNormalsColor;
+		face_normals_color = scene.GetActiveModel().gui.FaceNormalsColor;
 	}
 
-	if (ImGui::ColorEdit3("Vertics Normals Color", (float*)&scene.GetActiveModel().VerticsNormalsColor))
+	if (ImGui::ColorEdit3("Vertics Normals Color", (float*)&scene.GetActiveModel().gui.VerticsNormalsColor))
 	{
-		vertics_normals_color = scene.GetActiveModel().VerticsNormalsColor;
+		vertics_normals_color = scene.GetActiveModel().gui.VerticsNormalsColor;
+	}
+
+	if (ImGui::ColorEdit3("Bounding Rectangle Color", (float*)&scene.GetActiveModel().gui.BoundingRectColor))
+	{
+		bounding_rect_color = scene.GetActiveModel().gui.BoundingRectColor;
 	}
 	ImGui::End();
 
@@ -384,15 +389,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 					scene.SetActiveModelIndex(i);
 
-					ImGui::Checkbox("Show on screen", &scene.GetActiveModel().IsOnScreen);
+					ImGui::Checkbox("Show on screen", &scene.GetActiveModel().gui.IsOnScreen);
 					ImGui::SameLine();
-					ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().IsBoundingBoxOnScreen);
+					ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
 					ImGui::SameLine();
-					ImGui::Checkbox("Model Frame", &scene.GetActiveModel().IsFrameOnScreen);
+					ImGui::Checkbox("Bounding Rectangle", &scene.GetActiveModel().gui.IsBoundingRectOnScreen);
 
-					ImGui::Checkbox("Face Normals", &scene.GetActiveModel().AreFaceNormalsOnScreen);
+					ImGui::Checkbox("Model Frame", &scene.GetActiveModel().gui.IsFrameOnScreen);
 					ImGui::SameLine();
-					ImGui::Checkbox("Vertices Normals", &scene.GetActiveModel().AreVerticesNormalsOnScreen);
+					ImGui::Checkbox("Face Normals", &scene.GetActiveModel().gui.AreFaceNormalsOnScreen);
+					ImGui::SameLine();
+					ImGui::Checkbox("Vertices Normals", &scene.GetActiveModel().gui.AreVerticesNormalsOnScreen);
 
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin, scaleMax))

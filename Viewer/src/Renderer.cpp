@@ -204,24 +204,40 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 		boundingBox[i] = TransVector(boundingBox[i], model, camera);
 	}
 
-	DrawLine(boundingBox[0], boundingBox[1], model.BoundingBoxColor);
-	DrawLine(boundingBox[0], boundingBox[2], model.BoundingBoxColor);
-	DrawLine(boundingBox[0], boundingBox[4], model.BoundingBoxColor);
+	DrawLine(boundingBox[0], boundingBox[1], model.gui.BoundingBoxColor);
+	DrawLine(boundingBox[0], boundingBox[2], model.gui.BoundingBoxColor);
+	DrawLine(boundingBox[0], boundingBox[4], model.gui.BoundingBoxColor);
 
-	DrawLine(boundingBox[1], boundingBox[3], model.BoundingBoxColor);
-	DrawLine(boundingBox[1], boundingBox[5], model.BoundingBoxColor);
+	DrawLine(boundingBox[1], boundingBox[3], model.gui.BoundingBoxColor);
+	DrawLine(boundingBox[1], boundingBox[5], model.gui.BoundingBoxColor);
 
-	DrawLine(boundingBox[2], boundingBox[3], model.BoundingBoxColor);
-	DrawLine(boundingBox[2], boundingBox[6], model.BoundingBoxColor);
+	DrawLine(boundingBox[2], boundingBox[3], model.gui.BoundingBoxColor);
+	DrawLine(boundingBox[2], boundingBox[6], model.gui.BoundingBoxColor);
 
-	DrawLine(boundingBox[3], boundingBox[7], model.BoundingBoxColor);
+	DrawLine(boundingBox[3], boundingBox[7], model.gui.BoundingBoxColor);
 
-	DrawLine(boundingBox[4], boundingBox[6], model.BoundingBoxColor);
-	DrawLine(boundingBox[4], boundingBox[5], model.BoundingBoxColor);
+	DrawLine(boundingBox[4], boundingBox[6], model.gui.BoundingBoxColor);
+	DrawLine(boundingBox[4], boundingBox[5], model.gui.BoundingBoxColor);
 
-	DrawLine(boundingBox[5], boundingBox[7], model.BoundingBoxColor);
+	DrawLine(boundingBox[5], boundingBox[7], model.gui.BoundingBoxColor);
 
-	DrawLine(boundingBox[6], boundingBox[7], model.BoundingBoxColor);
+	DrawLine(boundingBox[6], boundingBox[7], model.gui.BoundingBoxColor);
+}
+
+void Renderer::DrawBoundingRectangle(const MeshModel& model, const Camera& camera, const Face& face)
+{
+	auto rectanglePoints = model.GetBoundingRectangle(face);
+	std::vector<glm::vec3> transformedVecs;
+
+	for (int i = 0; i < 4; i++)
+	{
+		transformedVecs.push_back(TransVector(rectanglePoints[i], model, camera));
+	}
+
+	DrawLine(transformedVecs[0], transformedVecs[1], model.gui.BoundingRectColor);
+	DrawLine(transformedVecs[1], transformedVecs[2], model.gui.BoundingRectColor);
+	DrawLine(transformedVecs[2], transformedVecs[3], model.gui.BoundingRectColor);
+	DrawLine(transformedVecs[3], transformedVecs[0], model.gui.BoundingRectColor);
 }
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
@@ -230,14 +246,16 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 	{
 		Face currFace = model.GetFace(i);		
 
-		if (model.IsFrameOnScreen)
+		if (model.gui.IsFrameOnScreen)
 			DrawModelFrame(model, camera);
-		if (model.AreFaceNormalsOnScreen)
+		if (model.gui.AreFaceNormalsOnScreen)
 			DrawNormal(i, currFace, model, camera);
-		if (model.AreVerticesNormalsOnScreen)
+		if (model.gui.AreVerticesNormalsOnScreen)
 			DrawNormalsVertices(model, camera);
-		if (model.IsBoundingBoxOnScreen)
+		if (model.gui.IsBoundingBoxOnScreen)
 			DrawBoundingBox(model, camera);
+		if (model.gui.IsBoundingRectOnScreen)
+			DrawBoundingRectangle(model, camera, currFace);
 
 		DrawFace(currFace, model, camera);
 	}
@@ -253,9 +271,9 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
 	}
 
-	DrawLine(transformedVecs[0], transformedVecs[1], model.color);
-	DrawLine(transformedVecs[1], transformedVecs[2], model.color);
-	DrawLine(transformedVecs[2], transformedVecs[0], model.color);
+	DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
+	DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
+	DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
 }
 
 /**
@@ -267,7 +285,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 */
 void Renderer::DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
 {
-	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.FaceNormalsColor);
+	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.gui.FaceNormalsColor);
 }
 
 void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
@@ -280,7 +298,7 @@ void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
 		{
 			glm::vec3 vertex = model.GetVertice(currFace.GetVertexIndex(j) - 1);
 			glm::vec3 normal = model.GetNormal(currFace.GetNormalIndex(j) - 1) + vertex;
-			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.VerticsNormalsColor);
+			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.gui.VerticsNormalsColor);
 		}
 	}
 	
@@ -453,7 +471,7 @@ void Renderer::Render(const Scene& scene)
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);
-		if (currModel.IsOnScreen)
+		if (currModel.gui.IsOnScreen)
 			DrawModel(currModel, camera);
 	}
 

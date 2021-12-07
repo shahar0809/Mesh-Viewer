@@ -10,6 +10,7 @@ static glm::vec3 model_color = glm::vec3{ 1, 1, 1 };
 static glm::vec3 bounding_box_color = glm::vec3{ 0, 0, 0 };
 static glm::vec3 face_normals_color = glm::vec3{ 1, 0, 1 };
 static glm::vec3 vertics_normals_color = glm::vec3{ 0, 0, 1 };
+static glm::vec3 bounding_rect_color = glm::vec3{ 0, 1, 0 };
 
 static float const axes_length = 50.0f;
 static float const normal_length = 50.0f;
