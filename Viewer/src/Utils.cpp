@@ -181,3 +181,8 @@ double Utils::ToDegrees(double value)
 {
 	return value * (180 / M_PI);
 }
+
+glm::vec3 Utils::GenerateRandomColor()
+{
+	return glm::vec3(((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)));
+}

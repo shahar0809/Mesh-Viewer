@@ -15,6 +15,8 @@ static glm::vec3 bounding_rect_color = glm::vec3{ 0, 1, 0 };
 static float const axes_length = 50.0f;
 static float const normal_length = 50.0f;
 
+//static int const RAND_MAX = 500;
+
 class Utils
 {
 public:
@@ -28,6 +30,8 @@ public:
 
 	static double ToRadians(double value);
 	static double ToDegrees(double value);
+
+	static glm::vec3 GenerateRandomColor();
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 };

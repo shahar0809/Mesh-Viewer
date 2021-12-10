@@ -7,6 +7,8 @@
 #include <tuple>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <stdlib.h>
+#include <time.h>
 
 #define PI atan(1)*4
 

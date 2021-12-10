@@ -13,6 +13,7 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	viewport_width(viewport_width),
 	viewport_height(viewport_height)
 {
+	srand(time(NULL));
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
 }
@@ -226,18 +227,18 @@ void Renderer::DrawBoundingBox(const MeshModel& model, const Camera& camera)
 
 void Renderer::DrawBoundingRectangle(const MeshModel& model, const Camera& camera, const Face& face)
 {
-	auto rectanglePoints = model.GetBoundingRectangle(face);
 	std::vector<glm::vec3> transformedVecs;
-
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		transformedVecs.push_back(TransVector(rectanglePoints[i], model, camera));
+		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
 	}
 
-	DrawLine(transformedVecs[0], transformedVecs[1], model.gui.BoundingRectColor);
-	DrawLine(transformedVecs[1], transformedVecs[2], model.gui.BoundingRectColor);
-	DrawLine(transformedVecs[2], transformedVecs[3], model.gui.BoundingRectColor);
-	DrawLine(transformedVecs[3], transformedVecs[0], model.gui.BoundingRectColor);
+	auto rectanglePoints = model.GetBoundingRectangle(transformedVecs);
+	glm::vec3 randColor = Utils::GenerateRandomColor();
+	DrawLine(rectanglePoints[0], rectanglePoints[1], randColor);
+	DrawLine(rectanglePoints[1], rectanglePoints[2], randColor);
+	DrawLine(rectanglePoints[2], rectanglePoints[3], randColor);
+	DrawLine(rectanglePoints[3], rectanglePoints[0], randColor);
 }
 
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)

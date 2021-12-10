@@ -364,10 +364,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		vertics_normals_color = scene.GetActiveModel().gui.VerticsNormalsColor;
 	}
 
-	if (ImGui::ColorEdit3("Bounding Rectangle Color", (float*)&scene.GetActiveModel().gui.BoundingRectColor))
+	/*if (ImGui::ColorEdit3("Bounding Rectangle Color", (float*)&scene.GetActiveModel().gui.BoundingRectColor))
 	{
 		bounding_rect_color = scene.GetActiveModel().gui.BoundingRectColor;
-	}
+	}*/
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;

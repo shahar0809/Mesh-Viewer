@@ -59,7 +59,7 @@ public:
 	glm::vec3 GetFaceNormal(int index) const;
 
 	glm::vec3 GetFaceCenter(const Face& face) const;
-	std::vector<glm::vec3> GetBoundingRectangle(const Face& face) const;
+	std::vector<glm::vec3> GetBoundingRectangle(std::vector<glm::vec3> vectors) const;
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 	GUI_Attributes gui;

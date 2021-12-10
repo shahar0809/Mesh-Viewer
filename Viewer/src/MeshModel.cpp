@@ -432,15 +432,9 @@ glm::vec3 MeshModel::GetFaceCenter(const Face& face) const
 	return glm::vec3((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3, (p1.z + p2.z + p3.z) / 3);
 }
 
-std::vector<glm::vec3> MeshModel::GetBoundingRectangle(const Face& face) const
+std::vector<glm::vec3> MeshModel::GetBoundingRectangle(std::vector<glm::vec3> vectors) const
 {
-	std::vector<glm::vec3> faceVertices;
-	for (int i = 0; i < 3; i++)
-	{
-		faceVertices.push_back(GetVertice(face.GetVertexIndex(i) - 1));
-	}
-
-	auto minMax = GetMinMax(faceVertices);
+	auto minMax = GetMinMax(vectors);
 	std::vector<glm::vec3> points;
 
 	glm::vec3 p1(std::get<0>(minMax.first), std::get<1>(minMax.second), std::get<2>(minMax.first));
