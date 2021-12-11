@@ -38,6 +38,10 @@ private:
 	glm::vec3 TransVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera);
 	static glm::vec3 ApplyTrans(glm::vec3 vec, glm::mat4x4 trans);
 
+	void EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color);
+	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);
+	float EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p);
+
 	void DrawBoundingBox(const MeshModel& model, const Camera& camera);
 	void DrawBoundingRectangle(const MeshModel& model, const Camera& camera, const Face& face);
 

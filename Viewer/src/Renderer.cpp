@@ -272,6 +272,8 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
 	}
 
+	EdgeWalking(face, model, camera, Utils::GenerateRandomColor());
+
 	DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
 	DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
 	DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
@@ -302,13 +304,72 @@ void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
 			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.gui.VerticsNormalsColor);
 		}
 	}
-	
-	//for (int i = 0; i < model.GetVerticesCount(); i++)
-	//{
-	//	//glm::vec3 normal = model.GetNormalVertix(i);
-	//	glm::vec3 normal = model.GetNormal(model.)
-	//	DrawLine(TransVector(model.GetVertice(i), model, camera), TransVector(normal, model, camera), model.VerticsNormalsColor);
-	//}
+}
+
+float Renderer::EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p)
+{
+	return (p.x - v1.x) * (v2.y - v1.y) - (p.y - v1.y) * (v2.x - v1.x);
+}
+
+/**
+ * @brief Checks if a point overlaps a triangle.
+ * @param v1 First vertex in triangle
+ * @param v2 Second vertex in triangle
+ * @param v3 Third vertex in triangle
+ * @param point The point
+ * @return If it overlaps th triangle
+*/
+bool Renderer::Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point)
+{
+	bool doesOverlap = true;
+
+	std::vector<float> isLeft;
+	isLeft.push_back(EdgeFunction(v2, v3, point));
+	isLeft.push_back(EdgeFunction(v3, v1, point));
+	isLeft.push_back(EdgeFunction(v1, v2, point));
+
+	// Get edges of triangles
+	std::vector<glm::vec3> edges;
+	edges.push_back(v3 - v2);
+	edges.push_back(v1 - v3);
+	edges.push_back(v2 - v1);
+
+	for (int i = 0; i < 3; i++)
+	{
+		if (isLeft[i])
+		{
+			doesOverlap &= isLeft[i] > 0;
+		}
+		else
+		{
+			// Check if the edge is a left edge or top edge
+			doesOverlap &= (edges[i].y == 0 && edges[i].x > 0) || (edges[i].y > 0);
+		}
+	}
+
+	return doesOverlap;
+}
+
+void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color)
+{
+	std::vector<glm::vec3> transformedVecs;
+	for (int i = 0; i < 3; i++)
+	{
+		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
+	}
+
+	auto boundingRect = model.GetBoundingRectangle(transformedVecs);
+	for (int i = boundingRect[0].x; i <= boundingRect[1].x; i++)
+	{
+		for (int j = boundingRect[2].y; j <= boundingRect[1].y; j++)
+		{
+			glm::vec3 currPoint(i, j, 0);
+			if (Overlaps(transformedVecs[0], transformedVecs[1], transformedVecs[2], currPoint))
+			{
+				PutPixel(i, j, color);
+			}
+		}
+	}
 }
 
 /**
