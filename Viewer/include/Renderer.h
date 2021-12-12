@@ -24,7 +24,7 @@ public:
 
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;
-	
+
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color);
 	void DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color);
@@ -42,6 +42,8 @@ private:
 	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);
 	float EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p);
 
+	float ComputeDepth(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3, const glm::vec2& point);
+
 	void DrawBoundingBox(const MeshModel& model, const Camera& camera);
 	void DrawBoundingRectangle(const MeshModel& model, const Camera& camera, const Face& face);
 
@@ -57,4 +59,6 @@ private:
 	int viewport_height;
 	GLuint gl_screen_tex;
 	GLuint gl_screen_vtc;
+
+	float zBuffer**;
 };

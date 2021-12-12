@@ -186,3 +186,8 @@ glm::vec3 Utils::GenerateRandomColor()
 {
 	return glm::vec3(((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)), ((double)rand() / (RAND_MAX)));
 }
+
+float Utils::CalcTriangleArea(const glm::vec3& p1, const glm::vec3& p2, const glm::vec2& p3)
+{
+	return 0.5 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y));
+}

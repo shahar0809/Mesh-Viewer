@@ -16,11 +16,14 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	srand(time(NULL));
 	InitOpenglRendering();
 	CreateBuffers(viewport_width, viewport_height);
+
+	zBuffer = new float[viewport_width][viewport_height];
 }
 
 Renderer::~Renderer()
 {
 	delete[] color_buffer;
+	delete[] zBuffer;
 }
 
 void Renderer::PutPixel(int i, int j, const glm::vec3& color)
@@ -241,11 +244,21 @@ void Renderer::DrawBoundingRectangle(const MeshModel& model, const Camera& camer
 	DrawLine(rectanglePoints[3], rectanglePoints[0], randColor);
 }
 
+float Renderer::ComputeDepth(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3, const glm::vec2& point)
+{
+	float area1 = Utils::CalcTriangleArea(v2, v3, point),
+		area2 = Utils::CalcTriangleArea(v1, v3, point),
+		area3 = Utils::CalcTriangleArea(v1, v2, point);
+	float area = area1 + area2 + area3;
+
+	return (area1 / area) * v1.z + (area2 / area) * v2.z + (area3 / area) * v3.z;
+}
+
 void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 {
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
-		Face currFace = model.GetFace(i);		
+		Face currFace = model.GetFace(i);
 
 		if (model.gui.IsFrameOnScreen)
 			DrawModelFrame(model, camera);
@@ -281,7 +294,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 /**
  * @brief Draws normal of a face
- * @param index The index of the face in the model	
+ * @param index The index of the face in the model
  * @param face The Face
  * @param model The model
  * @param camera The active camera
@@ -366,7 +379,12 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 			glm::vec3 currPoint(i, j, 0);
 			if (Overlaps(transformedVecs[0], transformedVecs[1], transformedVecs[2], currPoint))
 			{
-				PutPixel(i, j, color);
+				float z = ComputeDepth(transformedVecs[0], transformedVecs[1], transformedVecs[2], glm::vec2(i, j));
+				if (z < zBuffer[i][j])
+				{
+					PutPixel(i, j, color);
+					zBuffer[i][j] = z;
+				}
 			}
 		}
 	}
