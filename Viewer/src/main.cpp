@@ -54,31 +54,6 @@ static const int S_KEY_ASCII = int('S'),
 static const int ZOOM_IN_KEY_ASCII = int('['),
 				 ZOOM_OUT_KEY_ASCII = int(']');
 
-static float ModelScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
-static float ModelTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-static float ModelRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-
-static float WorldScaleValue_array[5][3] = { {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1} };
-static float WorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-static float WorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-
-static float CameraTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-static float CameraRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-
-static float CameraWorldTransValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-static float CameraWorldRotateValue_array[5][3] = { {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0} };
-
-//static float CameraController_array[4][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30}};
-static float ortho_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
-static float perspective_array[3][3] = { {30, 30, 30}, {30, 30, 30} , {30, 30, 30} };
-static float eye_array[3][3] = { {0, 0, 0}, {0, 0, 0} , {0, 0, 0} };
-static float at_array[3][3] = { {0, 0, 1}, {0, 0, 1} , {0, 0, 1} };
-static float up_array[3][3] = { {0, 1, 0}, {0, 1, 0} , {0, 1, 0} };
-
-static int cameraMode = ORTHO;
-static float Fovy = -30.0f;
-static float aspect = 1;
-static float OrthoWidth = 1;
 int windowWidth = 1280, windowHeight = 720;
 
 /**
@@ -118,20 +93,20 @@ int main(int argc, char** argv)
 
 	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
 
-	// Initialize camera controllers
-	for (int i = 0; i < 3; i++) 
-	{
-		ortho_array[i][0] = width / SCREEN_ASPECT;
-		ortho_array[i][1] = height / SCREEN_ASPECT;
-		ortho_array[i][2] = 15;
+	//// Initialize camera controllers
+	//for (int i = 0; i < 3; i++) 
+	//{
+	//	ortho_array[i][0] = width / SCREEN_ASPECT;
+	//	ortho_array[i][1] = height / SCREEN_ASPECT;
+	//	ortho_array[i][2] = 15;
 
-		perspective_array[i][0] = width / SCREEN_ASPECT;
-		perspective_array[i][1] = height / SCREEN_ASPECT;
-		perspective_array[i][2] = 15;
-	}
+	//	perspective_array[i][0] = width / SCREEN_ASPECT;
+	//	perspective_array[i][1] = height / SCREEN_ASPECT;
+	//	perspective_array[i][2] = 15;
+	//}
 	
 	/* Load a few models */
-	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "bishop.obj");
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
 	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
 	//scene.AddModel(model2);
@@ -232,54 +207,61 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		// The key is down (S)
 		if (io.KeysDown[S_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
-			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+			scene.GetActiveModel().gui.ModelTransValue_array[1] -= mouse_offset;
+			scene.GetActiveModel().SetModelTranslate(scene.GetActiveModel().gui.ModelTransValue_array[0], 
+				scene.GetActiveModel().gui.ModelTransValue_array[1], scene.GetActiveModel().gui.ModelTransValue_array[2]);
 		}
 		// The key is up (W)
 		else if (io.KeysDown[W_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
-			scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+			scene.GetActiveModel().gui.ModelTransValue_array[1] += mouse_offset;
+			scene.GetActiveModel().SetModelTranslate(scene.GetActiveModel().gui.ModelTransValue_array[0], 
+				scene.GetActiveModel().gui.ModelTransValue_array[1], scene.GetActiveModel().gui.ModelTransValue_array[2]);
 		}
 		// The key is left (A)
 		else if (io.KeysDown[A_KEY_ASCII])
 		{
-		ModelTransValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+			scene.GetActiveModel().gui.ModelTransValue_array[0] -= mouse_offset;
+			scene.GetActiveModel().SetModelTranslate(scene.GetActiveModel().gui.ModelTransValue_array[0], 
+				scene.GetActiveModel().gui.ModelTransValue_array[1], scene.GetActiveModel().gui.ModelTransValue_array[2]);
 		}
 		// The key is right (D)
 		else if (io.KeysDown[D_KEY_ASCII])
 		{
-		ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-		scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[scene.GetActiveModelIndex()][0], ModelTransValue_array[scene.GetActiveModelIndex()][1], ModelTransValue_array[scene.GetActiveModelIndex()][2]);
+			scene.GetActiveModel().gui.ModelTransValue_array[0] += mouse_offset;
+			scene.GetActiveModel().SetModelTranslate(scene.GetActiveModel().gui.ModelTransValue_array[0], 
+				scene.GetActiveModel().gui.ModelTransValue_array[1], scene.GetActiveModel().gui.ModelTransValue_array[2]);
 		}
 		// The key is right (U)
 		else if (io.KeysDown[U_KEY_ASCII])
 		{
-			ModelTransValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
+			scene.GetActiveModel().gui.ModelTransValue_array[0] += mouse_offset;
 			scene.GetActiveCamera().ApplyLocalTranslate(1, 0, 0);
 		}
 		// Zoom in on model
 		else if (io.KeysDown[ZOOM_IN_KEY_ASCII])
 		{
-		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+		if (scene.GetActiveModel().gui.ModelScaleValue_array[0] < scaleMax)
 		{
-			ModelScaleValue_array[scene.GetActiveModelIndex()][0] += mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][1] += mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][2] += mouse_offset;
+			scene.GetActiveModel().gui.ModelScaleValue_array[0] += mouse_offset;
+			scene.GetActiveModel().gui.ModelScaleValue_array[1] += mouse_offset;
+			scene.GetActiveModel().gui.ModelScaleValue_array[2] += mouse_offset;
 		}
-		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		scene.GetActiveModel().SetModelScale(scene.GetActiveModel().gui.ModelScaleValue_array[0], 
+			scene.GetActiveModel().gui.ModelScaleValue_array[1],
+			scene.GetActiveModel().gui.ModelScaleValue_array[2]);
 		}
 		// Zoom out on model
 		else if (io.KeysDown[ZOOM_OUT_KEY_ASCII])
 		{
-		if (ModelScaleValue_array[scene.GetActiveModelIndex()][0] < scaleMax)
+		if (scene.GetActiveModel().gui.ModelScaleValue_array[0] < scaleMax)
 		{
-			ModelScaleValue_array[scene.GetActiveModelIndex()][0] -= mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][1] -= mouse_offset;
-			ModelScaleValue_array[scene.GetActiveModelIndex()][2] -= mouse_offset;
+			scene.GetActiveModel().gui.ModelScaleValue_array[0] -= mouse_offset;
+			scene.GetActiveModel().gui.ModelScaleValue_array[1] -= mouse_offset;
+			scene.GetActiveModel().gui.ModelScaleValue_array[2] -= mouse_offset;
 		}
-		scene.GetActiveModel().SetModelScale(ModelScaleValue_array[scene.GetActiveModelIndex()][0], ModelScaleValue_array[scene.GetActiveModelIndex()][1], ModelScaleValue_array[scene.GetActiveModelIndex()][2]);
+		scene.GetActiveModel().SetModelScale(scene.GetActiveModel().gui.ModelScaleValue_array[0], 
+			scene.GetActiveModel().gui.ModelScaleValue_array[1], scene.GetActiveModel().gui.ModelScaleValue_array[2]);
 		}
 	}
 
@@ -402,47 +384,53 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::Checkbox("Vertices Normals", &scene.GetActiveModel().gui.AreVerticesNormalsOnScreen);
 
 					/* Set new parameters for each transformation when the slider is changed [Model] */
-					if (ImGui::SliderFloat3("Model Scale", ModelScaleValue_array[i], scaleMin, scaleMax))
+					if (ImGui::SliderFloat3("Model Scale", scene.GetActiveModel().gui.ModelScaleValue_array, scaleMin, scaleMax))
 					{
-						if (ModelScaleValue_array[i][0] == 0.0)
-							ModelScaleValue_array[i][0] = 1;
-						if (ModelScaleValue_array[i][1] == 0.0)
-							ModelScaleValue_array[i][1] = 1;
-						if (ModelScaleValue_array[i][2] == 0.0)
-							ModelScaleValue_array[i][2] = 1;
+						if (scene.GetActiveModel().gui.ModelScaleValue_array[0] == 0.0)
+							scene.GetActiveModel().gui.ModelScaleValue_array[0] = 1;
+						if (scene.GetActiveModel().gui.ModelScaleValue_array[1] == 0.0)
+							scene.GetActiveModel().gui.ModelScaleValue_array[1] = 1;
+						if (scene.GetActiveModel().gui.ModelScaleValue_array[2] == 0.0)
+							scene.GetActiveModel().gui.ModelScaleValue_array[2] = 1;
 
-						scene.GetActiveModel().SetModelScale(ModelScaleValue_array[i][0], ModelScaleValue_array[i][1], ModelScaleValue_array[i][2]);
+						scene.GetActiveModel().SetModelScale(scene.GetActiveModel().gui.ModelScaleValue_array[0], 
+							scene.GetActiveModel().gui.ModelScaleValue_array[1],
+							scene.GetActiveModel().gui.ModelScaleValue_array[2]);
 					}
-					if (ImGui::SliderFloat3("Model Translate", ModelTransValue_array[i], translateMin, translateMax))
+					if (ImGui::SliderFloat3("Model Translate", scene.GetActiveModel().gui.ModelTransValue_array, translateMin, translateMax))
 					{
-						scene.GetActiveModel().SetModelTranslate(ModelTransValue_array[i][0], ModelTransValue_array[i][1], ModelTransValue_array[i][2]);
+						scene.GetActiveModel().SetModelTranslate(scene.GetActiveModel().gui.ModelTransValue_array[0], 
+							scene.GetActiveModel().gui.ModelTransValue_array[1],
+							scene.GetActiveModel().gui.ModelTransValue_array[2]);
 					}
-					if (ImGui::SliderFloat3("Model Rotate", ModelRotateValue_array[i], rotateMin, rotateMax))
+					if (ImGui::SliderFloat3("Model Rotate", scene.GetActiveModel().gui.ModelRotateValue_array, rotateMin, rotateMax))
 					{
-						scene.GetActiveModel().SetModelRotate(ModelRotateValue_array[i][0], ModelRotateValue_array[i][1], ModelRotateValue_array[i][2]);
+						scene.GetActiveModel().SetModelRotate(scene.GetActiveModel().gui.ModelRotateValue_array[0], 
+							scene.GetActiveModel().gui.ModelRotateValue_array[1],
+							scene.GetActiveModel().gui.ModelRotateValue_array[2]);
 					}
 
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Scale", WorldScaleValue_array[i], scaleMinWorld, scaleMaxWorld))
+					if (ImGui::SliderFloat3("World Scale", scene.GetActiveModel().gui.WorldScaleValue_array, scaleMinWorld, scaleMaxWorld))
 					{
-						if (WorldScaleValue_array[i][0] == 0.0)
-							WorldScaleValue_array[i][0] = 1;
-						if (WorldScaleValue_array[i][1] == 0.0)
-							WorldScaleValue_array[i][1] = 1;
-						if (WorldScaleValue_array[i][2] == 0.0)
-							WorldScaleValue_array[i][2] = 1;
+						if (scene.GetActiveModel().gui.WorldScaleValue_array[0] == 0.0)
+							scene.GetActiveModel().gui.WorldScaleValue_array[0] = 1;
+						if (scene.GetActiveModel().gui.WorldScaleValue_array[1] == 0.0)
+							scene.GetActiveModel().gui.WorldScaleValue_array[1] = 1;
+						if (scene.GetActiveModel().gui.WorldScaleValue_array[2] == 0.0)
+							scene.GetActiveModel().gui.WorldScaleValue_array[2] = 1;
 
-						scene.GetActiveModel().SetWorldScale(WorldScaleValue_array[i][0], WorldScaleValue_array[i][1], WorldScaleValue_array[i][2]);
+						scene.GetActiveModel().SetWorldScale(scene.GetActiveModel().gui.WorldScaleValue_array[0], scene.GetActiveModel().gui.WorldScaleValue_array[1], scene.GetActiveModel().gui.WorldScaleValue_array[2]);
 					}
-					if (ImGui::SliderFloat3("World Translate", WorldTransValue_array[i], translateMin, translateMax))
+					if (ImGui::SliderFloat3("World Translate", scene.GetActiveModel().gui.WorldTransValue_array, translateMin, translateMax))
 					{
-						scene.GetActiveModel().SetWorldTranslate(WorldTransValue_array[i][0], WorldTransValue_array[i][1], WorldTransValue_array[i][2]);
+						scene.GetActiveModel().SetWorldTranslate(scene.GetActiveModel().gui.WorldTransValue_array[0], scene.GetActiveModel().gui.WorldTransValue_array[1], scene.GetActiveModel().gui.WorldTransValue_array[2]);
 					}
-					if (ImGui::SliderFloat3("World Rotate", WorldRotateValue_array[i], rotateMin, rotateMax))
+					if (ImGui::SliderFloat3("World Rotate", scene.GetActiveModel().gui.WorldRotateValue_array, rotateMin, rotateMax))
 					{
-						scene.GetActiveModel().SetWorldRotate(WorldRotateValue_array[i][0], WorldRotateValue_array[i][1], WorldRotateValue_array[i][2]);
+						scene.GetActiveModel().SetWorldRotate(scene.GetActiveModel().gui.WorldRotateValue_array[0], scene.GetActiveModel().gui.WorldRotateValue_array[1], scene.GetActiveModel().gui.WorldRotateValue_array[2]);
 					}
 
 					ImGui::EndTabItem();
@@ -467,78 +455,91 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.SetActiveCameraIndex(i);
 
 					// Radio buttons for camera projection modes
-					if (ImGui::RadioButton("Orthographic", &cameraMode, ORTHO))
+					if (ImGui::RadioButton("Orthographic", &scene.GetActiveCamera().gui.cameraMode, ORTHO))
 					{
 						scene.GetActiveCamera().SetOrthoCamera();
 					}
 					ImGui::SameLine();
-					if (ImGui::RadioButton("Perspective", &cameraMode, PERSPECTIVE))
+					if (ImGui::RadioButton("Perspective", &scene.GetActiveCamera().gui.cameraMode, PERSPECTIVE))
 					{
 						scene.GetActiveCamera().SetPerspectiveCamera();
 					}
 
-					if (ImGui::SliderFloat3("Camera Translate", CameraTransValue_array[i], translateMin, translateMax))
+					if (ImGui::SliderFloat3("Camera Translate", scene.GetActiveCamera().gui.CameraTransValue_array, translateMin, translateMax))
 					{
-						scene.GetActiveCamera().SetLocalTranslate(CameraTransValue_array[i][0], CameraTransValue_array[i][1], CameraTransValue_array[i][2]);
+						scene.GetActiveCamera().SetLocalTranslate(scene.GetActiveCamera().gui.CameraTransValue_array[0], 
+							scene.GetActiveCamera().gui.CameraTransValue_array[1],
+							scene.GetActiveCamera().gui.CameraTransValue_array[2]);
 					}
-					if (ImGui::SliderFloat3("Camera Rotate", CameraRotateValue_array[i], rotateMin, rotateMax))
+					if (ImGui::SliderFloat3("Camera Rotate", scene.GetActiveCamera().gui.CameraRotateValue_array, rotateMin, rotateMax))
 					{
-						scene.GetActiveCamera().SetLocalRotate(CameraRotateValue_array[i][0], CameraRotateValue_array[i][1], CameraRotateValue_array[i][2]);
+						scene.GetActiveCamera().SetLocalRotate(scene.GetActiveCamera().gui.CameraRotateValue_array[0], 
+							scene.GetActiveCamera().gui.CameraRotateValue_array[1],
+							scene.GetActiveCamera().gui.CameraRotateValue_array[2]);
 					}
 
-					//ImGui::Dummy(ImVec2(0.0f, 20.0f));
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Translate", CameraWorldTransValue_array[i], translateMin, translateMax))
+					if (ImGui::SliderFloat3("World Translate", scene.GetActiveCamera().gui.CameraWorldRotateValue_array, translateMin, translateMax))
 					{
-						scene.GetActiveCamera().SetWorldTranslate(CameraWorldTransValue_array[i][0], CameraWorldTransValue_array[i][1], CameraWorldTransValue_array[i][2]);
+						scene.GetActiveCamera().SetWorldTranslate(scene.GetActiveCamera().gui.CameraWorldRotateValue_array[0],
+							scene.GetActiveCamera().gui.CameraWorldRotateValue_array[1],
+							scene.GetActiveCamera().gui.CameraWorldRotateValue_array[2]);
 					}
-					if (ImGui::SliderFloat3("World Rotate", CameraWorldRotateValue_array[i], rotateMin, rotateMax))
+					if (ImGui::SliderFloat3("World Rotate", scene.GetActiveCamera().gui.CameraWorldRotateValue_array, rotateMin, rotateMax))
 					{
-						scene.GetActiveCamera().SetWorldRotate(CameraWorldRotateValue_array[i][0], CameraWorldRotateValue_array[i][1], CameraWorldRotateValue_array[i][2]);
+						scene.GetActiveCamera().SetWorldRotate(scene.GetActiveCamera().gui.CameraWorldRotateValue_array[0],
+							scene.GetActiveCamera().gui.CameraWorldRotateValue_array[1],
+							scene.GetActiveCamera().gui.CameraWorldRotateValue_array[2]);
 					}
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-					if (cameraMode == ORTHO)
+					if (scene.GetActiveCamera().gui.cameraMode == ORTHO)
 					{
 						/* Sliders to change view volume of projection */
-						ImGui::SliderFloat("Camera X", &ortho_array[i][0], cameraMin, cameraMax);
-						ImGui::SliderFloat("Camera Y", &ortho_array[i][1], cameraMin, cameraMax);
-						ImGui::SliderFloat("Distance", &ortho_array[i][2], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera X", &scene.GetActiveCamera().gui.ortho_array[0], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera Y", &scene.GetActiveCamera().gui.ortho_array[1], cameraMin, cameraMax);
+						ImGui::SliderFloat("Distance", &scene.GetActiveCamera().gui.ortho_array[2], cameraMin, cameraMax);
 						
-						scene.GetActiveCamera().SetDepth(ortho_array[i][2] / 2, -ortho_array[i][2] / 2);
-						scene.GetActiveCamera().SetOrthoViewVolume(ortho_array[i][0] / 2, -ortho_array[i][0] / 2,
-							-ortho_array[i][1] / 2, ortho_array[i][1] / 2);
+						scene.GetActiveCamera().SetDepth(scene.GetActiveCamera().gui.ortho_array[2] / 2, -scene.GetActiveCamera().gui.ortho_array[2] / 2);
+						scene.GetActiveCamera().SetOrthoViewVolume(scene.GetActiveCamera().gui.ortho_array[0] / 2,
+							-scene.GetActiveCamera().gui.ortho_array[0] / 2,
+							-scene.GetActiveCamera().gui.ortho_array[1] / 2,
+							scene.GetActiveCamera().gui.ortho_array[1] / 2);
 					}
-					else if (cameraMode == PERSPECTIVE)
+					else if (scene.GetActiveCamera().gui.cameraMode == PERSPECTIVE)
 					{
 						/* Sliders to change view volume of projection */
-						ImGui::SliderFloat("Camera X", &perspective_array[i][0], cameraMin, cameraMax);
-						ImGui::SliderFloat("Camera Y", &perspective_array[i][1], cameraMin, cameraMax);
-						ImGui::SliderFloat("Distance", &perspective_array[i][2], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera X", &scene.GetActiveCamera().gui.perspective_array[0], cameraMin, cameraMax);
+						ImGui::SliderFloat("Camera Y", &scene.GetActiveCamera().gui.perspective_array[1], cameraMin, cameraMax);
+						ImGui::SliderFloat("Distance", &scene.GetActiveCamera().gui.perspective_array[2], cameraMin, cameraMax);
 
-						scene.GetActiveCamera().SetDepth(perspective_array[i][2] / 2, -perspective_array[i][2] / 2);
-						scene.GetActiveCamera().SetPerspectiveViewVolume(perspective_array[i][0] / 2, -perspective_array[i][0] / 2,
-							-perspective_array[i][1] / 2, perspective_array[i][1] / 2);
+						scene.GetActiveCamera().SetDepth(scene.GetActiveCamera().gui.perspective_array[2] / 2,
+							-scene.GetActiveCamera().gui.perspective_array[2] / 2);
+						scene.GetActiveCamera().SetPerspectiveViewVolume(scene.GetActiveCamera().gui.perspective_array[0] / 2,
+							-scene.GetActiveCamera().gui.perspective_array[0] / 2,
+							-scene.GetActiveCamera().gui.perspective_array[1] / 2,
+							scene.GetActiveCamera().gui.perspective_array[1] / 2);
 					}
 
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-					glm::vec3 eye(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
-					glm::vec3 at(at_array[i][0], at_array[i][1], at_array[i][2]);
-					glm::vec3 up(up_array[i][0], up_array[i][1], up_array[i][2]);
+					glm::vec3 eye(scene.GetActiveCamera().gui.eye_array[0], scene.GetActiveCamera().gui.eye_array[1], scene.GetActiveCamera().gui.eye_array[2]);
+					glm::vec3 at(scene.GetActiveCamera().gui.at_array[0], scene.GetActiveCamera().gui.at_array[1], scene.GetActiveCamera().gui.at_array[2]);
+					glm::vec3 up(scene.GetActiveCamera().gui.up_array[0], scene.GetActiveCamera().gui.up_array[1], scene.GetActiveCamera().gui.up_array[2]);
 
-					if (ImGui::SliderFloat3("Eye", eye_array[i], LookAtMin, LookAtMax))
+					if (ImGui::SliderFloat3("Eye", scene.GetActiveCamera().gui.eye_array, LookAtMin, LookAtMax))
 					{
-						eye = glm::vec3(eye_array[i][0], eye_array[i][1], eye_array[i][2]);
+						eye = glm::vec3(scene.GetActiveCamera().gui.eye_array[0], scene.GetActiveCamera().gui.eye_array[1], scene.GetActiveCamera().gui.eye_array[2]);
 					}
-					if (ImGui::SliderFloat3("At", at_array[i], LookAtMin, LookAtMax))
+					if (ImGui::SliderFloat3("At", scene.GetActiveCamera().gui.at_array, LookAtMin, LookAtMax))
 					{
-						at = glm::vec3(at_array[i][0], at_array[i][1], at_array[i][2]);
+						at = glm::vec3(scene.GetActiveCamera().gui.at_array[0], scene.GetActiveCamera().gui.at_array[1], scene.GetActiveCamera().gui.at_array[2]);
 					}
-					if (ImGui::SliderFloat3("Up", up_array[i], LookAtMin, LookAtMax))
+					if (ImGui::SliderFloat3("Up", scene.GetActiveCamera().gui.up_array, LookAtMin, LookAtMax))
 					{
-						up = glm::vec3(up_array[i][0], up_array[i][1], up_array[i][2]);
+						up = glm::vec3(scene.GetActiveCamera().gui.up_array[0], scene.GetActiveCamera().gui.up_array[1], scene.GetActiveCamera().gui.up_array[2]);
 					}
 					scene.GetActiveCamera().SetCameraLookAt(eye, at, up);
 
