@@ -1,5 +1,8 @@
 #include "CameraGUI_Attributes.h"
 
+int CameraGUI_Attributes::SCREEN_ASPECT = 80;
+int CameraGUI_Attributes::width = 0;
+int CameraGUI_Attributes::height = 0;
 float CameraGUI_Attributes::CameraTransValue_array[3] = { 0, 0, 0 };
 float CameraGUI_Attributes::CameraRotateValue_array[3] = { 0, 0, 0 };
 

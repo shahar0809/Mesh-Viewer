@@ -6,6 +6,10 @@
 class CameraGUI_Attributes
 {
 public:
+	static int SCREEN_ASPECT;
+	static int width;
+	static int height;
+
 	static const int ORTHO = 0, PERSPECTIVE = 1;
 
 	static float CameraTransValue_array[3];

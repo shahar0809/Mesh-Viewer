@@ -36,9 +36,6 @@ const float LookAtMax = 3.0f, LookAtMin = -3.0f;
 
 const int ORTHO = 0, PERSPECTIVE = 1;
 
-static int SCREEN_ASPECT = 80;
-static int width = 0, height = 0;
-
 /**
 * Colors
 */
@@ -91,7 +88,7 @@ int main(int argc, char** argv)
 	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
-	width = renderer.GetViewportWidth(), height = renderer.GetViewportHeight();
+	CameraGUI_Attributes::width = renderer.GetViewportWidth(), CameraGUI_Attributes::height = renderer.GetViewportHeight();
 
 	//// Initialize camera controllers
 	//for (int i = 0; i < 3; i++) 
