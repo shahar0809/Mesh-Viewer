@@ -336,9 +336,9 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 	EdgeWalking(face, model, camera, Utils::GenerateRandomColor());
 
-	DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
-	DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
-	DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
+	//DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
+	//DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
+	//DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
 }
 
 /**

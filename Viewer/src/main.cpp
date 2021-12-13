@@ -131,7 +131,7 @@ int main(int argc, char** argv)
 	}
 	
 	/* Load a few models */
-	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "cube.obj");
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "bishop.obj");
 	scene.AddModel(model1);
 	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
 	//scene.AddModel(model2);
