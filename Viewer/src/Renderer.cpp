@@ -63,7 +63,7 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color, int z = 0)
 
 }
 
-void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
+void Renderer::DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color)
 {
 	int x, y;
 
@@ -115,7 +115,8 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				}
 				decisionParam_X += 2 * (abs_deltaY - abs_deltaX);
 			}
-			PutPixel(x, y, color);
+
+			PutPixel(x, y, color, ComputeDepth(x, y, p1, p2));
 		}
 	}
 	// We go over the Y coordinates, instead of X ( Slope >= 1)
@@ -157,15 +158,36 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				}
 				decisionParam_Y += 2 * (abs_deltaX - abs_deltaY);
 			}
-			PutPixel(x, y, color);
+
+			PutPixel(x, y, color, ComputeDepth(x, y, p1, p2));
 		}
 	}
 }
 
+/**
+ * @brief Computes z component of a point using linear interpolation.
+ * @param x The x coordinate of the point
+ * @param y The y coordinate of the point
+ * @param p1 Source of line
+ * @param p2 Dest of line
+ * @return Z coordinate
+*/
+float Renderer::ComputeDepth(int x, int y, glm::ivec3 p1, glm::ivec3 p2)
+{
+	glm::vec2 point(x, y);
+	float totalDist = glm::distance(glm::vec2(p1), glm::vec2(p2));
+	// Compute distance between current point and source and dest
+	float d1 = glm::distance(glm::vec2(p1), point), d2 = glm::distance(point, glm::vec2(p2));
+	// Normalize distance
+	float nd1 = d1 / totalDist, nd2 = d2 / totalDist;
+	// Linear interpolation
+	return nd1 * p1.z + nd2 * p2.z;
+}
+
 void Renderer::DrawLineSanityCheck()
 {
-	glm::ivec2 circleCenter(600, 400);
-	glm::ivec2 currentPoint;
+	glm::ivec3 circleCenter(600, 400, 0);
+	glm::ivec3 currentPoint;
 	glm::vec3 color({ 0, 0, 1 });
 
 	int stepSize = 10, circleRadius = 150, fullCircle = 360;
