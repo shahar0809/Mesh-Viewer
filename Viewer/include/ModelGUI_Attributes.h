@@ -23,7 +23,7 @@ public:
 	static float WorldRotateValue_array[3];
 
 	/* Fields to draw attributes on Mesh Viewer */
-	bool IsOnScreen = true;
+	bool IsOnScreen = false;
 	bool IsBoundingBoxOnScreen = false;
 	bool IsFrameOnScreen = false;
 	bool AreFaceNormalsOnScreen = false;

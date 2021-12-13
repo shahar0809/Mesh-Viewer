@@ -52,6 +52,8 @@ static const int ZOOM_IN_KEY_ASCII = int('['),
 				 ZOOM_OUT_KEY_ASCII = int(']');
 
 int windowWidth = 1280, windowHeight = 720;
+const std::string base_path = "C: ../../../Data/";
+
 
 /**
  * Function declarations
@@ -74,9 +76,7 @@ void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 int main(int argc, char** argv)
-{
-	const std::string base_path = "C: ../../../Data/";
-	
+{	
 	GLFWwindow* window = SetupGlfwWindow(windowWidth, windowHeight, "Mesh Viewer");
 	if (!window)
 		return 1;
@@ -113,9 +113,9 @@ int main(int argc, char** argv)
 	//scene.AddModel(model4);
 
 	/* Load a camera */
-	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();;
+	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();
 	scene.AddCamera(camera1);
-	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();;
+	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();
 	scene.AddCamera(camera2);
 	
 	ImGuiIO& io = SetupDearImgui(window);
@@ -312,6 +312,49 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			}
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Add"))
+		{
+			if (ImGui::MenuItem("Camera", "CTRL+SHIFT+C"))
+			{
+				scene.AddCamera(std::make_shared<Camera>());
+			}
+			if (ImGui::BeginMenu("Model"))
+			{
+				if (ImGui::MenuItem("Demo"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "demo.obj");
+					scene.AddModel(model);
+				}
+				
+				if (ImGui::MenuItem("Cow"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "cow.obj");
+					scene.AddModel(model);
+				}
+				if (ImGui::MenuItem("Banana"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "banana.obj");
+					scene.AddModel(model);
+				}
+				if (ImGui::MenuItem("Pawn"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "pawn.obj");
+					scene.AddModel(model);
+				}
+				if (ImGui::MenuItem("Teapot"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "teapot.obj");
+					scene.AddModel(model);
+				}
+				if (ImGui::MenuItem("Bunny"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "bunny.obj");
+					scene.AddModel(model);
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenu();
+		}
 
 		// TODO: Add more menubar items (if you want to)
 		ImGui::EndMainMenuBar();
@@ -350,8 +393,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
-	static int numberOfModels = scene.GetModelCount();
-	static int numberOfCameras = scene.GetCameraCount();
+	int numberOfModels = scene.GetModelCount();
+	int numberOfCameras = scene.GetCameraCount();
 
 	{
 		ImGui::Begin("Model and World Transformation");
