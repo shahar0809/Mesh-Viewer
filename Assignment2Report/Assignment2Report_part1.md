@@ -133,3 +133,34 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 Each face gets a different random color which the function gets from the DrawFace function in Renderer.
 
 The result:
+
+
+
+## Z-buffer
+### The Algorithm
+
+This algorithm draws pixels on the screen according to their depth. We create a buffer that is the size of the image. 
+For each pixel, we calculate the pixel's depth considering all other pixels in the Z-buffer.
+
+```cpp
+
+```
+
+If it is closer than we draw this pixel, otherwise we do nothing. 
+We add to our Overlaps function check of the pixel depth using the  Z-buffer we have changed our Overlaps function.
+
+
+```cpp
+
+```
+
+
+The result:
+
+
+
+
+#### *Compare results*:
+
+We decided to show several perspectives on several different models.
+On the left side is coler-buffer on the rigth side is the Z-buffer.
