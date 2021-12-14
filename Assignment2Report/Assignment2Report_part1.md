@@ -1,5 +1,5 @@
 # Assignment 2 - Part 1
-*Shahar Tefler & Iris Berger*
+Shahar Tefler & Iris Berger
 
 ## Bounding Rectangles per Face
 ### Drawing the bounding rectangle
@@ -25,6 +25,7 @@ std::vector<glm::vec3> MeshModel::GetBoundingRectangle(std::vector<glm::vec3> ve
 }
 ```
 
+
 ### Drawing with diferent colors
 We created a function that returnes a random color, and then, drew each bounding rectangle
 with a random color:
@@ -47,6 +48,7 @@ void Renderer::DrawBoundingRectangle(const MeshModel& model, const Camera& camer
 }
 ```
 
+
 The result:
 
 ![World Trans](part1_images/color_rectangles.gif)
@@ -55,9 +57,17 @@ The result:
 ### The Algorithm
 
 We decided to implement the edge walking algorithm. 
-In this algorithm we want to find for every point whether it inside the triangle or not. 
-We did a function that gets two points that form a triangle edge, and a third point that we want the position related to this edge. 
-The function returns a negative value if the point is on the left of the line, a positive value when the point is on the right side of this line, and zero when it is on the line.
+Using this algorithm, we want to find for each point whether it is inside the triangle or not. 
+
+
+We created the `EdgeFunction` function:
+- Input:
+  - Two points that form a triangle edge
+  - Point
+- Output:
+  - Negative value: If the point is on the left of the line
+  - Positive value: If the point is on the left of the line
+  - Zero: If the point is on the edge
 
 ```cpp
 float Renderer::EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p)
@@ -66,8 +76,19 @@ float Renderer::EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p)
 }
 ```
 
-Now we need to check whether a given point is inside a triangle.
-In The function, we get the there vertices of the triangle and the point to check for overlapping. From the three given vertices, we can find the triangle's edges. Then using the first function we talk about, we can decide if the given point is inside the triangle, check if the value is positive or the point is on the left triangle's edge. 
+Now we need to check whether a given point is inside a triangle. 
+We created the `Overlaps` function:
+
+- Input:
+  - vertices of the triangle
+  - input point
+- Output:
+  - Whether the point is inside the triangle
+
+
+From the three given vertices, we can find the triangle's edges. 
+Then, using the first function we mentioned, we can decide if the given point is inside the 
+triangle by checking if the value is positive or if the point is on the left triangle's edge. 
 
 ```cpp
 bool Renderer::Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point)
@@ -102,9 +123,13 @@ bool Renderer::Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 
 }
 ```
 
-The last thing left to do is start painting all the model's faces. 
-We do it by going over each face in the model and coloring every pixel inside the face. 
-We find the right pixels to paint by going over all the pixels in the face bounding rectangles (we did it in section 1) and chacking using the overlap function if it is inside the face and then coloring only these pixels. 
+Now, all that's left to do is to start painting all the model's faces. 
+We paint the faces by going over each face in the model, and coloring every pixel inside the face.
+ 
+Next, We find the right pixels to paint: 
+We loop over all the pixels in the face's bounding rectangle (mentioned in section 1), 
+and color a pixel only if it's inside the face (we can check it using the overlap function)
+
 
 ```cpp
 void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color)
@@ -130,37 +155,85 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 }
 ```
 
-Each face gets a different random color which the function gets from the DrawFace function in Renderer.
+Each face gets a different random color, which the function gets from the DrawFace function in Renderer.
 
 The result:
-
+![Edge Walking](part1_images/edge_walking.gif)
 
 
 ## Z-buffer
 ### The Algorithm
 
-This algorithm draws pixels on the screen according to their depth. We create a buffer that is the size of the image. 
-For each pixel, we calculate the pixel's depth considering all other pixels in the Z-buffer.
+This algorithm draws pixels on the screen according to their depth. 
+
+We create a buffer that is the size of the image. 
+For each pixel, we calculate the pixel's depth by performing linear interpolation with baycentric coordinates:
+
+
+![Linear Interpolation](part1_images/linear_interpolation.png)
+
+cpp
+
+
+
+If the current pixel is the closest of all objects (its Z coordinate is less the in the zBuffer), 
+we update the Z-Buffer, and draw the pixel. Otherwise, we do nothing :)
+
+We added the Z-buffer logic to the `PutPixel` function, since it updates the color buffer.
 
 ```cpp
+void Renderer::PutPixel(int i, int j, const glm::vec3& color, int z = 0)
+{
+	if (i < 0) return; if (i >= viewport_width) return;
+	if (j < 0) return; if (j >= viewport_height) return;
 
+	if (zBuffer[i][j] > z)
+	{
+		color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
+		color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
+		color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
+		zBuffer[i][j] = z;
+	}
+}
 ```
 
-If it is closer than we draw this pixel, otherwise we do nothing. 
-We add to our Overlaps function check of the pixel depth using the  Z-buffer we have changed our Overlaps function.
 
+We also compute the depth of each pixel that is inside the face in `EdgeWalking`, and pass it to `PutPixel`.
 
 ```cpp
+void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color)
+{
+	std::vector<glm::vec3> transformedVecs;
+	for (int i = 0; i < 3; i++)
+	{
+		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
+	}
 
+	auto boundingRect = model.GetBoundingRectangle(transformedVecs);
+	for (int i = boundingRect[0].x; i < boundingRect[1].x; i++)
+	{
+		for (int j = boundingRect[2].y; j < boundingRect[1].y; j++)
+		{
+			glm::vec3 currPoint(i, j, 0);
+			if (Overlaps(transformedVecs[0], transformedVecs[1], transformedVecs[2], currPoint))
+			{
+				float z = ComputeDepth(transformedVecs[0], transformedVecs[1], transformedVecs[2], glm::vec2(i, j));
+				PutPixel(i, j, color, z);
+			}
+		}
+	}
+}
 ```
 
 
 The result:
 
+| Without Z-Buffer      | With Z-Buffer |
+| ----------- | ----------- |
+| ![Without Z-Buffer Teapot](part1_images/teapot.jpeg)    | ![Z-Buffer Teapot](part1_images/z-buffer_teapot.jpeg)       |
+| ![Without Z-Buffer Cow](part1_images/cow.jpeg)    | ![Z-Buffer Cow](part1_images/z-buffer_cow.jpeg)       |
 
 
 
-#### *Compare results*:
-
-We decided to show several perspectives on several different models.
-On the left side is coler-buffer on the rigth side is the Z-buffer.
+## fin
+This is a tradition by now
