@@ -172,9 +172,6 @@ For each pixel, we calculate the pixel's depth by performing linear interpolatio
 
 ![Linear Interpolation](part1_images/linear_interpolation.png)
 
-cpp
-
-
 
 If the current pixel is the closest of all objects (its Z coordinate is less the in the zBuffer), 
 we update the Z-Buffer, and draw the pixel. Otherwise, we do nothing :)
@@ -235,5 +232,6 @@ The result:
 
 
 
-## fin
-This is a tradition by now
+## The End
+
+![gif](/Assignment2Report/part1_images/happy_gif.gif)
