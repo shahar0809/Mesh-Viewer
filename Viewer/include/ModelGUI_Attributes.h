@@ -3,7 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glad/glad.h>
 
-class GUI_Attributes
+class ModelGUI_Attributes
 {
 public:
 	// Colors
@@ -13,8 +13,17 @@ public:
 	glm::vec3 VerticsNormalsColor;
 	glm::vec3 BoundingRectColor;
 
+	// GUI controllers
+	static float ModelScaleValue_array[3];
+	static float ModelTransValue_array[3];
+	static float ModelRotateValue_array[3];
+
+	static float WorldScaleValue_array[3];
+	static float WorldTransValue_array[3];
+	static float WorldRotateValue_array[3];
+
 	/* Fields to draw attributes on Mesh Viewer */
-	bool IsOnScreen = true;
+	bool IsOnScreen = false;
 	bool IsBoundingBoxOnScreen = false;
 	bool IsFrameOnScreen = false;
 	bool AreFaceNormalsOnScreen = false;

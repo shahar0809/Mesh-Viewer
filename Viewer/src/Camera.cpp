@@ -97,6 +97,14 @@ Camera::Camera()
 	Eye = glm::vec3(0, 0, 0);
 	At = glm::vec3(0, 0, 1);
 	Up = glm::vec3(0, 1, 0);
+
+	gui.ortho_array[0] = gui.width / gui.SCREEN_ASPECT;
+	gui.ortho_array[1] = gui.height / gui.SCREEN_ASPECT;
+	gui.ortho_array[2] = 15;
+
+	gui.perspective_array[0] = gui.width / gui.SCREEN_ASPECT;
+	gui.perspective_array[1] = gui.height / gui.SCREEN_ASPECT;
+	gui.perspective_array[2] = 15;
 }
 
 Camera::~Camera()

@@ -6,7 +6,7 @@
 #include <tuple>
 #include <memory>
 #include "Face.h"
-#include "GUI_Attributes.h"
+#include "ModelGUI_Attributes.h"
 
 #define M_PI 3.14159265358979323846264338327950288
 
@@ -62,7 +62,7 @@ public:
 	std::vector<glm::vec3> GetBoundingRectangle(std::vector<glm::vec3> vectors) const;
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
-	GUI_Attributes gui;
+	ModelGUI_Attributes gui;
 
 private:
 	std::vector<Face> faces;

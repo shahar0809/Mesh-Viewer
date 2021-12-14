@@ -7,7 +7,6 @@
 #include <glm/gtx/string_cast.hpp>
 
 #define INDEX(width,x,y,c) ((x)+(y)*(width))*3+(c)
-#define Z_INDEX(width,x,y) ((x)+(y)*(width))
 
 Renderer::Renderer(int viewport_width, int viewport_height) :
 	viewport_width(viewport_width),
@@ -15,28 +14,56 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 {
 	srand(time(NULL));
 	InitOpenglRendering();
-	CreateBuffers(viewport_width, viewport_height);
 
-	zBuffer = new float[viewport_width][viewport_height];
+	InitBufferZ();
+	CreateBuffers(viewport_width, viewport_height);
 }
 
 Renderer::~Renderer()
 {
 	delete[] color_buffer;
+	FreeZbuffer();
+}
+
+void Renderer::InitBufferZ()
+{
+	zBuffer = new float*[viewport_width];
+
+	for (int i = 0; i < viewport_width; i++)
+	{
+		zBuffer[i] = new float[viewport_height];
+		for (int j = 0; j < viewport_height; j++)
+		{
+			zBuffer[i][j] = std::numeric_limits<float>::max();
+		}
+	}
+}
+
+void Renderer::FreeZbuffer()
+{
+	for (int i = 0; i < viewport_width; i++)
+	{
+		delete[] zBuffer[i];
+	}
 	delete[] zBuffer;
 }
 
-void Renderer::PutPixel(int i, int j, const glm::vec3& color)
+void Renderer::PutPixel(int i, int j, const glm::vec3& color, int z = 0)
 {
 	if (i < 0) return; if (i >= viewport_width) return;
 	if (j < 0) return; if (j >= viewport_height) return;
 
-	color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
-	color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
-	color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
+	if (zBuffer[i][j] > z)
+	{
+		color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
+		color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
+		color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
+		zBuffer[i][j] = z;
+	}
+
 }
 
-void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::vec3& color)
+void Renderer::DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color)
 {
 	int x, y;
 
@@ -88,7 +115,8 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				}
 				decisionParam_X += 2 * (abs_deltaY - abs_deltaX);
 			}
-			PutPixel(x, y, color);
+
+			PutPixel(x, y, color, ComputeDepth(x, y, p1, p2));
 		}
 	}
 	// We go over the Y coordinates, instead of X ( Slope >= 1)
@@ -130,15 +158,36 @@ void Renderer::DrawLine(const glm::ivec2& p1, const glm::ivec2& p2, const glm::v
 				}
 				decisionParam_Y += 2 * (abs_deltaX - abs_deltaY);
 			}
-			PutPixel(x, y, color);
+
+			PutPixel(x, y, color, ComputeDepth(x, y, p1, p2));
 		}
 	}
 }
 
+/**
+ * @brief Computes z component of a point using linear interpolation.
+ * @param x The x coordinate of the point
+ * @param y The y coordinate of the point
+ * @param p1 Source of line
+ * @param p2 Dest of line
+ * @return Z coordinate
+*/
+float Renderer::ComputeDepth(int x, int y, glm::ivec3 p1, glm::ivec3 p2)
+{
+	glm::vec2 point(x, y);
+	float totalDist = glm::distance(glm::vec2(p1), glm::vec2(p2));
+	// Compute distance between current point and source and dest
+	float d1 = glm::distance(glm::vec2(p1), point), d2 = glm::distance(point, glm::vec2(p2));
+	// Normalize distance
+	float nd1 = d1 / totalDist, nd2 = d2 / totalDist;
+	// Linear interpolation
+	return nd1 * p1.z + nd2 * p2.z;
+}
+
 void Renderer::DrawLineSanityCheck()
 {
-	glm::ivec2 circleCenter(600, 400);
-	glm::ivec2 currentPoint;
+	glm::ivec3 circleCenter(600, 400, 0);
+	glm::ivec3 currentPoint;
 	glm::vec3 color({ 0, 0, 1 });
 
 	int stepSize = 10, circleRadius = 150, fullCircle = 360;
@@ -287,9 +336,9 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 
 	EdgeWalking(face, model, camera, Utils::GenerateRandomColor());
 
-	DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
-	DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
-	DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
+	//DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
+	//DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
+	//DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
 }
 
 /**
@@ -372,19 +421,15 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 	}
 
 	auto boundingRect = model.GetBoundingRectangle(transformedVecs);
-	for (int i = boundingRect[0].x; i <= boundingRect[1].x; i++)
+	for (int i = boundingRect[0].x; i < boundingRect[1].x; i++)
 	{
-		for (int j = boundingRect[2].y; j <= boundingRect[1].y; j++)
+		for (int j = boundingRect[2].y; j < boundingRect[1].y; j++)
 		{
 			glm::vec3 currPoint(i, j, 0);
 			if (Overlaps(transformedVecs[0], transformedVecs[1], transformedVecs[2], currPoint))
 			{
 				float z = ComputeDepth(transformedVecs[0], transformedVecs[1], transformedVecs[2], glm::vec2(i, j));
-				if (z < zBuffer[i][j])
-				{
-					PutPixel(i, j, color);
-					zBuffer[i][j] = z;
-				}
+				PutPixel(i, j, color, z);
 			}
 		}
 	}
@@ -413,6 +458,8 @@ void Renderer::CreateBuffers(int w, int h)
 {
 	CreateOpenglBuffer(); //Do not remove this line.
 	color_buffer = new float[3 * w * h];
+
+	InitBufferZ();
 	ClearColorBuffer(glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
@@ -536,6 +583,7 @@ void Renderer::ClearColorBuffer(const glm::vec3& color)
 		for (int j = 0; j < viewport_height; j++)
 		{
 			PutPixel(i, j, color);
+			zBuffer[i][j] = std::numeric_limits<float>::max();
 		}
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Utils.h"
+#include "CameraGUI_Attributes.h"
 
 enum class CameraMode
 {
@@ -47,6 +48,8 @@ public:
 
 	void SetWorldRotate(double rotateX, double rotateY, double rotateZ);
 	void SetWorldTranslate(double transX, double transY, double transZ);
+
+	CameraGUI_Attributes gui;
 
 private:
 	CameraMode mode;
