@@ -429,7 +429,21 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 			if (Overlaps(transformedVecs[0], transformedVecs[1], transformedVecs[2], currPoint))
 			{
 				float z = ComputeDepth(transformedVecs[0], transformedVecs[1], transformedVecs[2], glm::vec2(i, j));
-				PutPixel(i, j, color, z);
+				if (model.gui.Grayscale)
+				{
+					//z = zBuffer[i][j];
+					//glm::vec3 grayScale((z / camera.getFar()) + 1, (z / camera.getFar()) + 1, (z / camera.getFar()) + 1);
+					float min = std::get<2>(Utils::GetMinMax(model.GetVertices()).first);
+					float max = std::get<2>(Utils::GetMinMax(model.GetVertices()).second);
+
+					float diff = ((z) / (max - min));
+					glm::vec3 grayScale((diff + 1), (diff + 1), (diff + 1));
+					PutPixel(i, j, grayScale, z);
+				}
+				else
+				{
+					PutPixel(i, j, color, z);
+				}
 			}
 		}
 	}

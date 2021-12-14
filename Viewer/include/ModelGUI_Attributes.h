@@ -29,5 +29,6 @@ public:
 	bool AreFaceNormalsOnScreen = false;
 	bool AreVerticesNormalsOnScreen = false;
 	bool IsBoundingRectOnScreen = false;
+	bool Grayscale = false;
 };
 

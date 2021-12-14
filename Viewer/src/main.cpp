@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 	//}
 	
 	/* Load a few models */
-	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "cow.obj");
 	scene.AddModel(model1);
 	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
 	//scene.AddModel(model2);
@@ -422,6 +422,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::Checkbox("Face Normals", &scene.GetActiveModel().gui.AreFaceNormalsOnScreen);
 					ImGui::SameLine();
 					ImGui::Checkbox("Vertices Normals", &scene.GetActiveModel().gui.AreVerticesNormalsOnScreen);
+
+					ImGui::SameLine();
+					ImGui::Checkbox("Model Grayscale", &scene.GetActiveModel().gui.Grayscale);
 
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", scene.GetActiveModel().gui.ModelScaleValue_array, scaleMin, scaleMax))
