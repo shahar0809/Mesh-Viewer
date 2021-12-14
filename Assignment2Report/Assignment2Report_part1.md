@@ -230,7 +230,8 @@ The result:
 | ![Without Z-Buffer Teapot](part1_images/teapot.jpeg)    | ![Z-Buffer Teapot](part1_images/z-buffer_teapot.jpeg)       |
 | ![Without Z-Buffer Cow](part1_images/cow.jpeg)    | ![Z-Buffer Cow](part1_images/z-buffer_cow.jpeg)       |
 
-
+Grayscale result:
+![Grayscale](part1_images/grayscale.jpeg)
 
 ## The End
 
