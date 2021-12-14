@@ -51,7 +51,7 @@ void Renderer::DrawBoundingRectangle(const MeshModel& model, const Camera& camer
 
 The result:
 
-![World Trans](part1_images/color_rectangles.gif)
+![Rectangles](part1_images/color_rectangles.gif)
 
 ## Edge Walking
 ### The Algorithm
@@ -231,8 +231,10 @@ The result:
 | ![Without Z-Buffer Cow](part1_images/cow.jpeg)    | ![Z-Buffer Cow](part1_images/z-buffer_cow.jpeg)       |
 
 Grayscale result:
+
 ![Grayscale](part1_images/grayscale.jpeg)
 
-## The End
+## *fin*
+This is a tradition by now:
 
-![gif](/Assignment2Report/part1_images/happy_gif.gif)
+![gif](part1_images/happy_gif.gif)
