@@ -103,7 +103,7 @@ int main(int argc, char** argv)
 	//}
 	
 	/* Load a few models */
-	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "cow.obj");
+	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
 	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
 	//scene.AddModel(model2);
@@ -353,6 +353,10 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				}
 				ImGui::EndMenu();
 			}
+			if (ImGui::MenuItem("Light", "CTRL+SHIFT+L"))
+			{
+				scene.AddLight(std::make_shared<Light>());
+			}
 			ImGui::EndMenu();
 		}
 
@@ -361,27 +365,27 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	// Controls
-	if (ImGui::ColorEdit3("Background Color", (float*)&backgroundColor))
+	if (ImGui::ColorEdit3("Background", (float*)&backgroundColor))
 	{
 		clear_color = backgroundColor;
 	}
 
-	if (ImGui::ColorEdit3("Model Color", (float*)&scene.GetActiveModel().gui.color))
+	if (ImGui::ColorEdit3("Model", (float*)&scene.GetActiveModel().gui.color))
 	{
 		model_color = scene.GetActiveModel().gui.color;
 	}
 
-	if (ImGui::ColorEdit3("Bounding Box Color", (float*)&scene.GetActiveModel().gui.BoundingBoxColor))
+	if (ImGui::ColorEdit3("Bounding Box", (float*)&scene.GetActiveModel().gui.BoundingBoxColor))
 	{
 		bounding_box_color = scene.GetActiveModel().gui.BoundingBoxColor;
 	}
 
-	if (ImGui::ColorEdit3("Faces Normals Color", (float*)&scene.GetActiveModel().gui.FaceNormalsColor))
+	if (ImGui::ColorEdit3("Faces Normals", (float*)&scene.GetActiveModel().gui.FaceNormalsColor))
 	{
 		face_normals_color = scene.GetActiveModel().gui.FaceNormalsColor;
 	}
 
-	if (ImGui::ColorEdit3("Vertics Normals Color", (float*)&scene.GetActiveModel().gui.VerticsNormalsColor))
+	if (ImGui::ColorEdit3("Vertics Normals", (float*)&scene.GetActiveModel().gui.VerticsNormalsColor))
 	{
 		vertics_normals_color = scene.GetActiveModel().gui.VerticsNormalsColor;
 	}
@@ -414,8 +418,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::Checkbox("Show on screen", &scene.GetActiveModel().gui.IsOnScreen);
 					ImGui::SameLine();
 					ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
-					ImGui::SameLine();
-					ImGui::Checkbox("Bounding Rectangle", &scene.GetActiveModel().gui.IsBoundingRectOnScreen);
 
 					ImGui::Checkbox("Model Frame", &scene.GetActiveModel().gui.IsFrameOnScreen);
 					ImGui::SameLine();
@@ -423,8 +425,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::SameLine();
 					ImGui::Checkbox("Vertices Normals", &scene.GetActiveModel().gui.AreVerticesNormalsOnScreen);
 
-					ImGui::SameLine();
-					ImGui::Checkbox("Model Grayscale", &scene.GetActiveModel().gui.Grayscale);
+					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveModel().gui.AmbientReflectionColor);
+					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveModel().gui.SpecularReflectionColor);
+					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveModel().gui.DiffuseReflectionColor);
 
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", scene.GetActiveModel().gui.ModelScaleValue_array, scaleMin, scaleMax))
@@ -479,7 +482,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::EndTabItem();
 				}
 			}
-			ImGui::EndTabItem();
+			ImGui::EndTabBar();
 		}
 
 		ImGui::End();
@@ -589,7 +592,31 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::EndTabItem();
 				}
 			}
-			ImGui::EndTabItem();
+			ImGui::EndTabBar();
+		}
+		ImGui::End();
+
+		ImGui::Begin("Lights Control");
+
+		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+		{
+			for (int i = 0; i < scene.GetLightCount(); i++)
+			{
+				string str = "Light " + std::to_string(i);
+				char* light = &str[0];
+
+				if (ImGui::BeginTabItem(light))
+				{
+					scene.SetActiveLightIndex(i);
+
+					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().gui.AmbientSourceColor);
+					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().gui.SpecularSourceColor);
+					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().gui.DiffuseSourceColor);
+
+					ImGui::EndTabItem();
+				}
+			}
+			ImGui::EndTabBar();
 		}
 		ImGui::End();
 	}

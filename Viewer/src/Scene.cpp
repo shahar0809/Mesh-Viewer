@@ -68,3 +68,33 @@ int Scene::GetActiveModelIndex() const
 {
 	return active_model_index;
 }
+
+void Scene::AddLight(const shared_ptr<Light>& light)
+{
+	lights.push_back(light);
+}
+
+int Scene::GetLightCount() const
+{
+	return lights.size();
+}
+
+Light& Scene::GetLight(int index) const
+{
+	return *lights[index];
+}
+
+Light& Scene::GetActiveLight()
+{
+	return *lights[active_light_index];
+}
+
+void Scene::SetActiveLightIndex(int index)
+{
+	active_light_index = index;
+}
+
+int Scene::GetActiveLightIndex() const
+{
+	return active_light_index;
+}

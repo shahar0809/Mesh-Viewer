@@ -48,17 +48,29 @@ void Renderer::FreeZbuffer()
 	delete[] zBuffer;
 }
 
-void Renderer::PutPixel(int i, int j, const glm::vec3& color, int z = 0)
+void Renderer::PutPixel(int i, int j, const glm::vec3& color, float z = 0, bool isGray = false)
 {
 	if (i < 0) return; if (i >= viewport_width) return;
 	if (j < 0) return; if (j >= viewport_height) return;
 
 	if (zBuffer[i][j] > z)
-	{
-		color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
-		color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
-		color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
+	{			
 		zBuffer[i][j] = z;
+
+		if (isGray)
+		{
+			color_buffer[INDEX(viewport_width, i, j, 0)] = z;
+			color_buffer[INDEX(viewport_width, i, j, 1)] = z;
+			color_buffer[INDEX(viewport_width, i, j, 2)] = z;
+
+		}
+		else
+		{
+			color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
+			color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
+			color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
+		}
+
 	}
 
 }
@@ -209,6 +221,23 @@ void Renderer::DrawLineSanityCheck()
 		currentStep += stepSize;
 	}
 }
+
+void Renderer::DrawFilledCircle(glm::vec3 center, float radius)
+{
+
+}
+
+void Renderer::DrawFilledRectangle(glm::vec3 point, int width, int height, glm::vec3 color)
+{
+	for (int i = point.x; i < point.x + width; i++)
+	{
+		for (int j = point.y; j < point.y + height; j++)
+		{
+			PutPixel(i, j, color);
+		}
+	}
+}
+
 
 void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 {
@@ -433,12 +462,12 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 				{
 					//z = zBuffer[i][j];
 					//glm::vec3 grayScale((z / camera.getFar()) + 1, (z / camera.getFar()) + 1, (z / camera.getFar()) + 1);
-					float min = std::get<2>(Utils::GetMinMax(model.GetVertices()).first);
-					float max = std::get<2>(Utils::GetMinMax(model.GetVertices()).second);
+					float min = std::get<2>(Utils::GetMinMax(transformedVecs).first);
+					float max = std::get<2>(Utils::GetMinMax(transformedVecs).second);
 
-					float diff = ((z) / (max - min));
-					glm::vec3 grayScale((diff + 1), (diff + 1), (diff + 1));
-					PutPixel(i, j, grayScale, z);
+					float diff = ((z - min) / (max - min));
+					glm::vec3 grayScale((diff), (diff), (diff));
+					PutPixel(i, j, grayScale, z, true);
 				}
 				else
 				{
@@ -615,6 +644,12 @@ void Renderer::Render(const Scene& scene)
 		MeshModel currModel = scene.GetModel(i);
 		if (currModel.gui.IsOnScreen)
 			DrawModel(currModel, camera);
+	}
+
+	for (int i = 0; i < scene.GetLightCount(); i++)
+	{
+		Light currLight = scene.GetLight(i);
+		DrawFilledRectangle(currLight.GetSource(), currLight.gui.LightSize, currLight.gui.LightSize, currLight.GetColor());
 	}
 
 	DrawWorldFrame(camera);

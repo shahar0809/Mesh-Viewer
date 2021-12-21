@@ -13,6 +13,10 @@ public:
 	glm::vec3 VerticsNormalsColor;
 	glm::vec3 BoundingRectColor;
 
+	glm::vec3 DiffuseReflectionColor;
+	glm::vec3 SpecularReflectionColor;
+	glm::vec3 AmbientReflectionColor;
+
 	// GUI controllers
 	static float ModelScaleValue_array[3];
 	static float ModelTransValue_array[3];

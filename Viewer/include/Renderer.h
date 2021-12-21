@@ -26,11 +26,13 @@ public:
 	int GetViewportHeight() const;
 
 private:
-	void PutPixel(const int i, const int j, const glm::vec3& color, int z);
+	void PutPixel(const int i, const int j, const glm::vec3& color, float z, bool isGray);
 	void DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color);
 	float ComputeDepth(int x, int y, glm::ivec3 p1, glm::ivec3 p2);
 
 	void DrawLineSanityCheck();
+	void DrawFilledCircle(glm::vec3 center, float radius);
+	void DrawFilledRectangle(glm::vec3 point, int width, int height, glm::vec3 color);
 
 	void DrawModel(const MeshModel& model, const Camera& camera);
 	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera);
