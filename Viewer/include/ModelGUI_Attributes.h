@@ -13,18 +13,18 @@ public:
 	glm::vec3 VerticsNormalsColor;
 	glm::vec3 BoundingRectColor;
 
-	glm::vec3 DiffuseReflectionColor;
-	glm::vec3 SpecularReflectionColor;
-	glm::vec3 AmbientReflectionColor;
+	glm::vec3 DiffuseReflectionColor = { 1, 1, 1 };
+	glm::vec3 SpecularReflectionColor = { 1, 1, 1 };
+	glm::vec3 AmbientReflectionColor = { 1, 1, 1 };
 
 	// GUI controllers
-	static float ModelScaleValue_array[3];
-	static float ModelTransValue_array[3];
-	static float ModelRotateValue_array[3];
+	float ModelScaleValue_array[3] = { 1, 1, 1 };
+	float ModelTransValue_array[3] = { 0, 0, 0 };
+	float ModelRotateValue_array[3] = { 0, 0, 0 };
 
-	static float WorldScaleValue_array[3];
-	static float WorldTransValue_array[3];
-	static float WorldRotateValue_array[3];
+	float WorldScaleValue_array[3] = { 1, 1, 1 };
+	float WorldTransValue_array[3] = { 0, 0, 0 };
+	float WorldRotateValue_array[3] = { 0, 0, 0 };
 
 	/* Fields to draw attributes on Mesh Viewer */
 	bool IsOnScreen = false;

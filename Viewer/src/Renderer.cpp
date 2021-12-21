@@ -48,7 +48,7 @@ void Renderer::FreeZbuffer()
 	delete[] zBuffer;
 }
 
-void Renderer::PutPixel(int i, int j, const glm::vec3& color, float z = 0, bool isGray = false)
+void Renderer::PutPixel(int i, int j, const glm::vec3& color, float z = 0)
 {
 	if (i < 0) return; if (i >= viewport_width) return;
 	if (j < 0) return; if (j >= viewport_height) return;
@@ -57,22 +57,10 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color, float z = 0, bool 
 	{			
 		zBuffer[i][j] = z;
 
-		if (isGray)
-		{
-			color_buffer[INDEX(viewport_width, i, j, 0)] = z;
-			color_buffer[INDEX(viewport_width, i, j, 1)] = z;
-			color_buffer[INDEX(viewport_width, i, j, 2)] = z;
-
-		}
-		else
-		{
-			color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
-			color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
-			color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
-		}
-
+		color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
+		color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
+		color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
 	}
-
 }
 
 void Renderer::DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color)
@@ -460,14 +448,12 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 				float z = ComputeDepth(transformedVecs[0], transformedVecs[1], transformedVecs[2], glm::vec2(i, j));
 				if (model.gui.Grayscale)
 				{
-					//z = zBuffer[i][j];
-					//glm::vec3 grayScale((z / camera.getFar()) + 1, (z / camera.getFar()) + 1, (z / camera.getFar()) + 1);
 					float min = std::get<2>(Utils::GetMinMax(transformedVecs).first);
 					float max = std::get<2>(Utils::GetMinMax(transformedVecs).second);
 
 					float diff = ((z - min) / (max - min));
 					glm::vec3 grayScale((diff), (diff), (diff));
-					PutPixel(i, j, grayScale, z, true);
+					PutPixel(i, j, grayScale, z);
 				}
 				else
 				{

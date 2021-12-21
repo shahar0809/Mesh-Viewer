@@ -415,9 +415,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 					scene.SetActiveModelIndex(i);
 
-					ImGui::Checkbox("Show on screen", &scene.GetActiveModel().gui.IsOnScreen);
+					ImGui::Checkbox("Visible", &scene.GetActiveModel().gui.IsOnScreen);
 					ImGui::SameLine();
-					ImGui::Checkbox("Bounding Box", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
+					ImGui::Checkbox("BBox", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
 
 					ImGui::Checkbox("Model Frame", &scene.GetActiveModel().gui.IsFrameOnScreen);
 					ImGui::SameLine();
@@ -609,10 +609,29 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				{
 					scene.SetActiveLightIndex(i);
 
-					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().gui.AmbientSourceColor);
-					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().gui.SpecularSourceColor);
-					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().gui.DiffuseSourceColor);
+					float* colorPointer = nullptr;
+					colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
 
+					// Radio buttons for light type modes
+					if (ImGui::RadioButton("Ambient", (int*)(&scene.GetActiveLight().gui.lightType), (int)AMBIENT))
+					{
+						scene.GetActiveLight().SetAmbient();
+						colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
+					}
+					ImGui::SameLine();
+					if (ImGui::RadioButton("Specular", (int*)(&scene.GetActiveLight().gui.lightType), (int)SPECULAR))
+					{
+						scene.GetActiveLight().SetSpecular();
+						colorPointer = (float*)&scene.GetActiveLight().gui.SpecularSourceColor;
+					}
+					ImGui::SameLine();
+					if (ImGui::RadioButton("Diffuse", (int*)(&scene.GetActiveLight().gui.lightType), (int)DIFFUSE))
+					{
+						scene.GetActiveLight().SetDiffuse();
+						colorPointer = (float*)&scene.GetActiveLight().gui.DiffuseSourceColor;
+					}
+
+					ImGui::ColorEdit3("Light source", colorPointer);
 					ImGui::EndTabItem();
 				}
 			}

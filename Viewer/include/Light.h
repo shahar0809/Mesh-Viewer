@@ -3,13 +3,6 @@
 
 #include "LightGUI_Attributes.h"
 
-enum LightType
-{
-	DIFFUSE,
-	SPECULAR,
-	AMBIENT
-};
-
 class Light
 {
 public:

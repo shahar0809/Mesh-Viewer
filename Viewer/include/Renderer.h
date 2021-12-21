@@ -26,7 +26,7 @@ public:
 	int GetViewportHeight() const;
 
 private:
-	void PutPixel(const int i, const int j, const glm::vec3& color, float z, bool isGray);
+	void PutPixel(const int i, const int j, const glm::vec3& color, float z);
 	void DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color);
 	float ComputeDepth(int x, int y, glm::ivec3 p1, glm::ivec3 p2);
 

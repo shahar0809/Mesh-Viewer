@@ -3,6 +3,7 @@
 Light::Light()
 {
 	Source = glm::vec3(0);
+	type = AMBIENT;
 }
 
 const glm::vec3& Light::GetSource() const
