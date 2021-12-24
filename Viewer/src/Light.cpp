@@ -127,6 +127,66 @@ const LightType& Light::GetLightType() const
 	return type;
 }
 
+const float& Light::GetAmbientIntensity() const
+{
+	return AmbientIntensity;
+}
+
+const float& Light::GetSpecularIntensity() const
+{
+	return SpecularIntensity;
+}
+
+const float& Light::GetDiffuseIntensity() const
+{
+	return DiffuseIntensity;
+}
+
+void Light::SetAmbientIntensity(const float& intensity)
+{
+	this->AmbientIntensity = intensity;
+}
+
+void Light::SetSpecularIntensity(const float& intensity)
+{
+	this->SpecularIntensity = intensity;
+}
+
+void Light::SetDiffuseIntensity(const float& intensity)
+{
+	this->DiffuseIntensity = intensity;
+}
+
+const glm::vec3& Light::GetAmbientColor() const
+{
+	return AmbientColor;
+}
+
+const glm::vec3& Light::GetSpecularColor() const
+{
+	return SpecularColor;
+}
+
+const glm::vec3& Light::GetDiffuseColor() const
+{
+	return DiffuseColor;
+}
+
+void Light::SetAmbientColor(const glm::vec3& color)
+{
+	this->AmbientColor = color;
+}
+
+void Light::SetSpecularColor(const glm::vec3& color)
+{
+	this->SpecularColor = color;
+}
+
+void Light::SetDiffuseColor(const glm::vec3& color)
+{
+	this->DiffuseColor = color;
+}
+
 //##############################
 //## Controling position      ##
 //##############################

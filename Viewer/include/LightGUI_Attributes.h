@@ -1,6 +1,6 @@
 enum LightType
 {
-	DIFFUSE,
+	DIFFUSE = 0,
 	SPECULAR,
 	AMBIENT
 };
@@ -11,6 +11,10 @@ public:
 	glm::vec3 DiffuseSourceColor = glm::vec3(1, 1, 1);
 	glm::vec3 SpecularSourceColor = glm::vec3(1, 1, 1);
 	glm::vec3 AmbientSourceColor = glm::vec3(1, 1, 1);
+
+	float AmbientIntensity = 1;
+	float SpecularIntensity = 1;
+	float DiffuseIntensity = 1;
 
 	float LightWorldTransValue_array[3] = { 0 };
 	float LightWorldRotateValue_array[3] = { 0 };

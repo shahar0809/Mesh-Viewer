@@ -324,7 +324,7 @@ float Renderer::ComputeDepth(const glm::vec3& v1, const glm::vec3& v2, const glm
 	return (area1 / area) * v1.z + (area2 / area) * v2.z + (area3 / area) * v3.z;
 }
 
-void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
+void Renderer::DrawModel(const MeshModel& model, const Camera& camera, const Light& light)
 {
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
@@ -341,11 +341,11 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera)
 		if (model.gui.IsBoundingRectOnScreen)
 			DrawBoundingRectangle(model, camera, currFace);
 
-		DrawFace(currFace, model, camera);
+		DrawFace(currFace, model, camera, light);
 	}
 }
 
-void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera)
+void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light)
 {
 	std::vector<glm::vec3> transformedVecs;
 
@@ -355,11 +355,12 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
 	}
 
-	EdgeWalking(face, model, camera, Utils::GenerateRandomColor());
+	EdgeWalking(face, model, camera, CalcAmbientReflection(light));
+}
 
-	//DrawLine(transformedVecs[0], transformedVecs[1], model.gui.color);
-	//DrawLine(transformedVecs[1], transformedVecs[2], model.gui.color);
-	//DrawLine(transformedVecs[2], transformedVecs[0], model.gui.color);
+glm::vec3 Renderer::CalcAmbientReflection(const Light& light)
+{
+	return light.GetAmbientIntensity() * light.GetAmbientColor();
 }
 
 /**
@@ -634,19 +635,20 @@ void Renderer::Render(const Scene& scene)
 	int half_height = viewport_height / 2;
 
 	const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
+	const Light& light = scene.GetLight(scene.GetActiveLightIndex());
+
+	for (int i = 0; i < scene.GetLightCount(); i++)
+	{
+		Light currLight = scene.GetLight(i);
+		DrawFilledRectangle(TransVector(currLight.GetSource(), currLight, camera), currLight.gui.LightSize, currLight.gui.LightSize, currLight.GetColor());
+	}
 
 	// Draw mesh triangles
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel currModel = scene.GetModel(i);
 		if (currModel.gui.IsOnScreen)
-			DrawModel(currModel, camera);
-	}
-
-	for (int i = 0; i < scene.GetLightCount(); i++)
-	{
-		Light currLight = scene.GetLight(i);
-		DrawFilledRectangle(TransVector(currLight.GetSource(), currLight, camera), currLight.gui.LightSize, currLight.gui.LightSize, currLight.GetColor());
+			DrawModel(currModel, camera, light);
 	}
 
 	DrawWorldFrame(camera);

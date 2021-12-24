@@ -21,6 +21,22 @@ public:
 	void SetAmbient();
 	const LightType& GetLightType() const;
 
+	const float& GetAmbientIntensity() const;
+	const float& GetSpecularIntensity() const;
+	const float& GetDiffuseIntensity() const;
+
+	void SetAmbientIntensity(const float& intensity);
+	void SetSpecularIntensity(const float& intensity);
+	void SetDiffuseIntensity(const float& intensity);
+
+	const glm::vec3& GetAmbientColor() const;
+	const glm::vec3& GetSpecularColor() const;
+	const glm::vec3& GetDiffuseColor() const;
+
+	void SetAmbientColor(const glm::vec3& color);
+	void SetSpecularColor(const glm::vec3& color);
+	void SetDiffuseColor(const glm::vec3& color);
+
 	glm::mat4x4 GetTransformation() const;
 
 	// Apply transformations on both model and world (dependant on previous values)
@@ -40,6 +56,9 @@ public:
 protected:
 	glm::vec3 Source;
 	LightType type;
+
+	float AmbientIntensity = 1, SpecularIntensity = 1, DiffuseIntensity = 1;
+	glm::vec3 AmbientColor = glm::vec3(1), SpecularColor = glm::vec3(1), DiffuseColor = glm::vec3(1);
 
 	// Attributes to keep translate and rotation values
 	glm::mat4x4 TranslateLocal, RotateLocal, RotateLocalX, RotateLocalY, RotateLocalZ;

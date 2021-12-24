@@ -117,6 +117,9 @@ int main(int argc, char** argv)
 	scene.AddCamera(camera1);
 	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();
 	scene.AddCamera(camera2);
+
+	std::shared_ptr<Light> light1 = std::make_shared<Light>();
+	scene.AddLight(light1);
 	
 	ImGuiIO& io = SetupDearImgui(window);
 	glfwSetScrollCallback(window, ScrollCallback);
@@ -612,28 +615,55 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.SetActiveLightIndex(i);
 
 					float* colorPointer = nullptr;
-					colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
+					//colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
 
 					// Radio buttons for light type modes
 					if (ImGui::RadioButton("Ambient", (int*)(&scene.GetActiveLight().gui.lightType), (int)AMBIENT))
 					{
 						scene.GetActiveLight().SetAmbient();
-						colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
+						//colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
 					}
 					ImGui::SameLine();
 					if (ImGui::RadioButton("Specular", (int*)(&scene.GetActiveLight().gui.lightType), (int)SPECULAR))
 					{
 						scene.GetActiveLight().SetSpecular();
-						colorPointer = (float*)&scene.GetActiveLight().gui.SpecularSourceColor;
+						//colorPointer = (float*)&scene.GetActiveLight().gui.SpecularSourceColor;
 					}
 					ImGui::SameLine();
 					if (ImGui::RadioButton("Diffuse", (int*)(&scene.GetActiveLight().gui.lightType), (int)DIFFUSE))
 					{
 						scene.GetActiveLight().SetDiffuse();
-						colorPointer = (float*)&scene.GetActiveLight().gui.DiffuseSourceColor;
+						//colorPointer = (float*)&scene.GetActiveLight().gui.DiffuseSourceColor;
 					}
 
-					ImGui::ColorEdit3("Light source", colorPointer);
+					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().gui.AmbientSourceColor);
+					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().gui.SpecularSourceColor);
+					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().gui.DiffuseSourceColor);
+
+					scene.GetActiveLight().SetAmbientColor(glm::vec3(scene.GetActiveLight().gui.AmbientSourceColor[0],
+						scene.GetActiveLight().gui.AmbientSourceColor[1],
+						scene.GetActiveLight().gui.AmbientSourceColor[2]));
+					scene.GetActiveLight().SetSpecularColor(glm::vec3(scene.GetActiveLight().gui.SpecularSourceColor[0],
+						scene.GetActiveLight().gui.SpecularSourceColor[1],
+						scene.GetActiveLight().gui.SpecularSourceColor[2]));
+					scene.GetActiveLight().SetDiffuseColor(glm::vec3(scene.GetActiveLight().gui.DiffuseSourceColor[0],
+						scene.GetActiveLight().gui.DiffuseSourceColor[1],
+						scene.GetActiveLight().gui.DiffuseSourceColor[2]));
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+					if (ImGui::SliderFloat("Ambient Intensity", &scene.GetActiveLight().gui.AmbientIntensity, 1, 5))
+					{
+						scene.GetActiveLight().SetAmbientIntensity(scene.GetActiveLight().gui.AmbientIntensity);
+					}
+					if (ImGui::SliderFloat("Specular Intensity", &scene.GetActiveLight().gui.SpecularIntensity, 1, 5))
+					{
+						scene.GetActiveLight().SetSpecularIntensity(scene.GetActiveLight().gui.SpecularIntensity);
+					}
+					if (ImGui::SliderFloat("Diffuse Intensity", &scene.GetActiveLight().gui.DiffuseIntensity, 1, 5))
+					{
+						scene.GetActiveLight().SetDiffuseIntensity(scene.GetActiveLight().gui.DiffuseIntensity);
+					}
 
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
