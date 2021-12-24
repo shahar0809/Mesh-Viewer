@@ -341,11 +341,11 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera, const Lig
 		if (model.gui.IsBoundingRectOnScreen)
 			DrawBoundingRectangle(model, camera, currFace);
 
-		DrawFace(currFace, model, camera, light);
+		DrawFace(currFace, model, camera, light, i);
 	}
 }
 
-void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light)
+void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index)
 {
 	std::vector<glm::vec3> transformedVecs;
 
@@ -355,12 +355,34 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
 	}
 
-	EdgeWalking(face, model, camera, CalcAmbientReflection(light));
+	glm::vec3 finalColor = glm::vec3(0);
+	switch (light.GetLightType())
+	{
+		case (LightType::AMBIENT):
+		{
+			finalColor = CalcAmbientReflection(light);
+			break;
+		}
+		case (LightType::DIFFUSE):
+		{
+			glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(model.GetFaceCenter(face), model, camera);
+			finalColor = CalcDiffuseReflection(model, light, model.GetFaceNormal(index), lightDirection);
+			break;
+		}
+	}
+
+	EdgeWalking(face, model, camera, finalColor);
 }
 
 glm::vec3 Renderer::CalcAmbientReflection(const Light& light)
 {
 	return light.GetAmbientIntensity() * light.GetAmbientColor();
+}
+
+glm::vec3 Renderer::CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection)
+{
+	float brightness = glm::dot(normal, lightDirection) / (glm::length(lightDirection) * glm::length(normal));
+	return brightness * light.GetDiffuseIntensity() * model.gui.DiffuseReflectionColor;
 }
 
 /**

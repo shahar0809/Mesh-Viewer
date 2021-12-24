@@ -35,7 +35,7 @@ private:
 	void DrawFilledRectangle(glm::vec3 point, int width, int height, glm::vec3 color);
 
 	void DrawModel(const MeshModel& model, const Camera& camera, const Light& light);
-	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light);
+	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index);
 	void DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera);
 	void DrawNormalsVertices(const MeshModel& model, const Camera& camera);
 	glm::vec3 TransVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera);
@@ -43,6 +43,7 @@ private:
 	static glm::vec3 ApplyTrans(glm::vec3 vec, glm::mat4x4 trans);
 
 	glm::vec3 CalcAmbientReflection(const Light& light);
+	glm::vec3 CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection);
 
 	void EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color);
 	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);
