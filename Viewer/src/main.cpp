@@ -429,6 +429,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveModel().gui.SpecularReflectionColor);
 					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveModel().gui.DiffuseReflectionColor);
 
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
 					/* Set new parameters for each transformation when the slider is changed [Model] */
 					if (ImGui::SliderFloat3("Model Scale", scene.GetActiveModel().gui.ModelScaleValue_array, scaleMin, scaleMax))
 					{
@@ -527,11 +529,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
 					/* Set new parameters for each transformation when the slider is changed [World] */
-					if (ImGui::SliderFloat3("World Translate", scene.GetActiveCamera().gui.CameraWorldRotateValue_array, translateMin, translateMax))
+					if (ImGui::SliderFloat3("World Translate", scene.GetActiveCamera().gui.CameraWorldTransValue_array, translateMin, translateMax))
 					{
-						scene.GetActiveCamera().SetWorldTranslate(scene.GetActiveCamera().gui.CameraWorldRotateValue_array[0],
-							scene.GetActiveCamera().gui.CameraWorldRotateValue_array[1],
-							scene.GetActiveCamera().gui.CameraWorldRotateValue_array[2]);
+						scene.GetActiveCamera().SetWorldTranslate(scene.GetActiveCamera().gui.CameraWorldTransValue_array[0],
+							scene.GetActiveCamera().gui.CameraWorldTransValue_array[1],
+							scene.GetActiveCamera().gui.CameraWorldTransValue_array[2]);
 					}
 					if (ImGui::SliderFloat3("World Rotate", scene.GetActiveCamera().gui.CameraWorldRotateValue_array, rotateMin, rotateMax))
 					{
@@ -632,6 +634,36 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					}
 
 					ImGui::ColorEdit3("Light source", colorPointer);
+
+					ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+
+					if (ImGui::SliderFloat3("Local Translate", scene.GetActiveLight().gui.LightLocalTransValue_array, translateMin, translateMax))
+					{
+						scene.GetActiveLight().SetLocalTranslate(scene.GetActiveLight().gui.LightLocalTransValue_array[0],
+							scene.GetActiveLight().gui.LightLocalTransValue_array[1],
+							scene.GetActiveLight().gui.LightLocalTransValue_array[2]);
+					}
+					if (ImGui::SliderFloat3("Local Rotate", scene.GetActiveLight().gui.LightLocalRotateValue_array, rotateMin, rotateMax))
+					{
+						scene.GetActiveLight().SetLocalRotate(scene.GetActiveLight().gui.LightLocalRotateValue_array[0],
+							scene.GetActiveLight().gui.LightLocalRotateValue_array[1],
+							scene.GetActiveLight().gui.LightLocalRotateValue_array[2]);
+					}
+
+					/* Set new parameters for each transformation when the slider is changed [World] */
+					if (ImGui::SliderFloat3("World Translate", scene.GetActiveLight().gui.LightWorldTransValue_array, translateMin, translateMax))
+					{
+						scene.GetActiveLight().SetWorldTranslate(scene.GetActiveLight().gui.LightWorldTransValue_array[0],
+							scene.GetActiveLight().gui.LightWorldTransValue_array[1],
+							scene.GetActiveLight().gui.LightWorldTransValue_array[2]);
+					}
+					if (ImGui::SliderFloat3("World Rotate", scene.GetActiveLight().gui.LightWorldRotateValue_array, rotateMin, rotateMax))
+					{
+						scene.GetActiveLight().SetWorldRotate(scene.GetActiveLight().gui.LightWorldRotateValue_array[0],
+							scene.GetActiveLight().gui.LightWorldRotateValue_array[1],
+							scene.GetActiveLight().gui.LightWorldRotateValue_array[2]);
+					}
 					ImGui::EndTabItem();
 				}
 			}

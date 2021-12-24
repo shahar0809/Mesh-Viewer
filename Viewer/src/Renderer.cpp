@@ -53,6 +53,10 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color, float z = 0)
 	if (i < 0) return; if (i >= viewport_width) return;
 	if (j < 0) return; if (j >= viewport_height) return;
 
+	//color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
+	//color_buffer[INDEX(viewport_width, i, j, 1)] = color.y;
+	//color_buffer[INDEX(viewport_width, i, j, 2)] = color.z;
+
 	if (zBuffer[i][j] > z)
 	{			
 		zBuffer[i][j] = z;
@@ -478,6 +482,13 @@ glm::vec3 Renderer::TransVector(const glm::vec3& vec, const MeshModel& model, co
 	return ApplyTrans(vec, transform);
 }
 
+glm::vec3 Renderer::TransVector(const glm::vec3& vec, const Light& light, const Camera& camera)
+{
+	glm::mat4x4 transform = camera.GetViewportTrans(viewport_width, viewport_height) * camera.GetProjectionTransformation()
+		* glm::inverse(camera.GetViewTransformation()) * light.GetTransformation();
+	return ApplyTrans(vec, transform);
+}
+
 glm::vec3 Renderer::ApplyTrans(glm::vec3 vec, glm::mat4x4 trans)
 {
 	return Utils::FromHomogCoords(trans * Utils::ToHomogCoords(vec));
@@ -635,7 +646,7 @@ void Renderer::Render(const Scene& scene)
 	for (int i = 0; i < scene.GetLightCount(); i++)
 	{
 		Light currLight = scene.GetLight(i);
-		DrawFilledRectangle(currLight.GetSource(), currLight.gui.LightSize, currLight.gui.LightSize, currLight.GetColor());
+		DrawFilledRectangle(TransVector(currLight.GetSource(), currLight, camera), currLight.gui.LightSize, currLight.gui.LightSize, currLight.GetColor());
 	}
 
 	DrawWorldFrame(camera);
