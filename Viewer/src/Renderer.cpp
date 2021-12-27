@@ -366,7 +366,8 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		case (LightType::DIFFUSE):
 		{
 			glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(model.GetFaceCenter(face), model, camera);
-			finalColor = CalcDiffuseReflection(model, light, model.GetFaceNormal(index), lightDirection);
+			glm::vec3 transVec = Utils::FromHomogCoords(model.GetTransformation() * Utils::ToHomogCoords(model.GetFaceNormal(index)));
+			finalColor = CalcDiffuseReflection(model, light, transVec, lightDirection);
 			break;
 		}
 	}
