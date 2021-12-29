@@ -366,9 +366,11 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& 
 		case (LightType::DIFFUSE):
 		{
 			glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(model.GetFaceCenter(face), model, camera);
+			glm::vec3 CameraDirection = camera.getEye();
 			glm::vec3 transVec = Utils::FromHomogCoords(model.GetTransformation() * Utils::ToHomogCoords(model.GetFaceNormal(index)));
-			finalColor = CalcDiffuseReflection(model, light, transVec, lightDirection);
-			// finalColor = CalcSpecularReflection(model, light, transVec, lightDirection);
+			//finalColor = CalcDiffuseReflection(model, light, transVec, lightDirection);
+			finalColor = CalcSpecularReflection(model, light, transVec, lightDirection, CameraDirection, 3.0);
+			// finalColor = CalcColor(model, light, transVec, lightDirection, CameraDirection, 3.0);
 			break;
 		}
 	}
@@ -392,6 +394,15 @@ glm::vec3 Renderer::CalcSpecularReflection(const MeshModel& model, const Light& 
 	float degree = glm::clamp(glm::dot(glm::reflect(lightDirection, normal), CameraDirection), 0.0f, 360.0f);
 	float power = glm::clamp(pow(degree, Alpha), 0.0f, 1.0f);
 	return power * light.GetSpecularIntensity() * model.gui.SpecularReflectionColor;
+}
+
+glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha)
+{
+	glm::vec3 AmbientLight = CalcAmbientReflection(light);
+	glm::vec3 DiffuseLight = CalcDiffuseReflection(model, light, normal, lightDirection);
+	glm::vec3 SpecularLight = CalcSpecularReflection(model, light, normal, lightDirection, CameraDirection, Alpha);
+
+	return AmbientLight + DiffuseLight + SpecularLight;
 }
 
 /**
