@@ -44,6 +44,7 @@ private:
 
 	glm::vec3 CalcAmbientReflection(const Light& light);
 	glm::vec3 CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection);
+	glm::vec3 CalcSpecularReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha);
 
 	void EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color);
 	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);
