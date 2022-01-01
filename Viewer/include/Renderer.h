@@ -42,12 +42,13 @@ private:
 	glm::vec3 TransVector(const glm::vec3& vec, const Light& light, const Camera& camera);
 	static glm::vec3 ApplyTrans(glm::vec3 vec, glm::mat4x4 trans);
 
+	glm::vec3 GetColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
 	glm::vec3 CalcAmbientReflection(const Light& light);
 	glm::vec3 CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection);
-	glm::vec3 CalcSpecularReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha);
+	glm::vec3 CalcSpecularReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float& Alpha);
 	glm::vec3 CalcColor(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha);
 
-	void EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const glm::vec3 color);
+	void EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index);
 	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);
 	float EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p);
 
