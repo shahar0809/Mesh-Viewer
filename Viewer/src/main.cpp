@@ -89,18 +89,6 @@ int main(int argc, char** argv)
 	Scene scene = Scene();
 
 	CameraGUI_Attributes::width = renderer.GetViewportWidth(), CameraGUI_Attributes::height = renderer.GetViewportHeight();
-
-	//// Initialize camera controllers
-	//for (int i = 0; i < 3; i++) 
-	//{
-	//	ortho_array[i][0] = width / SCREEN_ASPECT;
-	//	ortho_array[i][1] = height / SCREEN_ASPECT;
-	//	ortho_array[i][2] = 15;
-
-	//	perspective_array[i][0] = width / SCREEN_ASPECT;
-	//	perspective_array[i][1] = height / SCREEN_ASPECT;
-	//	perspective_array[i][2] = 15;
-	//}
 	
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
@@ -634,6 +622,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					{
 						scene.GetActiveLight().SetDiffuse();
 						//colorPointer = (float*)&scene.GetActiveLight().gui.DiffuseSourceColor;
+					}
+
+					if (scene.GetActiveLight().gui.lightType == SPECULAR)
+					{
+						ImGui::SliderFloat("Shininess", &scene.GetActiveLight().gui.shininess, 1, 5);
 					}
 
 					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().gui.AmbientSourceColor);
