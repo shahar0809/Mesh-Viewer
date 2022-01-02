@@ -3,6 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glad/glad.h>
 #include <string>
+#include <map>
 #include <tuple>
 #include <memory>
 #include "Face.h"
@@ -57,6 +58,7 @@ public:
 	
 	glm::vec3 GetNormalVertix(int index) const;
 	glm::vec3 GetFaceNormal(int index) const;
+	void InitVertexNormals();
 
 	glm::vec3 GetFaceCenter(const Face& face) const;
 	std::vector<glm::vec3> GetBoundingRectangle(std::vector<glm::vec3> vectors) const;
@@ -70,6 +72,7 @@ private:
 	std::vector<glm::vec3> normals;
 	std::vector<std::vector<int>> verticesFacesNeighbors;
 	std::string model_name;
+	std::map<int, std::vector<glm::vec3>> vertexesNormals;
 
 	// Keep the frame of the model
 	glm::vec3 Origin, AxisX, AxisY, AxisZ;
@@ -89,5 +92,4 @@ private:
 	static glm::vec3 FromHomogCoords(glm::vec4 vec);
 
 	void TransformModelFrame(glm::mat4x4 trans);
-
 };

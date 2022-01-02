@@ -97,7 +97,7 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	};
 	
 	InitLocalFrame();
-	InitverticesFacesNeighbors();
+	InitVertexNormals();
 }
 
 MeshModel::~MeshModel()
@@ -383,35 +383,29 @@ void MeshModel::InitLocalFrame()
 		std::get<2>(minMax.second));
 }
 
-void MeshModel::InitverticesFacesNeighbors()
+void MeshModel::InitVertexNormals()
 {
-	verticesFacesNeighbors.reserve(GetVerticesCount());
-	for (int i = 0; i < GetVerticesCount(); i++)
+	// Go over all faces, and add each face normal to the vertex's map
+	for (int i = 0; i < GetFacesCount(); i++)
 	{
-		for (int j = 0; j < GetFacesCount(); j++)
+		Face currFace = faces[i];
+		for (int j = 0; j < 3; j++)
 		{
-			for (int k = 0; k < 3; k++) 
-			{
-				verticesFacesNeighbors.at(GetFace(j).GetVertexIndex(k) - 1).push_back(j);
-			}
+			glm::vec3 currNormal = GetFaceNormal(i);
+			vertexesNormals[currFace.GetVertexIndex(j) - 1].push_back(currNormal);
 		}
 	}
 }
 
 glm::vec3 MeshModel::GetNormalVertix(int index) const
 {
-	glm::vec3 sum(0.0f);
-	int face_count = 0;
-	for (int j : verticesFacesNeighbors.at(index))
+	glm::vec3 vertexNormal(0);
+
+	for (auto normal : vertexesNormals.at(index))
 	{
-		sum += GetFaceNormal(j);
-		face_count++;
+		vertexNormal += normal;
 	}
-	if (face_count == 0)
-	{
-		sum /= face_count;
-	}
-	return sum;
+	return glm::normalize(vertexNormal);
 }
 
 glm::vec3 MeshModel::GetFaceNormal(int index) const
