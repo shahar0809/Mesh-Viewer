@@ -43,6 +43,7 @@ private:
 	static glm::vec3 ApplyTrans(glm::vec3 vec, glm::mat4x4 trans);
 
 	glm::vec3 GetColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
+	glm::vec3 LinearInterpolateColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
 	glm::vec3 CalcAmbientReflection(const Light& light);
 	glm::vec3 CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection);
 	glm::vec3 CalcSpecularReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float& Alpha);

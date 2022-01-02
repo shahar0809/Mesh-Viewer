@@ -27,7 +27,7 @@ Renderer::~Renderer()
 
 void Renderer::InitBufferZ()
 {
-	zBuffer = new float*[viewport_width];
+	zBuffer = new float* [viewport_width];
 
 	for (int i = 0; i < viewport_width; i++)
 	{
@@ -54,7 +54,7 @@ void Renderer::PutPixel(int i, int j, const glm::vec3& color, float z = 0)
 	if (j < 0) return; if (j >= viewport_height) return;
 
 	if (zBuffer[i][j] > z)
-	{			
+	{
 		zBuffer[i][j] = z;
 
 		color_buffer[INDEX(viewport_width, i, j, 0)] = color.x;
@@ -226,7 +226,6 @@ void Renderer::DrawFilledRectangle(glm::vec3 point, int width, int height, glm::
 	}
 }
 
-
 void Renderer::DrawModelFrame(const MeshModel& model, const Camera& camera)
 {
 	glm::mat4x4 transform = camera.GetViewportTrans(viewport_width, viewport_height) * camera.GetProjectionTransformation()
@@ -325,7 +324,7 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera, const Lig
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
 		Face currFace = model.GetFace(i);
-		
+
 		if (model.gui.IsFrameOnScreen)
 			DrawModelFrame(model, camera);
 		if (model.gui.AreFaceNormalsOnScreen)
@@ -343,6 +342,24 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera, const Lig
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index)
 {
 	EdgeWalking(face, model, camera, light, index);
+}
+
+glm::vec3 Renderer::LinearInterpolateColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
+{
+	std::vector<glm::vec3> verticesColors;
+	std::vector<glm::vec3> vertices;
+	for (int i = 0; i < 3; i++)
+	{
+		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
+		verticesColors.push_back(GetColor(model, light, camera, face, vertices[i], index));
+	}
+
+	float area1 = Utils::CalcTriangleArea(vertices[1], vertices[2], point),
+		area2 = Utils::CalcTriangleArea(vertices[0], vertices[2], point),
+		area3 = Utils::CalcTriangleArea(vertices[0], vertices[1], point);
+	float area = area1 + area2 + area3;
+
+	return (area1 / area) * verticesColors[0] + (area2 / area) * verticesColors[1] + (area3 / area) * verticesColors[2];
 }
 
 glm::vec3 Renderer::GetColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
@@ -393,10 +410,10 @@ glm::vec3 Renderer::CalcSpecularReflection(const MeshModel& model, const Light& 
 	float cosAngIncidence = glm::dot(surfaceNormal, lightDirection);
 	cosAngIncidence = glm::clamp(cosAngIncidence, 0.0f, 1.0f);
 
-	if (cosAngIncidence == 0)
-	{
-		std::cout << "is 0 " << std::endl;
-	}
+	//if (cosAngIncidence == 0)
+	//{
+	//	std::cout << "is 0 " << std::endl;
+	//}
 
 	glm::vec3 viewDirection = glm::normalize(-cameraDirection);
 	glm::vec3 reflectDir = glm::reflect(-lightDirection, surfaceNormal);
@@ -405,7 +422,7 @@ glm::vec3 Renderer::CalcSpecularReflection(const MeshModel& model, const Light& 
 	phongTerm = cosAngIncidence != 0.0 ? phongTerm : 0.0;
 	phongTerm = glm::pow(phongTerm, light.gui.shininess);
 	return phongTerm * model.gui.SpecularReflectionColor;
-	
+
 	/*float reflectionDegree = glm::clamp(glm::dot(glm::reflect(lightDirection, glm::normalize(normal)), glm::normalize(cameraDirection)), 0.0f, 360.0f);
 	float shininess = glm::clamp(pow(reflectionDegree, alpha), 0.0f, 1.0f);
 	if (shininess * light.GetSpecularIntensity() * model.gui.SpecularReflectionColor == glm::vec3(0))
@@ -525,7 +542,8 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 				}
 				else
 				{
-					PutPixel(i, j, GetColor(model, light, camera, face, glm::vec3(i, j, z), index), z);
+					glm::vec3 currPoint(i, j, z);
+					PutPixel(i, j, LinearInterpolateColor(model, light, camera, face, currPoint, index), z);
 				}
 			}
 		}
