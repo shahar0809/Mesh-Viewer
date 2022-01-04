@@ -33,6 +33,4 @@ public:
 	ShadingType shadingType = FLAT;
 
 	float LightSize = 20;
-
-	float shininess = 1.0;
 };

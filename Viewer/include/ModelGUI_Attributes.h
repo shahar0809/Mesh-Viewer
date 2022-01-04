@@ -26,6 +26,8 @@ public:
 	float WorldTransValue_array[3] = { 0, 0, 0 };
 	float WorldRotateValue_array[3] = { 0, 0, 0 };
 
+	float shininess = 1.0;
+
 	/* Fields to draw attributes on Mesh Viewer */
 	bool IsOnScreen = false;
 	bool IsBoundingBoxOnScreen = false;

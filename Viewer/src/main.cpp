@@ -419,6 +419,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveModel().gui.AmbientReflectionColor);
 					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveModel().gui.SpecularReflectionColor);
 					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveModel().gui.DiffuseReflectionColor);
+					ImGui::SliderFloat("Shininess", &scene.GetActiveModel().gui.shininess, 1, 20);
 
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
@@ -620,30 +621,20 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 						scene.GetActiveLight().SetDiffuse();
 					}
 
-					if (scene.GetActiveLight().gui.lightType == SPECULAR)
-					{
-						ImGui::SliderFloat("Shininess", &scene.GetActiveLight().gui.shininess, 1, 20);
-					}
-
 					// Radio buttons for shading type modes
 					if (ImGui::RadioButton("Flat", (int*)(&scene.GetActiveLight().gui.shadingType), (int)FLAT))
 					{
-						scene.GetActiveLight().SetAmbient();
+						scene.GetActiveLight().SetFlat();
 					}
 					ImGui::SameLine();
 					if (ImGui::RadioButton("Gouraud", (int*)(&scene.GetActiveLight().gui.shadingType), (int)GOURAUD))
 					{
-						scene.GetActiveLight().SetSpecular();
+						scene.GetActiveLight().SetGouraud();
 					}
 					ImGui::SameLine();
 					if (ImGui::RadioButton("Phong", (int*)(&scene.GetActiveLight().gui.shadingType), (int)PHONG))
 					{
-						scene.GetActiveLight().SetDiffuse();
-					}
-
-					if (scene.GetActiveLight().gui.lightType == SPECULAR)
-					{
-						ImGui::SliderFloat("Shininess", &scene.GetActiveLight().gui.shininess, 1, 5);
+						scene.GetActiveLight().SetPhong();
 					}
 
 					ImGui::ColorEdit3("Ambient", (float*)&scene.GetActiveLight().gui.AmbientSourceColor);

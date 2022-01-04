@@ -380,7 +380,7 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 	for (int i = 0; i < 3; i++)
 	{
 		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
-		glm::vec3 normal = model.GetNormalVertix(face.GetVertexIndex(i));
+		glm::vec3 normal = model.GetNormal(face.GetNormalIndex(i));
 		verticesColors.push_back(GetVertexColor(model, light, camera, face, vertices[i], normal));
 	}
 
@@ -424,7 +424,7 @@ glm::vec3 Renderer::GetVertexColor(const MeshModel& model, const Light& light, c
 		glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
 		glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
 
-		finalColor = light.CalcSpecularReflection(model.gui.SpecularReflectionColor, normal, lightDirection, cameraDirection, light.gui.shininess);
+		finalColor = light.CalcSpecularReflection(model.gui.SpecularReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
 		break;
 	}
 	}
