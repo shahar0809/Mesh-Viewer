@@ -93,19 +93,12 @@ int main(int argc, char** argv)
 	/* Load a few models */
 	std::shared_ptr<MeshModel> model1 = Utils::LoadMeshModel(base_path + "demo.obj");
 	scene.AddModel(model1);
-	//std::shared_ptr<MeshModel> model2 = Utils::LoadMeshModel(base_path + "camera.obj");
-	//scene.AddModel(model2);
-	//std::shared_ptr<MeshModel> model3 = Utils::LoadMeshModel(base_path + "camera.obj");
-	//scene.AddModel(model3);
-	//std::shared_ptr<MeshModel> model4 = Utils::LoadMeshModel(base_path + "camera.obj");
-	//scene.AddModel(model4);
 
 	/* Load a camera */
 	std::shared_ptr<Camera> camera1 = std::make_shared<Camera>();
 	scene.AddCamera(camera1);
-	std::shared_ptr<Camera> camera2 = std::make_shared<Camera>();
-	scene.AddCamera(camera2);
 
+	/* Add a light */
 	std::shared_ptr<Light> light1 = std::make_shared<Light>();
 	scene.AddLight(light1);
 	
@@ -190,6 +183,7 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 		ChangeFrameSize(frameBufferWidth, frameBufferHeight, renderer);
 	}
 
+	/* -------------------------------------------------- Keyboard and Mouse Interactions -----------------------------------------------*/
 	if (!io.WantCaptureKeyboard)
 	{
 		// The key is down (S)
@@ -299,7 +293,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				else
 				{
 				}
-
 			}
 			ImGui::EndMenu();
 		}
@@ -360,7 +353,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		ImGui::EndMainMenuBar();
 	}
 
-	// Controls
+	/* -------------------------------------------------- Colors control -----------------------------------------------*/
 	if (ImGui::ColorEdit3("Background", (float*)&backgroundColor))
 	{
 		clear_color = backgroundColor;
@@ -391,14 +384,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	int numberOfModels = scene.GetModelCount();
 	int numberOfCameras = scene.GetCameraCount();
 
+	/* -------------------------------------------------- Control models -----------------------------------------------*/
 	{
-		ImGui::Begin("Model and World Transformation");
+		ImGui::Begin("Models");
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 		{
 			for (int i = 0; i < numberOfModels; i++)
 			{
-				//string str = scene.GetActiveModel().GetModelName();
 				string str = "Model " + std::to_string(i);
 				char* model = &str[0];
 
@@ -481,6 +474,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		ImGui::End();
 	
+		/* -------------------------------------------------- Cameras Control -----------------------------------------------*/
 		ImGui::Begin("Camera Control");
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
@@ -590,6 +584,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 		ImGui::End();
 
+		/* -------------------------------------------------- Lights Control -----------------------------------------------*/
 		ImGui::Begin("Lights Control");
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))

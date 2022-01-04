@@ -184,6 +184,7 @@ float Renderer::ComputeDepth(int x, int y, glm::ivec3 p1, glm::ivec3 p2)
 	return nd1 * p1.z + nd2 * p2.z;
 }
 
+/* -------------------------------------------------- Draw differnet objects -----------------------------------------------*/
 void Renderer::DrawLineSanityCheck()
 {
 	glm::ivec3 circleCenter(600, 400, 0);
@@ -309,16 +310,34 @@ void Renderer::DrawBoundingRectangle(const MeshModel& model, const Camera& camer
 	DrawLine(rectanglePoints[3], rectanglePoints[0], randColor);
 }
 
-float Renderer::ComputeDepth(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3, const glm::vec2& point)
+/**
+ * @brief Draws normal of a face
+ * @param index The index of the face in the model
+ * @param face The Face
+ * @param model The model
+ * @param camera The active camera
+*/
+void Renderer::DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
 {
-	float area1 = Utils::CalcTriangleArea(v2, v3, point),
-		area2 = Utils::CalcTriangleArea(v1, v3, point),
-		area3 = Utils::CalcTriangleArea(v1, v2, point);
-	float area = area1 + area2 + area3;
-
-	return (area1 / area) * v1.z + (area2 / area) * v2.z + (area3 / area) * v3.z;
+	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.gui.FaceNormalsColor);
 }
 
+void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
+{
+	for (int i = 0; i < model.GetFacesCount(); i++)
+	{
+		Face currFace = model.GetFace(i);
+
+		for (int j = 0; j < 3; j++)
+		{
+			glm::vec3 vertex = model.GetVertice(currFace.GetVertexIndex(j) - 1);
+			glm::vec3 normal = model.GetNormalVertix(currFace.GetVertexIndex(j) - 1) + vertex;
+			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.gui.VerticsNormalsColor);
+		}
+	}
+}
+
+/* -------------------------------------------------- Draw models -----------------------------------------------*/
 void Renderer::DrawModel(const MeshModel& model, const Scene& scene)
 {
 	Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());
@@ -345,6 +364,7 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Scene& s
 	EdgeWalking(face, model, scene, index);
 }
 
+/* -------------------------------------------------- Lights & Shading -----------------------------------------------*/
 /**
  * @brief Performs Flat Shading.
  * @param model 
@@ -472,32 +492,15 @@ glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const 
 	return AmbientLight + DiffuseLight + SpecularLight;
 }
 
-/**
- * @brief Draws normal of a face
- * @param index The index of the face in the model
- * @param face The Face
- * @param model The model
- * @param camera The active camera
-*/
-void Renderer::DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera)
+/* -------------------------------------------------- Edge Walking -----------------------------------------------*/
+float Renderer::ComputeDepth(const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3, const glm::vec2& point)
 {
-	DrawLine(TransVector(model.GetFaceCenter(face), model, camera), TransVector(model.GetFaceNormal(index) + model.GetFaceCenter(face), model, camera), model.gui.FaceNormalsColor);
-}
+	float area1 = Utils::CalcTriangleArea(v2, v3, point),
+		area2 = Utils::CalcTriangleArea(v1, v3, point),
+		area3 = Utils::CalcTriangleArea(v1, v2, point);
+	float area = area1 + area2 + area3;
 
-void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
-{
-	for (int i = 0; i < model.GetFacesCount(); i++)
-	{
-		Face currFace = model.GetFace(i);
-
-		for (int j = 0; j < 3; j++)
-		{
-			glm::vec3 vertex = model.GetVertice(currFace.GetVertexIndex(j) - 1);
-			//glm::vec3 normal = model.GetNormal(currFace.GetNormalIndex(j) - 1) + vertex;
-			glm::vec3 normal = model.GetNormalVertix(currFace.GetVertexIndex(j) - 1) + vertex;
-			DrawLine(TransVector(vertex, model, camera), TransVector(normal, model, camera), model.gui.VerticsNormalsColor);
-		}
-	}
+	return (area1 / area) * v1.z + (area2 / area) * v2.z + (area3 / area) * v3.z;
 }
 
 float Renderer::EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p)
@@ -583,6 +586,7 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Scene
 	}
 }
 
+/* -------------------------------------------------- Transformations & OpenGL -----------------------------------------------*/
 /**
  * @brief Apply renderer transformation on a vertex.
  * @param vec The vertex
