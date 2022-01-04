@@ -327,6 +327,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "banana.obj");
 					scene.AddModel(model);
 				}
+				if (ImGui::MenuItem("Sphere"))
+				{
+					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "sphere.obj");
+					scene.AddModel(model);
+				}
 				if (ImGui::MenuItem("Pawn"))
 				{
 					std::shared_ptr<MeshModel> model = Utils::LoadMeshModel(base_path + "pawn.obj");
@@ -380,11 +385,6 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	{
 		vertics_normals_color = scene.GetActiveModel().gui.VerticsNormalsColor;
 	}
-
-	/*if (ImGui::ColorEdit3("Bounding Rectangle Color", (float*)&scene.GetActiveModel().gui.BoundingRectColor))
-	{
-		bounding_rect_color = scene.GetActiveModel().gui.BoundingRectColor;
-	}*/
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
@@ -603,25 +603,42 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.SetActiveLightIndex(i);
 
 					float* colorPointer = nullptr;
-					//colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
 
 					// Radio buttons for light type modes
 					if (ImGui::RadioButton("Ambient", (int*)(&scene.GetActiveLight().gui.lightType), (int)AMBIENT))
 					{
 						scene.GetActiveLight().SetAmbient();
-						//colorPointer = (float*)&scene.GetActiveLight().gui.AmbientSourceColor;
 					}
 					ImGui::SameLine();
 					if (ImGui::RadioButton("Specular", (int*)(&scene.GetActiveLight().gui.lightType), (int)SPECULAR))
 					{
 						scene.GetActiveLight().SetSpecular();
-						//colorPointer = (float*)&scene.GetActiveLight().gui.SpecularSourceColor;
 					}
 					ImGui::SameLine();
 					if (ImGui::RadioButton("Diffuse", (int*)(&scene.GetActiveLight().gui.lightType), (int)DIFFUSE))
 					{
 						scene.GetActiveLight().SetDiffuse();
-						//colorPointer = (float*)&scene.GetActiveLight().gui.DiffuseSourceColor;
+					}
+
+					if (scene.GetActiveLight().gui.lightType == SPECULAR)
+					{
+						ImGui::SliderFloat("Shininess", &scene.GetActiveLight().gui.shininess, 1, 20);
+					}
+
+					// Radio buttons for shading type modes
+					if (ImGui::RadioButton("Flat", (int*)(&scene.GetActiveLight().gui.shadingType), (int)FLAT))
+					{
+						scene.GetActiveLight().SetAmbient();
+					}
+					ImGui::SameLine();
+					if (ImGui::RadioButton("Gouraud", (int*)(&scene.GetActiveLight().gui.shadingType), (int)GOURAUD))
+					{
+						scene.GetActiveLight().SetSpecular();
+					}
+					ImGui::SameLine();
+					if (ImGui::RadioButton("Phong", (int*)(&scene.GetActiveLight().gui.shadingType), (int)PHONG))
+					{
+						scene.GetActiveLight().SetDiffuse();
 					}
 
 					if (scene.GetActiveLight().gui.lightType == SPECULAR)

@@ -5,6 +5,13 @@ enum LightType
 	AMBIENT
 };
 
+enum ShadingType
+{
+	FLAT = 0,
+	GOURAUD, 
+	PHONG
+};
+
 class LightGUI_Attributes
 {
 public:
@@ -23,6 +30,7 @@ public:
 	float LightLocalRotateValue_array[3] = { 0 };
 
 	LightType lightType = AMBIENT;
+	ShadingType shadingType = FLAT;
 
 	float LightSize = 20;
 

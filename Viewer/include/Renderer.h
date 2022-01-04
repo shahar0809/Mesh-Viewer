@@ -34,22 +34,24 @@ private:
 	void DrawFilledCircle(glm::vec3 center, float radius);
 	void DrawFilledRectangle(glm::vec3 point, int width, int height, glm::vec3 color);
 
-	void DrawModel(const MeshModel& model, const Camera& camera, const Light& light);
-	void DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index);
+	void DrawModel(const MeshModel& model, const Scene& scene);
+	void DrawFace(const Face& face, const MeshModel& model, const Scene& scene, const int& index);
 	void DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera);
 	void DrawNormalsVertices(const MeshModel& model, const Camera& camera);
 	glm::vec3 TransVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera);
 	glm::vec3 TransVector(const glm::vec3& vec, const Light& light, const Camera& camera);
 	static glm::vec3 ApplyTrans(glm::vec3 vec, glm::mat4x4 trans);
 
-	glm::vec3 GetColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
-	glm::vec3 LinearInterpolateColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
-	glm::vec3 CalcAmbientReflection(const Light& light);
-	glm::vec3 CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection);
-	glm::vec3 CalcSpecularReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float& Alpha);
+	glm::vec3 GetVertexColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal);
+	glm::vec3 GetColor(const MeshModel& model, const Scene& scene, const Face& face, const glm::vec3& point, const int& index);
+	
+	glm::vec3 FlatShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
+	glm::vec3 GouraudShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
+	glm::vec3 PhongShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
+
 	glm::vec3 CalcColor(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha);
 
-	void EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index);
+	void EdgeWalking(const Face& face, const MeshModel& model, const Scene& scene, const int& index);
 	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);
 	float EdgeFunction(glm::vec3 v1, glm::vec3 v2, glm::vec3 p);
 

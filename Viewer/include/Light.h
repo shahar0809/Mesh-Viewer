@@ -20,6 +20,10 @@ public:
 	void SetSpecular();
 	void SetAmbient();
 	const LightType& GetLightType() const;
+	void SetFlat();
+	void SetGouraud();
+	void SetPhong();
+	const ShadingType& GetShadingType() const;
 
 	const float& GetAmbientIntensity() const;
 	const float& GetSpecularIntensity() const;
@@ -36,6 +40,10 @@ public:
 	void SetAmbientColor(const glm::vec3& color);
 	void SetSpecularColor(const glm::vec3& color);
 	void SetDiffuseColor(const glm::vec3& color);
+
+	glm::vec3 CalcAmbientReflection() const;
+	glm::vec3 CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection) const;
+	glm::vec3 CalcSpecularReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& cameraDirection, const float& alpha) const;
 
 	glm::mat4x4 GetTransformation() const;
 
@@ -55,7 +63,8 @@ public:
 
 protected:
 	glm::vec3 Source;
-	LightType type;
+	LightType lightType;
+	ShadingType shadingType;
 
 	float AmbientIntensity = 1, SpecularIntensity = 1, DiffuseIntensity = 1;
 	glm::vec3 AmbientColor = glm::vec3(1), SpecularColor = glm::vec3(1), DiffuseColor = glm::vec3(1);

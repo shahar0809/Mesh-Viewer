@@ -319,8 +319,9 @@ float Renderer::ComputeDepth(const glm::vec3& v1, const glm::vec3& v2, const glm
 	return (area1 / area) * v1.z + (area2 / area) * v2.z + (area3 / area) * v3.z;
 }
 
-void Renderer::DrawModel(const MeshModel& model, const Camera& camera, const Light& light)
+void Renderer::DrawModel(const MeshModel& model, const Scene& scene)
 {
+	Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());
 	for (int i = 0; i < model.GetFacesCount(); i++)
 	{
 		Face currFace = model.GetFace(i);
@@ -335,25 +336,55 @@ void Renderer::DrawModel(const MeshModel& model, const Camera& camera, const Lig
 			DrawBoundingBox(model, camera);
 		if (model.gui.IsBoundingRectOnScreen)
 			DrawBoundingRectangle(model, camera, currFace);
-		DrawFace(currFace, model, camera, light, i);
+		DrawFace(currFace, model, scene, i);
 	}
 }
 
-void Renderer::DrawFace(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index)
+void Renderer::DrawFace(const Face& face, const MeshModel& model, const Scene& scene, const int& index)
 {
-	EdgeWalking(face, model, camera, light, index);
+	EdgeWalking(face, model, scene, index);
 }
 
-glm::vec3 Renderer::LinearInterpolateColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
+/**
+ * @brief Performs Flat Shading.
+ * @param model 
+ * @param light 
+ * @param camera 
+ * @param face 
+ * @param point 
+ * @param index 
+ * @return 
+*/
+glm::vec3 Renderer::FlatShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
+{
+	// In flat shading, we use normal per face
+	glm::vec3 normal = model.GetFaceNormal(index);
+	return GetVertexColor(model, light, camera, face, point, normal);
+}
+
+/**
+ * @brief Performs Gouraud Shading.
+ * @param model 
+ * @param light 
+ * @param camera 
+ * @param face 
+ * @param point 
+ * @param index 
+ * @return 
+*/
+glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
 {
 	std::vector<glm::vec3> verticesColors;
 	std::vector<glm::vec3> vertices;
+	/* Get colors of all face vertices, based on lighting type */
 	for (int i = 0; i < 3; i++)
 	{
 		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
-		verticesColors.push_back(GetColor(model, light, camera, face, vertices[i], index));
+		glm::vec3 normal = model.GetNormalVertix(face.GetVertexIndex(i));
+		verticesColors.push_back(GetVertexColor(model, light, camera, face, vertices[i], normal));
 	}
 
+	/* Use baycentric coordinates to linearly interpolate the colors of the vertices */
 	float area1 = Utils::CalcTriangleArea(vertices[1], vertices[2], point),
 		area2 = Utils::CalcTriangleArea(vertices[0], vertices[2], point),
 		area3 = Utils::CalcTriangleArea(vertices[0], vertices[1], point);
@@ -362,21 +393,30 @@ glm::vec3 Renderer::LinearInterpolateColor(const MeshModel& model, const Light& 
 	return (area1 / area) * verticesColors[0] + (area2 / area) * verticesColors[1] + (area3 / area) * verticesColors[2];
 }
 
-glm::vec3 Renderer::GetColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
+/**
+ * @brief Calculates the color of a face vertex based on the lighting type.
+ * @param model vertix's model
+ * @param light 
+ * @param camera Active camera
+ * @param face vertex's face
+ * @param point the vertex
+ * @param index Face index in model
+ * @return Color of the vertex
+*/
+glm::vec3 Renderer::GetVertexColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal)
 {
 	glm::vec3 finalColor = glm::vec3(0);
 	switch (light.GetLightType())
 	{
 	case (LightType::AMBIENT):
 	{
-		finalColor = CalcAmbientReflection(light);
+		finalColor = light.CalcAmbientReflection();
 		break;
 	}
 	case (LightType::DIFFUSE):
 	{
 		glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
-		glm::vec3 normal = Utils::FromHomogCoords(model.GetTransformation() * Utils::ToHomogCoords(model.GetFaceNormal(index)));
-		finalColor = CalcDiffuseReflection(model, light, normal, lightDirection);
+		finalColor = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
 		break;
 	}
 	case (LightType::SPECULAR):
@@ -384,59 +424,50 @@ glm::vec3 Renderer::GetColor(const MeshModel& model, const Light& light, const C
 		glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
 		glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
 
-		glm::vec3 normal = Utils::FromHomogCoords(model.GetTransformation() * Utils::ToHomogCoords(model.GetFaceNormal(index)));
-		finalColor = CalcSpecularReflection(model, light, normal, lightDirection, cameraDirection, light.gui.shininess);
+		finalColor = light.CalcSpecularReflection(model.gui.SpecularReflectionColor, normal, lightDirection, cameraDirection, light.gui.shininess);
 		break;
 	}
+	}
+	return glm::clamp(finalColor, 0.0f, 1.0f);
+}
+
+glm::vec3 Renderer::GetColor(const MeshModel& model, const Scene& scene, const Face& face, const glm::vec3& point, const int& index)
+{		
+	glm::vec3 finalColor(0);
+	Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());
+
+	for (int i = 0; i < scene.GetLightCount(); i++)
+	{	
+		Light currLight = scene.GetLight(i);
+		switch (currLight.GetShadingType())
+		{
+		case (FLAT):
+		{
+			finalColor += FlatShading(model, currLight, camera, face, point, index);
+			break;
+		}
+		case (GOURAUD):
+		{
+			finalColor += GouraudShading(model, currLight, camera, face, point, index);
+			break;
+		}
+		case (PHONG):
+		{
+			break;
+		}
+		default:
+			throw std::runtime_error("No shading type chosen");
+			break;
+		}
 	}
 	return finalColor;
 }
 
-glm::vec3 Renderer::CalcAmbientReflection(const Light& light)
-{
-	return light.GetAmbientIntensity() * light.GetAmbientColor();
-}
-
-glm::vec3 Renderer::CalcDiffuseReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection)
-{
-	float brightness = glm::dot(normal, lightDirection) / (glm::length(lightDirection) * glm::length(normal));
-	return brightness * light.GetDiffuseIntensity() * model.gui.DiffuseReflectionColor;
-}
-
-glm::vec3 Renderer::CalcSpecularReflection(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& cameraDirection, const float& alpha)
-{
-	//return model.gui.SpecularReflectionColor * glm::pow(glm::dot(glm::reflect(lightDirection, normal), cameraDirection), light.gui.shininess) * light.GetSpecularIntensity();
-	glm::vec3 surfaceNormal = glm::normalize(normal);
-	float cosAngIncidence = glm::dot(surfaceNormal, lightDirection);
-	cosAngIncidence = glm::clamp(cosAngIncidence, 0.0f, 1.0f);
-
-	//if (cosAngIncidence == 0)
-	//{
-	//	std::cout << "is 0 " << std::endl;
-	//}
-
-	glm::vec3 viewDirection = glm::normalize(-cameraDirection);
-	glm::vec3 reflectDir = glm::reflect(-lightDirection, surfaceNormal);
-	float phongTerm = glm::dot(viewDirection, reflectDir);
-	phongTerm = glm::clamp(phongTerm, 0.0f, 1.0f);
-	phongTerm = cosAngIncidence != 0.0 ? phongTerm : 0.0;
-	phongTerm = glm::pow(phongTerm, light.gui.shininess);
-	return phongTerm * model.gui.SpecularReflectionColor;
-
-	/*float reflectionDegree = glm::clamp(glm::dot(glm::reflect(lightDirection, glm::normalize(normal)), glm::normalize(cameraDirection)), 0.0f, 360.0f);
-	float shininess = glm::clamp(pow(reflectionDegree, alpha), 0.0f, 1.0f);
-	if (shininess * light.GetSpecularIntensity() * model.gui.SpecularReflectionColor == glm::vec3(0))
-	{
-		std::cout << "whattt" << std::endl;
-	}
-	return shininess * light.GetSpecularIntensity() * model.gui.SpecularReflectionColor;*/
-}
-
 glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha)
 {
-	glm::vec3 AmbientLight = CalcAmbientReflection(light);
-	glm::vec3 DiffuseLight = CalcDiffuseReflection(model, light, normal, lightDirection);
-	glm::vec3 SpecularLight = CalcSpecularReflection(model, light, normal, lightDirection, CameraDirection, Alpha);
+	glm::vec3 AmbientLight = light.CalcAmbientReflection();
+	glm::vec3 DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
+	glm::vec3 SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, CameraDirection, Alpha);
 
 	return AmbientLight + DiffuseLight + SpecularLight;
 }
@@ -513,9 +544,11 @@ bool Renderer::Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 
 	return doesOverlap;
 }
 
-void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camera& camera, const Light& light, const int& index)
+void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Scene& scene, const int& index)
 {
 	std::vector<glm::vec3> transformedVecs;
+	Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());
+
 	for (int i = 0; i < 3; i++)
 	{
 		transformedVecs.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
@@ -543,7 +576,7 @@ void Renderer::EdgeWalking(const Face& face, const MeshModel& model, const Camer
 				else
 				{
 					glm::vec3 currPoint(i, j, z);
-					PutPixel(i, j, LinearInterpolateColor(model, light, camera, face, currPoint, index), z);
+					PutPixel(i, j, GetColor(model, scene, face, currPoint, index), z);
 				}
 			}
 		}
@@ -729,7 +762,7 @@ void Renderer::Render(const Scene& scene)
 	{
 		MeshModel currModel = scene.GetModel(i);
 		if (currModel.gui.IsOnScreen)
-			DrawModel(currModel, camera, light);
+			DrawModel(currModel, scene);
 	}
 
 	DrawWorldFrame(camera);

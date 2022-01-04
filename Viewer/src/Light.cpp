@@ -3,7 +3,8 @@
 Light::Light()
 {
 	Source = glm::vec3(0, 0, 0);
-	type = AMBIENT;
+	lightType = AMBIENT;
+	shadingType = FLAT;
 
 	WorldRotateVal = glm::vec3(0);
 	LocalRotateVal = glm::vec3(0);
@@ -91,7 +92,7 @@ void Light::SetSource(const glm::vec3& source)
 
 const glm::vec3& Light::GetColor() const
 {
-	switch (type)
+	switch (lightType)
 	{
 	case DIFFUSE:
 		return gui.DiffuseSourceColor;
@@ -109,22 +110,42 @@ const glm::vec3& Light::GetColor() const
 
 void Light::SetDiffuse()
 {
-	type = DIFFUSE;
+	lightType = DIFFUSE;
 }
 
 void Light::SetSpecular()
 {
-	type = SPECULAR;
+	lightType = SPECULAR;
 }
 
 void Light::SetAmbient()
 {
-	type = AMBIENT;
+	lightType = AMBIENT;
 }
 
 const LightType& Light::GetLightType() const
 {
-	return type;
+	return lightType;
+}
+
+void Light::SetFlat()
+{
+	shadingType = FLAT;
+}
+
+void Light::SetGouraud()
+{
+	shadingType = GOURAUD;
+}
+
+void Light::SetPhong()
+{
+	shadingType = PHONG;
+}
+
+const ShadingType& Light::GetShadingType() const
+{
+	return shadingType;
 }
 
 const float& Light::GetAmbientIntensity() const
@@ -186,6 +207,46 @@ void Light::SetDiffuseColor(const glm::vec3& color)
 {
 	this->DiffuseColor = color;
 }
+
+/**
+ * @brief Calculates Ambient reflection according to the Phong lighting model.
+ * @param color Model's Ambient matrial color
+ * @param normal Normal of point
+ * @param lightDirection Direction of light
+ * @return Color according to Ambient reflection
+*/
+glm::vec3 Light::CalcAmbientReflection() const
+{
+	return AmbientIntensity * AmbientColor;
+}
+
+/**
+ * @brief Calculates Diffuse reflection according to the Phong lighting model.
+ * @param color Model's diffuse matrial color
+ * @param normal Normal of point
+ * @param lightDirection Direction of light
+ * @return Color according to diffuse reflection
+*/
+glm::vec3 Light::CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection) const
+{
+	return (color * DiffuseIntensity) * glm::dot(glm::normalize(lightDirection), glm::normalize(normal));
+}
+
+/**
+ * @brief Calculates Specular reflection according to the Phong lighting model.
+ * @param color Model's Specular matrial color
+ * @param normal Normal of point
+ * @param lightDirection Direction of light
+ * @return Color according to Specular reflection
+*/
+glm::vec3 Light::CalcSpecularReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& cameraDirection, const float& alpha) const
+{
+	glm::vec3 lightReflection = glm::reflect(glm::normalize(lightDirection), glm::normalize(normal));
+	float reflectionDegree = glm::clamp(glm::dot(lightReflection, glm::normalize(cameraDirection)), 0.0f, 360.0f);
+	float shininessFactor = glm::pow(reflectionDegree, alpha);
+	return (color * SpecularIntensity) * shininessFactor;
+}
+
 
 //##############################
 //## Controling position      ##

@@ -324,19 +324,6 @@ const CameraMode& Camera::GetCameraMode() const
 */
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
-	//view_transformation = glm::lookAt(eye, at, up);
-	/*Eye = eye; At = at; Up = up;*/
-
-	//glm::vec3 z = glm::normalize(at - eye);
-	//glm::vec3 x = glm::normalize(glm::cross(up, z));
-	//glm::vec3 y = glm::normalize(glm::cross(z ,x));
-
-	//glm::vec4 t = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	//view_transformation = glm::mat4x4(Utils::ToHomogCoords(x), Utils::ToHomogCoords(y), Utils::ToHomogCoords(z), t);
-	//view_transformation = view_transformation * SetWorldTranslate(-eye.x, -eye.y, -eye.z);
-
-
 	glm::mat3x3 lookAtTrasform = glm::lookAt(eye, at, up);
 
 	glm::mat4x4 lookAt;
@@ -345,21 +332,18 @@ void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const gl
 		lookAt[i][0] = lookAtTrasform[i][0];
 		lookAt[i][1] = lookAtTrasform[i][1];
 		lookAt[i][2] = lookAtTrasform[i][2];
-		lookAt[i][3] = 0; //homogeneous
+		lookAt[i][3] = 0;
 	}
-	//last colume 
+
 	lookAt[3][0] = 0;
 	lookAt[3][1] = 0;
 	lookAt[3][2] = 0;
 	lookAt[3][3] = 1;
 
-
 	view_transformation = GetTransformation() * lookAt;
-	//view_transformation = lookAt;
 
-	//chack that z translation is no 0 (can't divide by zero)
 	if (view_transformation[3][2] == 0)
-		view_transformation[3][2] = -10;
+		view_transformation[3][2]++;
 }
 
 void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top)
@@ -380,9 +364,6 @@ void Camera::SetDepth(float nearParameter, float farParameter)
 
 void Camera::SetPerspectiveViewVolume(float left, float right, float bottom, float top)
 {
-	//this->fovy = fovy;
-	//this->aspect = aspect;
-
 	this->right = right;
 	this->left = left;
 	this->top = top;
