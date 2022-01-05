@@ -379,7 +379,7 @@ glm::vec3 Renderer::FlatShading(const MeshModel& model, const Light& light, cons
 {
 	// In flat shading, we use normal per face
 	glm::vec3 normal = model.GetFaceNormal(index);
-	return GetVertexColor(model, light, camera, face, point, normal);
+	return GetVertexColor(model, light, camera, face, point, ApplyTrans(normal, model.GetTransformation()));
 }
 
 /**
@@ -401,6 +401,7 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 	{
 		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
 		glm::vec3 normal = model.GetNormal(face.GetNormalIndex(i));
+		normal = ApplyTrans(normal, model.GetTransformation());
 		verticesColors.push_back(GetVertexColor(model, light, camera, face, vertices[i], normal));
 	}
 
@@ -445,6 +446,13 @@ glm::vec3 Renderer::GetVertexColor(const MeshModel& model, const Light& light, c
 		glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
 
 		finalColor = light.CalcSpecularReflection(model.gui.SpecularReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
+
+		if (model.gui.ShowReflectionVectors)
+		{
+			glm::vec3 reflectionVec = glm::reflect(glm::normalize(lightDirection), glm::normalize(normal));
+			glm::vec3 transPoint = TransVector(point, model, camera);
+			DrawLine(transPoint, transPoint + TransVector(reflectionVec, light, camera), model.gui.ReflectionVectorsColor);
+		}
 		break;
 	}
 	}

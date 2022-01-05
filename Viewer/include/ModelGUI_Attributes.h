@@ -12,6 +12,7 @@ public:
 	glm::vec3 FaceNormalsColor;
 	glm::vec3 VerticsNormalsColor;
 	glm::vec3 BoundingRectColor;
+	glm::vec3 ReflectionVectorsColor = { 0, 0 , 1 };
 
 	glm::vec3 DiffuseReflectionColor = { 1, 1, 1 };
 	glm::vec3 SpecularReflectionColor = { 1, 1, 1 };
@@ -35,6 +36,7 @@ public:
 	bool AreFaceNormalsOnScreen = false;
 	bool AreVerticesNormalsOnScreen = false;
 	bool IsBoundingRectOnScreen = false;
+	bool ShowReflectionVectors = false;
 	bool Grayscale = false;
 };
 

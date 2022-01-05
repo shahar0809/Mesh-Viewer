@@ -37,6 +37,7 @@ private:
 	void DrawModel(const MeshModel& model, const Scene& scene);
 	void DrawFace(const Face& face, const MeshModel& model, const Scene& scene, const int& index);
 	void DrawNormal(const int& index, const Face& face, const MeshModel& model, const Camera& camera);
+	void DrawSpecularReflectionVectors(const MeshModel& model, const Scene& scene, const Face& face);
 	void DrawNormalsVertices(const MeshModel& model, const Camera& camera);
 	glm::vec3 TransVector(const glm::vec3& vec, const MeshModel& model, const Camera& camera);
 	glm::vec3 TransVector(const glm::vec3& vec, const Light& light, const Camera& camera);

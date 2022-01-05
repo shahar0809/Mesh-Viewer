@@ -378,6 +378,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	{
 		vertics_normals_color = scene.GetActiveModel().gui.VerticsNormalsColor;
 	}
+	ImGui::ColorEdit3("Reflection Vectors", (float*)&scene.GetActiveModel().gui.ReflectionVectorsColor);
 	ImGui::End();
 
 	static std::vector<std::string> modelNames;
@@ -402,6 +403,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::Checkbox("Visible", &scene.GetActiveModel().gui.IsOnScreen);
 					ImGui::SameLine();
 					ImGui::Checkbox("BBox", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
+					ImGui::SameLine();
+					ImGui::Checkbox("Reflection Vecs", &scene.GetActiveModel().gui.ShowReflectionVectors);
 
 					ImGui::Checkbox("Model Frame", &scene.GetActiveModel().gui.IsFrameOnScreen);
 					ImGui::SameLine();
