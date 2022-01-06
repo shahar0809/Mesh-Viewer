@@ -50,7 +50,7 @@ private:
 	glm::vec3 GouraudShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
 	glm::vec3 PhongShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index);
 
-	glm::vec3 CalcColor(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha);
+	glm::vec3 CalcColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal);
 
 	void EdgeWalking(const Face& face, const MeshModel& model, const Scene& scene, const int& index);
 	bool Overlaps(const glm::vec3 v1, const glm::vec3 v2, const glm::vec3 v3, const glm::vec3 point);

@@ -19,7 +19,10 @@ public:
 	void SetDiffuse();
 	void SetSpecular();
 	void SetAmbient();
+	void SetPoint();
+	void SetDirectional();
 	const LightType& GetLightType() const;
+	const LightDirection& GetLightDirection() const;
 	void SetFlat();
 	void SetGouraud();
 	void SetPhong();
@@ -65,6 +68,7 @@ protected:
 	glm::vec3 Source;
 	LightType lightType;
 	ShadingType shadingType;
+	LightDirection lightDirection;
 
 	float AmbientIntensity = 1, SpecularIntensity = 1, DiffuseIntensity = 1;
 	glm::vec3 AmbientColor = glm::vec3(1), SpecularColor = glm::vec3(1), DiffuseColor = glm::vec3(1);

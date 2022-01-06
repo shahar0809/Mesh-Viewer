@@ -491,11 +491,34 @@ glm::vec3 Renderer::GetColor(const MeshModel& model, const Scene& scene, const F
 	return finalColor;
 }
 
-glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& CameraDirection, const float Alpha)
+glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal)
 {
-	glm::vec3 AmbientLight = light.CalcAmbientReflection();
+	glm::vec3 finalColor(0);
+	glm::vec3 AmbientLight, DiffuseLight, SpecularLight;
+	/*Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());*/
+
+		/*Light currLight = scene.GetLight(i);*/
+		LightDirection direction = light.GetLightDirection();
+		if (direction == POINT) {
+			glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
+			glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
+
+			AmbientLight = light.CalcAmbientReflection();
+			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
+			SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
+		}
+		else if (direction == DIRECTIONAL) {
+			glm::vec3 lightDirection = -1.0f * ApplyTrans(normal, model.GetTransformation());
+			glm::vec3 cameraDirection = TransVector(point, model, camera) - TransVector(camera.getEye(), model, camera);
+
+			AmbientLight = light.CalcAmbientReflection();
+			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
+			SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
+		}
+
+	/*glm::vec3 AmbientLight = light.CalcAmbientReflection();
 	glm::vec3 DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
-	glm::vec3 SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, CameraDirection, Alpha);
+	glm::vec3 SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, CameraDirection, Alpha);*/
 
 	return AmbientLight + DiffuseLight + SpecularLight;
 }

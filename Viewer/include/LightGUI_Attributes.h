@@ -12,6 +12,12 @@ enum ShadingType
 	PHONG
 };
 
+enum LightDirection
+{
+	POINT = 0,
+	DIRECTIONAL
+};
+
 class LightGUI_Attributes
 {
 public:

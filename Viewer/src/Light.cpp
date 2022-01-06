@@ -5,6 +5,7 @@ Light::Light()
 	Source = glm::vec3(0, 0, 0);
 	lightType = AMBIENT;
 	shadingType = FLAT;
+	lightDirection = POINT;
 
 	WorldRotateVal = glm::vec3(0);
 	LocalRotateVal = glm::vec3(0);
@@ -123,6 +124,16 @@ void Light::SetAmbient()
 	lightType = AMBIENT;
 }
 
+void Light::SetPoint()
+{
+	lightDirection = POINT;
+}
+
+void Light::SetDirectional()
+{
+	lightDirection = DIRECTIONAL;
+}
+
 const LightType& Light::GetLightType() const
 {
 	return lightType;
@@ -146,6 +157,10 @@ void Light::SetPhong()
 const ShadingType& Light::GetShadingType() const
 {
 	return shadingType;
+}
+
+const LightDirection& Light::GetLightDirection() const {
+	return lightDirection;
 }
 
 const float& Light::GetAmbientIntensity() const
@@ -241,12 +256,12 @@ glm::vec3 Light::CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& 
 */
 glm::vec3 Light::CalcSpecularReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& cameraDirection, const float& alpha) const
 {
+	glm::vec3& newColor = color * this->SpecularColor;
 	glm::vec3 lightReflection = glm::reflect(glm::normalize(lightDirection), glm::normalize(normal));
 	float reflectionDegree = glm::clamp(glm::dot(lightReflection, glm::normalize(cameraDirection)), 0.0f, 360.0f);
 	float shininessFactor = glm::pow(reflectionDegree, alpha);
-	return (color * SpecularIntensity) * shininessFactor;
+	return (newColor * SpecularIntensity) * shininessFactor;
 }
-
 
 //##############################
 //## Controling position      ##
