@@ -191,3 +191,13 @@ float Utils::CalcTriangleArea(const glm::vec3& p1, const glm::vec3& p2, const gl
 {
 	return abs(0.5 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)));
 }
+
+glm::vec3 Utils::AdditiveColor(const glm::vec3& c1, const glm::vec3& c2)
+{
+	glm::vec3 finalColor(0);
+	for (int i = 0; i < 3; i++)
+	{
+		finalColor[i] = c1[i] * c2[i];
+	}
+	return finalColor;
+}

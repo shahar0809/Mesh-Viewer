@@ -16,25 +16,13 @@ public:
 
 	const glm::vec3& GetColor() const;
 
-	void SetDiffuse();
-	void SetSpecular();
-	void SetAmbient();
 	void SetPoint();
 	void SetDirectional();
 	const LightType& GetLightType() const;
-	const LightDirection& GetLightDirection() const;
 	void SetFlat();
 	void SetGouraud();
 	void SetPhong();
 	const ShadingType& GetShadingType() const;
-
-	const float& GetAmbientIntensity() const;
-	const float& GetSpecularIntensity() const;
-	const float& GetDiffuseIntensity() const;
-
-	void SetAmbientIntensity(const float& intensity);
-	void SetSpecularIntensity(const float& intensity);
-	void SetDiffuseIntensity(const float& intensity);
 
 	const glm::vec3& GetAmbientColor() const;
 	const glm::vec3& GetSpecularColor() const;
@@ -44,7 +32,7 @@ public:
 	void SetSpecularColor(const glm::vec3& color);
 	void SetDiffuseColor(const glm::vec3& color);
 
-	glm::vec3 CalcAmbientReflection() const;
+	glm::vec3 CalcAmbientReflection(glm::vec3 color) const;
 	glm::vec3 CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection) const;
 	glm::vec3 CalcSpecularReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& cameraDirection, const float& alpha) const;
 
@@ -68,10 +56,8 @@ protected:
 	glm::vec3 Source;
 	LightType lightType;
 	ShadingType shadingType;
-	LightDirection lightDirection;
 
-	float AmbientIntensity = 1, SpecularIntensity = 1, DiffuseIntensity = 1;
-	glm::vec3 AmbientColor = glm::vec3(1), SpecularColor = glm::vec3(1), DiffuseColor = glm::vec3(1);
+	glm::vec3 AmbientColor = glm::vec3(0), SpecularColor = glm::vec3(0), DiffuseColor = glm::vec3(0);
 
 	// Attributes to keep translate and rotation values
 	glm::mat4x4 TranslateLocal, RotateLocal, RotateLocalX, RotateLocalY, RotateLocalZ;

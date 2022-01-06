@@ -450,7 +450,7 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 */
 glm::vec3 Renderer::GetVertexColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal)
 {
-	glm::vec3 finalColor = glm::vec3(0);
+	/*glm::vec3 finalColor = glm::vec3(0);
 	switch (light.GetLightType())
 	{
 	case (LightType::AMBIENT):
@@ -480,7 +480,8 @@ glm::vec3 Renderer::GetVertexColor(const MeshModel& model, const Light& light, c
 		break;
 	}
 	}
-	return glm::clamp(finalColor, 0.0f, 1.0f);
+	return glm::clamp(finalColor, 0.0f, 1.0f);*/
+	return CalcColor(model, light, camera, face, point, normal);
 }
 
 glm::vec3 Renderer::GetColor(const MeshModel& model, const Scene& scene, const Face& face, const glm::vec3& point, const int& index)
@@ -493,17 +494,17 @@ glm::vec3 Renderer::GetColor(const MeshModel& model, const Scene& scene, const F
 		Light currLight = scene.GetLight(i);
 		switch (currLight.GetShadingType())
 		{
-		case (FLAT):
+		case (ShadingType::FLAT):
 		{
 			finalColor += FlatShading(model, currLight, camera, face, point, index);
 			break;
 		}
-		case (GOURAUD):
+		case (ShadingType::GOURAUD):
 		{
 			finalColor += GouraudShading(model, currLight, camera, face, point, index);
 			break;
 		}
-		case (PHONG):
+		case (ShadingType::PHONG):
 		{
 			break;
 		}
@@ -522,20 +523,20 @@ glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const 
 	/*Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());*/
 
 		/*Light currLight = scene.GetLight(i);*/
-		LightDirection direction = light.GetLightDirection();
-		if (direction == POINT) {
+		LightType direction = light.GetLightType();
+		if (direction == LightType::LIGHT_POINT) {
 			glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
 			glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
 
-			AmbientLight = light.CalcAmbientReflection();
+			AmbientLight = light.CalcAmbientReflection(model.gui.AmbientReflectionColor);
 			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
 			SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
 		}
-		else if (direction == DIRECTIONAL) {
+		else if (direction == LightType::DIRECTIONAL_LIGHT) {
 			glm::vec3 lightDirection = -1.0f * ApplyTrans(normal, model.GetTransformation());
 			glm::vec3 cameraDirection = TransVector(point, model, camera) - TransVector(camera.getEye(), model, camera);
 
-			AmbientLight = light.CalcAmbientReflection();
+			AmbientLight = light.CalcAmbientReflection(model.gui.AmbientReflectionColor);
 			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
 			SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
 		}

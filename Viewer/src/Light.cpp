@@ -3,9 +3,8 @@
 Light::Light()
 {
 	Source = glm::vec3(0, 0, 0);
-	lightType = AMBIENT;
-	shadingType = FLAT;
-	lightDirection = POINT;
+	shadingType = ShadingType::FLAT;
+	lightType = LightType::LIGHT_POINT;
 
 	WorldRotateVal = glm::vec3(0);
 	LocalRotateVal = glm::vec3(0);
@@ -93,45 +92,17 @@ void Light::SetSource(const glm::vec3& source)
 
 const glm::vec3& Light::GetColor() const
 {
-	switch (lightType)
-	{
-	case DIFFUSE:
-		return gui.DiffuseSourceColor;
-		break;
-	case SPECULAR:
-		return gui.SpecularSourceColor;
-		break;
-	case AMBIENT:
-		return gui.AmbientSourceColor;
-		break;
-	default:
-		break;
-	}
-}
-
-void Light::SetDiffuse()
-{
-	lightType = DIFFUSE;
-}
-
-void Light::SetSpecular()
-{
-	lightType = SPECULAR;
-}
-
-void Light::SetAmbient()
-{
-	lightType = AMBIENT;
+	return gui.SpecularSourceColor + gui.AmbientSourceColor + gui.DiffuseSourceColor;
 }
 
 void Light::SetPoint()
 {
-	lightDirection = POINT;
+	lightType = LightType::LIGHT_POINT;
 }
 
 void Light::SetDirectional()
 {
-	lightDirection = DIRECTIONAL;
+	lightType = LightType::DIRECTIONAL_LIGHT;
 }
 
 const LightType& Light::GetLightType() const
@@ -141,56 +112,22 @@ const LightType& Light::GetLightType() const
 
 void Light::SetFlat()
 {
-	shadingType = FLAT;
+	shadingType = ShadingType::FLAT;
 }
 
 void Light::SetGouraud()
 {
-	shadingType = GOURAUD;
+	shadingType = ShadingType::GOURAUD;
 }
 
 void Light::SetPhong()
 {
-	shadingType = PHONG;
+	shadingType = ShadingType::PHONG;
 }
 
 const ShadingType& Light::GetShadingType() const
 {
 	return shadingType;
-}
-
-const LightDirection& Light::GetLightDirection() const {
-	return lightDirection;
-}
-
-const float& Light::GetAmbientIntensity() const
-{
-	return AmbientIntensity;
-}
-
-const float& Light::GetSpecularIntensity() const
-{
-	return SpecularIntensity;
-}
-
-const float& Light::GetDiffuseIntensity() const
-{
-	return DiffuseIntensity;
-}
-
-void Light::SetAmbientIntensity(const float& intensity)
-{
-	this->AmbientIntensity = intensity;
-}
-
-void Light::SetSpecularIntensity(const float& intensity)
-{
-	this->SpecularIntensity = intensity;
-}
-
-void Light::SetDiffuseIntensity(const float& intensity)
-{
-	this->DiffuseIntensity = intensity;
 }
 
 const glm::vec3& Light::GetAmbientColor() const
@@ -230,9 +167,9 @@ void Light::SetDiffuseColor(const glm::vec3& color)
  * @param lightDirection Direction of light
  * @return Color according to Ambient reflection
 */
-glm::vec3 Light::CalcAmbientReflection() const
+glm::vec3 Light::CalcAmbientReflection(glm::vec3 color) const
 {
-	return AmbientIntensity * AmbientColor;
+	return Utils::AdditiveColor(color, AmbientColor);
 }
 
 /**
@@ -244,7 +181,7 @@ glm::vec3 Light::CalcAmbientReflection() const
 */
 glm::vec3 Light::CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection) const
 {
-	return (color * DiffuseIntensity) * glm::dot(glm::normalize(lightDirection), glm::normalize(normal));
+	return Utils::AdditiveColor(color, DiffuseColor) * glm::dot(glm::normalize(lightDirection), glm::normalize(normal));
 }
 
 /**
@@ -256,11 +193,11 @@ glm::vec3 Light::CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& 
 */
 glm::vec3 Light::CalcSpecularReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection, const glm::vec3& cameraDirection, const float& alpha) const
 {
-	glm::vec3& newColor = color * this->SpecularColor;
+	//glm::vec3& newColor = color * this->SpecularColor;
 	glm::vec3 lightReflection = glm::reflect(glm::normalize(lightDirection), glm::normalize(normal));
 	float reflectionDegree = glm::clamp(glm::dot(lightReflection, glm::normalize(cameraDirection)), 0.0f, 360.0f);
 	float shininessFactor = glm::pow(reflectionDegree, alpha);
-	return (newColor * SpecularIntensity) * shininessFactor;
+	return Utils::AdditiveColor(SpecularColor, color) * shininessFactor;
 }
 
 //##############################
