@@ -201,3 +201,26 @@ glm::vec3 Utils::AdditiveColor(const glm::vec3& c1, const glm::vec3& c2)
 	}
 	return finalColor;
 }
+
+glm::fvec3 Utils::triangleInterpolation(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 insidePoint)
+{
+	float top1 = (p2.y - p3.y) * (insidePoint.x - p3.x) + (p3.x - p2.x) * (insidePoint.y - p3.y);
+	float bottom1 = (p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y);
+	if (bottom1 == 0)
+	{
+		bottom1 += 0.00000000000000001;
+	}
+	float w1 = top1 / bottom1;
+
+	float top2 = (p3.y - p1.y) * (insidePoint.x - p3.x) + (p1.x - p3.x) * (insidePoint.y - p3.y);
+	float bottom2 = (p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y);
+	if (bottom2 == 0)
+	{
+		bottom2 += 0.00000000000000001;
+	}
+
+	float w2 = top2 / bottom2;
+	float w3 = 1 - w1 - w2;
+
+	return glm::fvec3(w1, w2, w3);
+}

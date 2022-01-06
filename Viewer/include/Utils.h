@@ -34,6 +34,7 @@ public:
 	static glm::vec3 GenerateRandomColor();
 
 	static float CalcTriangleArea(const glm::vec3& p1, const glm::vec3& p2, const glm::vec2& p3);
+	static glm::fvec3 triangleInterpolation(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 insidePoint);
 
 	static glm::vec3 AdditiveColor(const glm::vec3& c1, const glm::vec3& c2);
 
