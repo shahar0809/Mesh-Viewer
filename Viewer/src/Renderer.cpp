@@ -402,7 +402,7 @@ void Renderer::ApplyBlur()
 glm::vec3 Renderer::FlatShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
 {
 	// In flat shading, we use normal per face
-	glm::vec3 normal = model.GetFaceNormal(index);
+	glm::vec3 normal = model.GetFaceNormal(index) + model.GetFaceCenter(face);
 	return GetVertexColor(model, light, camera, face, point, ApplyTrans(normal, model.GetTransformation()));
 }
 
@@ -423,9 +423,10 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 	/* Get colors of all face vertices, based on lighting type */
 	for (int i = 0; i < 3; i++)
 	{
-		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
-		glm::vec3 normal = model.GetNormal(face.GetNormalIndex(i));
-		normal = ApplyTrans(normal, model.GetTransformation());
+		vertices.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
+		glm::vec3 normal = model.GetNormalVertix(face.GetVertexIndex(i));
+		normal = TransVector((normal + model.GetVertice(face.GetVertexIndex(i) - 1)), model, camera);
+		normal = normal - vertices[i];
 		verticesColors.push_back(GetVertexColor(model, light, camera, face, vertices[i], normal));
 	}
 
@@ -436,6 +437,30 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 	float area = area1 + area2 + area3;
 
 	return (area1 / area) * verticesColors[0] + (area2 / area) * verticesColors[1] + (area3 / area) * verticesColors[2];
+}
+
+glm::vec3 Renderer::PhongShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
+{
+	//std::vector<glm::vec3> normalizedNormals;
+	std::vector<glm::vec3> vertices;
+
+	for (int i = 0; i < 3; i++)
+	{
+		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
+		//normalizedNormals.push_back(glm::normalize(model.GetNormalVertix(i)));
+	}
+	///* Use baycentric coordinates to linearly interpolate the normals */
+	//float area1 = Utils::CalcTriangleArea(vertices[1], vertices[2], point),
+	//	area2 = Utils::CalcTriangleArea(vertices[0], vertices[2], point),
+	//	area3 = Utils::CalcTriangleArea(vertices[0], vertices[1], point);
+
+	//float area = area1 + area2 + area3;
+	//glm::vec3 normal = (area1 / area) * normalizedNormals[0] + (area2 / area) * normalizedNormals[1] + (area3 / area) * normalizedNormals[2];
+
+	//return GetVertexColor(model, light, camera, face, point, normal);
+
+	glm::fvec3 weights = Utils::triangleInterpolation(vertices[0], vertices[1], vertices[2], glm::fvec2(point.x, point.y));
+	return glm::vec3(0);
 }
 
 /**
@@ -450,37 +475,6 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 */
 glm::vec3 Renderer::GetVertexColor(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal)
 {
-	/*glm::vec3 finalColor = glm::vec3(0);
-	switch (light.GetLightType())
-	{
-	case (LightType::AMBIENT):
-	{
-		finalColor = light.CalcAmbientReflection();
-		break;
-	}
-	case (LightType::DIFFUSE):
-	{
-		glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
-		finalColor = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
-		break;
-	}
-	case (LightType::SPECULAR):
-	{
-		glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
-		glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
-
-		finalColor = light.CalcSpecularReflection(model.gui.SpecularReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
-
-		if (model.gui.ShowReflectionVectors)
-		{
-			glm::vec3 reflectionVec = glm::reflect(glm::normalize(lightDirection), glm::normalize(normal));
-			glm::vec3 transPoint = TransVector(point, model, camera);
-			DrawLine(transPoint, transPoint + TransVector(reflectionVec, light, camera), model.gui.ReflectionVectorsColor);
-		}
-		break;
-	}
-	}
-	return glm::clamp(finalColor, 0.0f, 1.0f);*/
 	return CalcColor(model, light, camera, face, point, normal);
 }
 
@@ -496,16 +490,17 @@ glm::vec3 Renderer::GetColor(const MeshModel& model, const Scene& scene, const F
 		{
 		case (ShadingType::FLAT):
 		{
-			finalColor += FlatShading(model, currLight, camera, face, point, index);
+			finalColor = FlatShading(model, currLight, camera, face, point, index);
 			break;
 		}
 		case (ShadingType::GOURAUD):
 		{
-			finalColor += GouraudShading(model, currLight, camera, face, point, index);
+			finalColor = GouraudShading(model, currLight, camera, face, point, index);
 			break;
 		}
 		case (ShadingType::PHONG):
 		{
+			finalColor = PhongShading(model, currLight, camera, face, point, index);
 			break;
 		}
 		default:

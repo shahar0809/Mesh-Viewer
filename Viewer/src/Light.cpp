@@ -181,7 +181,21 @@ glm::vec3 Light::CalcAmbientReflection(glm::vec3 color) const
 */
 glm::vec3 Light::CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection) const
 {
-	return Utils::AdditiveColor(color, DiffuseColor) * glm::dot(glm::normalize(lightDirection), glm::normalize(normal));
+	glm::vec3 res = Utils::AdditiveColor(color, DiffuseColor) * glm::dot(glm::normalize(lightDirection), glm::normalize(normal));
+
+	if (res.x < 0)
+	{
+		res.x = 0;
+	}
+	if (res.y < 0)
+	{
+		res.y = 0;
+	}
+	if (res.z < 0)
+	{
+		res.z = 0;
+	}
+	return res;
 }
 
 /**
