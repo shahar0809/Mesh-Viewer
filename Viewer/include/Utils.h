@@ -35,5 +35,7 @@ public:
 
 	static float CalcTriangleArea(const glm::vec3& p1, const glm::vec3& p2, const glm::vec2& p3);
 
+	static glm::vec3 AdditiveColor(const glm::vec3& c1, const glm::vec3& c2);
+
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 };

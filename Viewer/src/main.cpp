@@ -603,34 +603,18 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 					float* colorPointer = nullptr;
 
-					// Radio buttons for light type modes
-					if (ImGui::RadioButton("Ambient", (int*)(&scene.GetActiveLight().gui.lightType), (int)AMBIENT))
-					{
-						scene.GetActiveLight().SetAmbient();
-					}
-					ImGui::SameLine();
-					if (ImGui::RadioButton("Specular", (int*)(&scene.GetActiveLight().gui.lightType), (int)SPECULAR))
-					{
-						scene.GetActiveLight().SetSpecular();
-					}
-					ImGui::SameLine();
-					if (ImGui::RadioButton("Diffuse", (int*)(&scene.GetActiveLight().gui.lightType), (int)DIFFUSE))
-					{
-						scene.GetActiveLight().SetDiffuse();
-					}
-
 					// Radio buttons for shading type modes
-					if (ImGui::RadioButton("Flat", (int*)(&scene.GetActiveLight().gui.shadingType), (int)FLAT))
+					if (ImGui::RadioButton("Flat", (int*)(&scene.GetActiveLight().gui.shadingType), (int)ShadingType::FLAT))
 					{
 						scene.GetActiveLight().SetFlat();
 					}
 					ImGui::SameLine();
-					if (ImGui::RadioButton("Gouraud", (int*)(&scene.GetActiveLight().gui.shadingType), (int)GOURAUD))
+					if (ImGui::RadioButton("Gouraud", (int*)(&scene.GetActiveLight().gui.shadingType), (int)ShadingType::GOURAUD))
 					{
 						scene.GetActiveLight().SetGouraud();
 					}
 					ImGui::SameLine();
-					if (ImGui::RadioButton("Phong", (int*)(&scene.GetActiveLight().gui.shadingType), (int)PHONG))
+					if (ImGui::RadioButton("Phong", (int*)(&scene.GetActiveLight().gui.shadingType), (int)ShadingType::PHONG))
 					{
 						scene.GetActiveLight().SetPhong();
 					}
@@ -648,24 +632,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					scene.GetActiveLight().SetDiffuseColor(glm::vec3(scene.GetActiveLight().gui.DiffuseSourceColor[0],
 						scene.GetActiveLight().gui.DiffuseSourceColor[1],
 						scene.GetActiveLight().gui.DiffuseSourceColor[2]));
-
+			
 					ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
-					if (ImGui::SliderFloat("Ambient Intensity", &scene.GetActiveLight().gui.AmbientIntensity, 1, 5))
-					{
-						scene.GetActiveLight().SetAmbientIntensity(scene.GetActiveLight().gui.AmbientIntensity);
-					}
-					if (ImGui::SliderFloat("Specular Intensity", &scene.GetActiveLight().gui.SpecularIntensity, 1, 5))
-					{
-						scene.GetActiveLight().SetSpecularIntensity(scene.GetActiveLight().gui.SpecularIntensity);
-					}
-					if (ImGui::SliderFloat("Diffuse Intensity", &scene.GetActiveLight().gui.DiffuseIntensity, 1, 5))
-					{
-						scene.GetActiveLight().SetDiffuseIntensity(scene.GetActiveLight().gui.DiffuseIntensity);
-					}
-
-					ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
 
 					if (ImGui::SliderFloat3("Local Translate", scene.GetActiveLight().gui.LightLocalTransValue_array, translateMin, translateMax))
 					{

@@ -14,9 +14,9 @@ public:
 	glm::vec3 BoundingRectColor;
 	glm::vec3 ReflectionVectorsColor = { 0, 0 , 1 };
 
-	glm::vec3 DiffuseReflectionColor = { 1, 1, 1 };
-	glm::vec3 SpecularReflectionColor = { 1, 1, 1 };
-	glm::vec3 AmbientReflectionColor = { 1, 1, 1 };
+	glm::vec3 DiffuseReflectionColor = { 0, 0, 0 };
+	glm::vec3 SpecularReflectionColor = { 0, 0, 0 };
+	glm::vec3 AmbientReflectionColor = { 0, 0, 0 };
 
 	// GUI controllers
 	float ModelScaleValue_array[3] = { 1, 1, 1 };
