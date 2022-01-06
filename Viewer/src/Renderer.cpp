@@ -366,22 +366,22 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Scene& s
 
 /* -------------------------------------------------- Post Processing -----------------------------------------------*/
 
-void Renderer::ApplyFog(const Scene& scene, const Camera& camera)
-{
-	float pixelDistance;
-	float fogDistance;
-	for (int i = 0; i < viewport_width; i++)
-	{
-		for (int j = 0; j < viewport_height; j++)
-		{
-			pixelDistance = glm::distance(camera.getEye(), glm::vec3(i, j, zBuffer[i][j]));
-			fogDistance = glm::clamp((scene.fogEnd - pixelDistance) / (scene.fogEnd - scene.fogStart), 0.0f, 1.0f);
-			fog_color_buffer[INDEX(viewport_width, i, j, 0)] = glm::clamp(fogDistance * fog_color_buffer[INDEX(viewport_width, i, j, 0)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[0];
-			fog_color_buffer[INDEX(viewport_width, i, j, 1)] = glm::clamp(fogDistance * fog_color_buffer[INDEX(viewport_width, i, j, 1)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[1];
-			fog_color_buffer[INDEX(viewport_width, i, j, 2)] = glm::clamp(fogDistance * fog_color_buffer[INDEX(viewport_width, i, j, 2)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[2];
-		}
-	}
-}
+//void Renderer::ApplyFog(const Scene& scene, const Camera& camera)
+//{
+//	float pixelDistance;
+//	float fogDistance;
+//	for (int i = 0; i < viewport_width; i++)
+//	{
+//		for (int j = 0; j < viewport_height; j++)
+//		{
+//			pixelDistance = glm::distance(camera.getEye(), glm::vec3(i, j, zBuffer[i][j]));
+//			fogDistance = glm::clamp((scene.fogEnd - pixelDistance) / (scene.fogEnd - scene.fogStart), 0.0f, 1.0f);
+//			color_buffer[INDEX(viewport_width, i, j, 0)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 0)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[0];
+//			color_buffer[INDEX(viewport_width, i, j, 1)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 1)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[1];
+//			color_buffer[INDEX(viewport_width, i, j, 2)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 2)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[2];
+//		}
+//	}
+//}
 
 void Renderer::ApplyBlur()
 {
@@ -441,26 +441,25 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 
 glm::vec3 Renderer::PhongShading(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, const int& index)
 {
-	//std::vector<glm::vec3> normalizedNormals;
+	std::vector<glm::vec3> normals;
 	std::vector<glm::vec3> vertices;
-
+	/* Get colors of all face vertices, based on lighting type */
 	for (int i = 0; i < 3; i++)
 	{
-		vertices.push_back(model.GetVertice(face.GetVertexIndex(i) - 1));
-		//normalizedNormals.push_back(glm::normalize(model.GetNormalVertix(i)));
+		vertices.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
+		glm::vec3 normal = model.GetNormalVertix(face.GetVertexIndex(i) - 1);
+		normal = TransVector((normal + model.GetVertice(face.GetVertexIndex(i) - 1)), model, camera);
+		normal = normal - vertices[i];
+		normals.push_back(normal);
 	}
-	///* Use baycentric coordinates to linearly interpolate the normals */
-	//float area1 = Utils::CalcTriangleArea(vertices[1], vertices[2], point),
-	//	area2 = Utils::CalcTriangleArea(vertices[0], vertices[2], point),
-	//	area3 = Utils::CalcTriangleArea(vertices[0], vertices[1], point);
 
-	//float area = area1 + area2 + area3;
-	//glm::vec3 normal = (area1 / area) * normalizedNormals[0] + (area2 / area) * normalizedNormals[1] + (area3 / area) * normalizedNormals[2];
-
-	//return GetVertexColor(model, light, camera, face, point, normal);
-
-	glm::fvec3 weights = Utils::triangleInterpolation(vertices[0], vertices[1], vertices[2], glm::fvec2(point.x, point.y));
-	return glm::vec3(0);
+	/* Use baycentric coordinates to linearly interpolate the normals */
+	float area1 = Utils::CalcTriangleArea(vertices[1], vertices[2], point),
+		area2 = Utils::CalcTriangleArea(vertices[0], vertices[2], point),
+		area3 = Utils::CalcTriangleArea(vertices[0], vertices[1], point);
+	float area = area1 + area2 + area3;
+	glm::vec3 normal = glm::normalize((area1 / area) * normals[0] + (area2 / area) * normals[1] + (area3 / area) * normals[2]);
+	return GetVertexColor(model, light, camera, face, point, normal);
 }
 
 /**
