@@ -13,6 +13,8 @@ class Scene {
 public:
 	Scene();
 
+	bool isFog = false;
+
 	void AddModel(const shared_ptr<MeshModel>& mesh_model);
 	int GetModelCount() const;
 	MeshModel& GetModel(int index) const;

@@ -603,6 +603,16 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 					float* colorPointer = nullptr;
 
+					if (ImGui::RadioButton("Point", (int*)(&scene.GetActiveLight().gui.lightType), (int)LightType::LIGHT_POINT))
+					{
+						scene.GetActiveLight().SetPoint();
+					}
+					ImGui::SameLine();
+					if (ImGui::RadioButton("Directional", (int*)(&scene.GetActiveLight().gui.lightType), (int)LightType::DIRECTIONAL_LIGHT))
+					{
+						scene.GetActiveLight().SetDirectional();
+					}
+
 					// Radio buttons for shading type modes
 					if (ImGui::RadioButton("Flat", (int*)(&scene.GetActiveLight().gui.shadingType), (int)ShadingType::FLAT))
 					{
@@ -667,5 +677,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 			ImGui::EndTabBar();
 		}
 		ImGui::End();
+
+
+
+		/* -------------------------------------------------- Post Processing -----------------------------------------------*/
+
+		ImGui::Begin("Post Processing");
+		ImGui::Checkbox("Fog", &scene.isFog);
+		ImGui::SameLine();
+		/*ImGui::Checkbox("BBox", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
+		ImGui::SameLine();*/
+		ImGui::End();
+
 	}
 }

@@ -376,9 +376,9 @@ void Renderer::ApplyFog(const Scene& scene, const Camera& camera)
 		{
 			pixelDistance = glm::distance(camera.getEye(), glm::vec3(i, j, zBuffer[i][j]));
 			fogDistance = glm::clamp((scene.fogEnd - pixelDistance) / (scene.fogEnd - scene.fogStart), 0.0f, 1.0f);
-			color_buffer[INDEX(viewport_width, i, j, 0)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 0)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[0];
-			color_buffer[INDEX(viewport_width, i, j, 1)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 1)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[1];
-			color_buffer[INDEX(viewport_width, i, j, 2)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 2)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[2];
+			fog_color_buffer[INDEX(viewport_width, i, j, 0)] = glm::clamp(fogDistance * fog_color_buffer[INDEX(viewport_width, i, j, 0)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[0];
+			fog_color_buffer[INDEX(viewport_width, i, j, 1)] = glm::clamp(fogDistance * fog_color_buffer[INDEX(viewport_width, i, j, 1)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[1];
+			fog_color_buffer[INDEX(viewport_width, i, j, 2)] = glm::clamp(fogDistance * fog_color_buffer[INDEX(viewport_width, i, j, 2)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[2];
 		}
 	}
 }
@@ -534,7 +534,7 @@ glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const 
 		}
 		else if (direction == LightType::DIRECTIONAL_LIGHT) {
 			glm::vec3 lightDirection = -1.0f * ApplyTrans(normal, model.GetTransformation());
-			glm::vec3 cameraDirection = TransVector(point, model, camera) - TransVector(camera.getEye(), model, camera);
+			glm::vec3 cameraDirection = TransVector(camera.getEye(), model, camera) - TransVector(point, model, camera);
 
 			AmbientLight = light.CalcAmbientReflection(model.gui.AmbientReflectionColor);
 			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);

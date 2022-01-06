@@ -25,6 +25,7 @@ public:
 	float LightLocalRotateValue_array[3] = { 0 };
 
 	ShadingType shadingType = ShadingType::FLAT;
+	LightType lightType = LightType::LIGHT_POINT;
 
 	float LightSize = 20;
 };
