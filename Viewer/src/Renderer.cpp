@@ -337,6 +337,15 @@ void Renderer::DrawNormalsVertices(const MeshModel& model, const Camera& camera)
 	}
 }
 
+void Renderer::DrawSpecularReflectionVectors(const MeshModel& model, const Light& light, const Camera& camera, const Face& face, const glm::vec3& point, glm::vec3 normal)
+{
+	glm::vec3 lightDirection = TransVector(light.GetSource(), light, camera) - TransVector(point, model, camera);
+	glm::vec3 reflection = glm::reflect(glm::normalize(lightDirection), glm::normalize(normal));
+
+	DrawLine(TransVector(point, model, camera), reflection ,model.gui.ReflectionVectorsColor);
+}
+	
+
 /* -------------------------------------------------- Draw models -----------------------------------------------*/
 void Renderer::DrawModel(const MeshModel& model, const Scene& scene)
 {
@@ -424,7 +433,7 @@ glm::vec3 Renderer::GouraudShading(const MeshModel& model, const Light& light, c
 	for (int i = 0; i < 3; i++)
 	{
 		vertices.push_back(TransVector(model.GetVertice(face.GetVertexIndex(i) - 1), model, camera));
-		glm::vec3 normal = model.GetNormalVertix(face.GetVertexIndex(i));
+		glm::vec3 normal = model.GetNormalVertix(face.GetVertexIndex(i) - 1);
 		normal = TransVector((normal + model.GetVertice(face.GetVertexIndex(i) - 1)), model, camera);
 		normal = normal - vertices[i];
 		verticesColors.push_back(GetVertexColor(model, light, camera, face, vertices[i], normal));
@@ -525,6 +534,11 @@ glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const 
 			AmbientLight = light.CalcAmbientReflection(model.gui.AmbientReflectionColor);
 			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
 			SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
+		
+			if (model.gui.ShowReflectionVectors)
+			{
+				DrawSpecularReflectionVectors(model, light, camera, face, point, normal);
+			}
 		}
 		else if (direction == LightType::DIRECTIONAL_LIGHT) {
 			glm::vec3 lightDirection = -1.0f * ApplyTrans(normal, model.GetTransformation());
