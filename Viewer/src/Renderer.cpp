@@ -371,6 +371,8 @@ void Renderer::DrawModel(const MeshModel& model, const Scene& scene)
 void Renderer::DrawFace(const Face& face, const MeshModel& model, const Scene& scene, const int& index)
 {
 	EdgeWalking(face, model, scene, index);
+
+
 }
 
 /* -------------------------------------------------- Post Processing -----------------------------------------------*/
@@ -491,6 +493,8 @@ glm::vec3 Renderer::GetColor(const MeshModel& model, const Scene& scene, const F
 	glm::vec3 finalColor(0);
 	Camera camera = scene.GetCamera(scene.GetActiveCameraIndex());
 
+
+
 	for (int i = 0; i < scene.GetLightCount(); i++)
 	{	
 		Light currLight = scene.GetLight(i);
@@ -534,11 +538,6 @@ glm::vec3 Renderer::CalcColor(const MeshModel& model, const Light& light, const 
 			AmbientLight = light.CalcAmbientReflection(model.gui.AmbientReflectionColor);
 			DiffuseLight = light.CalcDiffuseReflection(model.gui.DiffuseReflectionColor, normal, lightDirection);
 			SpecularLight = light.CalcSpecularReflection(model.gui.AmbientReflectionColor, normal, lightDirection, cameraDirection, model.gui.shininess);
-		
-			if (model.gui.ShowReflectionVectors)
-			{
-				DrawSpecularReflectionVectors(model, light, camera, face, point, normal);
-			}
 		}
 		else if (direction == LightType::DIRECTIONAL_LIGHT) {
 			glm::vec3 lightDirection = -1.0f * ApplyTrans(normal, model.GetTransformation());

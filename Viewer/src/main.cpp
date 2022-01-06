@@ -633,6 +633,8 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().gui.SpecularSourceColor);
 					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().gui.DiffuseSourceColor);
 
+					ImGui::SliderFloat3("Direction", scene.GetActiveModel().gui.ModelScaleValue_array, scaleMin, scaleMax);
+
 					scene.GetActiveLight().SetAmbientColor(glm::vec3(scene.GetActiveLight().gui.AmbientSourceColor[0],
 						scene.GetActiveLight().gui.AmbientSourceColor[1],
 						scene.GetActiveLight().gui.AmbientSourceColor[2]));
