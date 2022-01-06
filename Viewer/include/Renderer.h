@@ -69,6 +69,9 @@ private:
 	void CreateBuffers(int w, int h);
 	void CreateOpenglBuffer();
 	void InitOpenglRendering();
+	
+	void ApplyFog(const Scene& scene, const Camera& camera);
+	void ApplyBlur();
 
 	float* color_buffer;
 	int viewport_width;

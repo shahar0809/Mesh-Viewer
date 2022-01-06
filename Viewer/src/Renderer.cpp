@@ -364,6 +364,30 @@ void Renderer::DrawFace(const Face& face, const MeshModel& model, const Scene& s
 	EdgeWalking(face, model, scene, index);
 }
 
+/* -------------------------------------------------- Post Processing -----------------------------------------------*/
+
+void Renderer::ApplyFog(const Scene& scene, const Camera& camera)
+{
+	float pixelDistance;
+	float fogDistance;
+	for (int i = 0; i < viewport_width; i++)
+	{
+		for (int j = 0; j < viewport_height; j++)
+		{
+			pixelDistance = glm::distance(camera.getEye(), glm::vec3(i, j, zBuffer[i][j]));
+			fogDistance = glm::clamp((scene.fogEnd - pixelDistance) / (scene.fogEnd - scene.fogStart), 0.0f, 1.0f);
+			color_buffer[INDEX(viewport_width, i, j, 0)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 0)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[0];
+			color_buffer[INDEX(viewport_width, i, j, 1)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 1)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[1];
+			color_buffer[INDEX(viewport_width, i, j, 2)] = glm::clamp(fogDistance * color_buffer[INDEX(viewport_width, i, j, 2)] + (1 - fogDistance) * scene.fogColor, 0.0f, 1.0f)[2];
+		}
+	}
+}
+
+void Renderer::ApplyBlur()
+{
+
+}
+
 /* -------------------------------------------------- Lights & Shading -----------------------------------------------*/
 /**
  * @brief Performs Flat Shading.

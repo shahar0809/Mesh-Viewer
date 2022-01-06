@@ -38,6 +38,12 @@ public:
 
 	void SetActiveLightIndex(int index);
 	int GetActiveLightIndex() const;
+
+	glm::vec3 fogColor = glm::vec3(0.4, 0.4, 0.4);
+	float fogDensity = 1.0f;
+	float fogStart = 0;
+	float fogEnd = 10.0f; // check what value should be initialized with
+	float fogDistance = 0;
 	
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
