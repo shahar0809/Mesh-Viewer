@@ -7,7 +7,7 @@
 class Light
 {
 public:
-	Light();
+	Light(LightType type);
 
 	LightGUI_Attributes gui;
 
@@ -31,6 +31,10 @@ public:
 	void SetAmbientColor(const glm::vec3& color);
 	void SetSpecularColor(const glm::vec3& color);
 	void SetDiffuseColor(const glm::vec3& color);
+
+	void SetDirection(const glm::vec3& direction);
+	void SetDirection(float arr[]);
+	const glm::vec3& GetDirection() const;
 
 	glm::vec3 CalcAmbientReflection(glm::vec3 color) const;
 	glm::vec3 CalcDiffuseReflection(const glm::vec3& color, const glm::vec3& normal, const glm::vec3& lightDirection) const;
@@ -56,6 +60,8 @@ protected:
 	glm::vec3 Source;
 	LightType lightType;
 	ShadingType shadingType;
+
+	glm::vec3 direction;
 
 	glm::vec3 AmbientColor = glm::vec3(0), SpecularColor = glm::vec3(0), DiffuseColor = glm::vec3(0);
 

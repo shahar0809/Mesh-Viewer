@@ -24,8 +24,13 @@ public:
 	float LightLocalTransValue_array[3] = { 0 };
 	float LightLocalRotateValue_array[3] = { 0 };
 
+	float Direction[3] = { 0 };
+	float Source[3] = { 0 };
+
 	ShadingType shadingType = ShadingType::FLAT;
 	LightType lightType = LightType::LIGHT_POINT;
+
+	bool isActive = false;
 
 	float LightSize = 20;
 };

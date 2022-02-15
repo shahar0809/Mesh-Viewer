@@ -99,7 +99,7 @@ int main(int argc, char** argv)
 	scene.AddCamera(camera1);
 
 	/* Add a light */
-	std::shared_ptr<Light> light1 = std::make_shared<Light>();
+	std::shared_ptr<Light> light1 = std::make_shared<Light>(LightType::LIGHT_POINT);
 	scene.AddLight(light1);
 	
 	ImGuiIO& io = SetupDearImgui(window);
@@ -342,9 +342,17 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::MenuItem("Light", "CTRL+SHIFT+L"))
+			if (ImGui::BeginMenu("Light"))
 			{
-				scene.AddLight(std::make_shared<Light>());
+				if (ImGui::MenuItem("Point"))
+				{
+					scene.AddLight(std::make_shared<Light>(LightType::LIGHT_POINT));
+				}
+				if (ImGui::MenuItem("Directional"))
+				{
+					scene.AddLight(std::make_shared<Light>(LightType::DIRECTIONAL_LIGHT));
+				}
+				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
 		}
@@ -603,15 +611,7 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 					float* colorPointer = nullptr;
 
-					if (ImGui::RadioButton("Point", (int*)(&scene.GetActiveLight().gui.lightType), (int)LightType::LIGHT_POINT))
-					{
-						scene.GetActiveLight().SetPoint();
-					}
-					ImGui::SameLine();
-					if (ImGui::RadioButton("Directional", (int*)(&scene.GetActiveLight().gui.lightType), (int)LightType::DIRECTIONAL_LIGHT))
-					{
-						scene.GetActiveLight().SetDirectional();
-					}
+					ImGui::Checkbox("active", &scene.GetActiveLight().gui.isActive);
 
 					// Radio buttons for shading type modes
 					if (ImGui::RadioButton("Flat", (int*)(&scene.GetActiveLight().gui.shadingType), (int)ShadingType::FLAT))
@@ -633,8 +633,14 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 					ImGui::ColorEdit3("Specular", (float*)&scene.GetActiveLight().gui.SpecularSourceColor);
 					ImGui::ColorEdit3("Diffuse", (float*)&scene.GetActiveLight().gui.DiffuseSourceColor);
 
-					ImGui::SliderFloat3("Direction", scene.GetActiveModel().gui.ModelScaleValue_array, scaleMin, scaleMax);
-
+					if (scene.GetActiveLight().GetLightType() == LightType::DIRECTIONAL_LIGHT)
+					{
+						if (ImGui::SliderFloat3("Direction", scene.GetActiveLight().gui.Direction, -20, 20))
+						{
+							scene.GetActiveLight().SetDirection(scene.GetActiveLight().gui.Direction);
+						}
+					}
+					
 					scene.GetActiveLight().SetAmbientColor(glm::vec3(scene.GetActiveLight().gui.AmbientSourceColor[0],
 						scene.GetActiveLight().gui.AmbientSourceColor[1],
 						scene.GetActiveLight().gui.AmbientSourceColor[2]));
@@ -686,10 +692,11 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 
 		ImGui::Begin("Post Processing");
 		ImGui::Checkbox("Fog", &scene.isFog);
-		ImGui::SameLine();
-		/*ImGui::Checkbox("BBox", &scene.GetActiveModel().gui.IsBoundingBoxOnScreen);
-		ImGui::SameLine();*/
-		ImGui::End();
 
+		ImGui::ColorEdit3("Fog Color", (float*)&scene.fogColor);
+		ImGui::SliderFloat("Fog Start", &scene.fogStart, 90.0f, 100.0f);
+		ImGui::SliderFloat("Fog End", &scene.fogEnd, 95.0f, 105.0f);
+
+		ImGui::End();
 	}
 }

@@ -43,8 +43,8 @@ public:
 
 	glm::vec3 fogColor = glm::vec3(0.4, 0.4, 0.4);
 	float fogDensity = 1.0f;
-	float fogStart = 0;
-	float fogEnd = 10.0f; // check what value should be initialized with
+	float fogStart = 90.0f;
+	float fogEnd = 95.0f; // check what value should be initialized with
 	float fogDistance = 0;
 	
 private:

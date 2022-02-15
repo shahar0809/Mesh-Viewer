@@ -1,10 +1,13 @@
 #include "Light.h"
-
-Light::Light()
+/*
+Each light will have a direction and source, direction will be used when directional
+*/
+Light::Light(LightType type=LightType::LIGHT_POINT)
 {
+	lightType = type;
 	Source = glm::vec3(0, 0, 0);
 	shadingType = ShadingType::FLAT;
-	lightType = LightType::LIGHT_POINT;
+	direction = glm::vec3(1, 0, 0);
 
 	WorldRotateVal = glm::vec3(0);
 	LocalRotateVal = glm::vec3(0);
@@ -78,6 +81,23 @@ Light::Light()
 		0, 0, 1, 0,
 		0, 0, 0, 1
 	};
+}
+
+void Light::SetDirection(const glm::vec3& direction)
+{
+	this->direction = direction;
+}
+
+void Light::SetDirection(float arr[])
+{
+	this->direction.x = arr[0];
+	this->direction.y = arr[1];
+	this->direction.z = arr[2];
+}
+
+const glm::vec3& Light::GetDirection() const
+{
+	return direction;
 }
 
 const glm::vec3& Light::GetSource() const
