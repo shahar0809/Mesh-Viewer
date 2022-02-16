@@ -13,6 +13,7 @@ class Camera
 {
 public:
 	Camera();
+	Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up);
 	virtual ~Camera();
 
 	void SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up);
@@ -30,6 +31,7 @@ public:
 	void SetOrthoViewVolume(float left, float right, float bottom, float top);
 	void SetDepth(float nearParameter, float farParameter);
 	void SetPerspectiveViewVolume(float left, float right, float bottom, float top);
+	void SetPerspectiveViewVolume(float aspect, float fovy);
 
 	void SetOrthoCamera();
 	void SetPerspectiveCamera();
@@ -54,13 +56,10 @@ public:
 private:
 	CameraMode mode;
 
-	glm::mat4x4 view_transformation;			// Orthographic transf
-	glm::mat4x4 projection_transformation;		// Projection tranformation
-	//glm::mat4x4 camera;							// C
-	//glm::mat4x4 camera_inverse;					// Cinv
+	glm::mat4x4 view_transformation;
+	glm::mat4x4 projection_transformation;
 
 	glm::vec3 Eye, At, Up;
-	glm::mat4x4 cameraAngle;
 
 	// View volume
 	float zNear = 0, zFar = 0;
@@ -72,7 +71,6 @@ private:
 	// Attributes to keep translate and rotation values
 	glm::mat4x4 TranslateLocal, RotateLocal, RotateLocalX, RotateLocalY, RotateLocalZ;
 	glm::mat4x4 TranslateWorld, RotateWorld, RotateWorldX, RotateWorldY, RotateWorldZ;
-
 	glm::mat4x4 WorldTrans, LocalTrans;
 
 	// Store current rotate values (to avoid using arcsin, arccos)

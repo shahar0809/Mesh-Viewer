@@ -105,6 +105,8 @@ Camera::Camera()
 	gui.perspective_array[0] = gui.width / gui.SCREEN_ASPECT;
 	gui.perspective_array[1] = gui.height / gui.SCREEN_ASPECT;
 	gui.perspective_array[2] = 15;
+
+	SetOrthoCamera();
 }
 
 Camera::~Camera()
@@ -112,17 +114,22 @@ Camera::~Camera()
 	
 }
 
+Camera::Camera(glm::vec3 eye, glm::vec3 at, glm::vec3 up) : Camera()
+{
+	Eye = eye;
+	At = at; 
+	Up = up;
+
+	view_transformation = glm::lookAt(eye, at, up);
+}
+
 const glm::mat4x4& Camera::GetProjectionTransformation() const
 {
-	//std::cout << "projection camera " << std::endl;
-	//std::cout << glm::to_string(projection_transformation) << std::endl;
 	return projection_transformation;
 }
 
 const glm::mat4x4& Camera::GetViewTransformation() const
 {
-	//std::cout << "view trans " << std::endl;
-	//std::cout << glm::to_string(view_transformation) << std::endl;
 	return view_transformation;
 }
 
@@ -304,11 +311,13 @@ void Camera::SetWorldTranslate(double transX, double transY, double transZ)
 void Camera::SetOrthoCamera()
 {
 	mode = CameraMode::Orthographic;
+	projection_transformation = glm::ortho(left, right, bottom, top);
 }
 
 void Camera::SetPerspectiveCamera()
 {
 	mode = CameraMode::Perspective;
+	projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
 }
 
 const CameraMode& Camera::GetCameraMode() const
@@ -324,26 +333,7 @@ const CameraMode& Camera::GetCameraMode() const
 */
 void Camera::SetCameraLookAt(const glm::vec3& eye, const glm::vec3& at, const glm::vec3& up)
 {
-	glm::mat3x3 lookAtTrasform = glm::lookAt(eye, at, up);
-
-	glm::mat4x4 lookAt;
-	for (int i = 0; i < 3; i++)
-	{
-		lookAt[i][0] = lookAtTrasform[i][0];
-		lookAt[i][1] = lookAtTrasform[i][1];
-		lookAt[i][2] = lookAtTrasform[i][2];
-		lookAt[i][3] = 0;
-	}
-
-	lookAt[3][0] = 0;
-	lookAt[3][1] = 0;
-	lookAt[3][2] = 0;
-	lookAt[3][3] = 1;
-
-	view_transformation = GetTransformation() * lookAt;
-
-	if (view_transformation[3][2] == 0)
-		view_transformation[3][2]++;
+	view_transformation = glm::lookAt(eye, at, up);
 }
 
 void Camera::SetOrthoViewVolume(float left, float right, float bottom, float top)
@@ -371,16 +361,24 @@ void Camera::SetPerspectiveViewVolume(float left, float right, float bottom, flo
 	CalcPerspectiveTrans();
 }
 
+void Camera::SetPerspectiveViewVolume(float aspect, float fovy)
+{
+	this->aspect = aspect;
+	this->fovy = fovy;
+	projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
+}
+
 void Camera::CalcOrthoTrans()
 {
-	projection_transformation = glm::mat4x4(1);
+	projection_transformation = glm::ortho(left, right, bottom, top);
+	/*projection_transformation = glm::mat4x4(1);
 	projection_transformation[0][0] = 2 / (right - left);	
 	projection_transformation[1][1] = 2 / (top - bottom);
 	projection_transformation[2][2] = 2 / (zNear - zFar);
 	projection_transformation[3][3] = 1;
 	projection_transformation[3][0] = -(right + left) / (right - left);
 	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
-	projection_transformation[3][2] = -(zFar + zNear) / (zFar - zNear);
+	projection_transformation[3][2] = -(zFar + zNear) / (zFar - zNear);*/
 }
 
 void Camera::CalcPerspectiveTrans()
