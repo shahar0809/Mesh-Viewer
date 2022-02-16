@@ -36,10 +36,6 @@ const float LookAtMax = 3.0f, LookAtMin = -3.0f;
 
 const int ORTHO = 0, PERSPECTIVE = 1;
 
-/**
-* Colors
-*/
-static const glm::vec3 backgroundColor = clear_color;
 
 // ASCII values for keyboard events
 static const int S_KEY_ASCII = int('S'),
@@ -140,6 +136,10 @@ GLFWwindow* SetupGlfwWindow(int w, int h, const char* window_name)
 						 // https://stackoverflow.com/questions/48582444/imgui-with-the-glad-opengl-loader-throws-segmentation-fault-core-dumped
 
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+	glClearColor(clear_color.r, clear_color.g, clear_color.b, 1);
+	glEnable(GL_DEPTH_TEST);
+
 	return window;
 }
 
@@ -248,7 +248,9 @@ void RenderFrame(GLFWwindow* window, Scene& scene, Renderer& renderer, ImGuiIO& 
 
 	renderer.ClearColorBuffer(clear_color);
 	renderer.Render(scene);
-	renderer.SwapBuffers();
+	//renderer.SwapBuffers();
+	// Clear the screen and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	glfwMakeContextCurrent(window);
@@ -361,9 +363,9 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 	}
 
 	/* -------------------------------------------------- Colors control -----------------------------------------------*/
-	if (ImGui::ColorEdit3("Background", (float*)&backgroundColor))
+	if (ImGui::ColorEdit3("Background", (float*)&clear_color))
 	{
-		clear_color = backgroundColor;
+		glClearColor(clear_color.r, clear_color.g, clear_color.b, 1);
 	}
 
 	if (ImGui::ColorEdit3("Model", (float*)&scene.GetActiveModel().gui.color))

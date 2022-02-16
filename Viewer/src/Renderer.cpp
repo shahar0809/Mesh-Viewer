@@ -835,40 +835,20 @@ void Renderer::Render(const Scene& scene)
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel& currModel = scene.GetModel(i);
-		vertexShader.use();
+		if (currModel.gui.IsOnScreen)
+		{
+			vertexShader.use();
 
-		texture.bind(0);
+			texture.bind(0);
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glBindVertexArray(currModel.GetVAO());
-		glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
-		glBindVertexArray(0);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glBindVertexArray(currModel.GetVAO());
+			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
+			glBindVertexArray(0);
 
-		texture.unbind(0);
+			texture.unbind(0);
+		}
 	}
-
-	//for (int i = 0; i < scene.GetLightCount(); i++)
-	//{
-	//	Light currLight = scene.GetLight(i);
-	//	glm::vec3 avgColor = (currLight.GetAmbientColor() + currLight.GetDiffuseColor() + currLight.GetSpecularColor()) / 3.0f;
-	//	DrawFilledRectangle(TransVector(currLight.GetSource(), currLight, camera), currLight.gui.LightSize, currLight.gui.LightSize, avgColor);
-
-	//	if (currLight.GetLightType() == LightType::DIRECTIONAL_LIGHT)
-	//	{
-	//		DrawLine(TransVector(currLight.GetSource(), currLight, camera), TransVector(currLight.GetSource(), currLight, camera) + light.GetDirection(),
-	//			avgColor);
-	//	}
-	//}
-
-	//// Draw mesh triangles
-	//for (int i = 0; i < scene.GetModelCount(); i++)
-	//{
-	//	MeshModel currModel = scene.GetModel(i);
-	//	if (currModel.gui.IsOnScreen)
-	//		DrawModel(currModel, scene);
-	//}
-
-	DrawWorldFrame(camera);
 }
 
 void Renderer::ApplyFog(const Scene& scene, const Camera& camera)
