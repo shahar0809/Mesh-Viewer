@@ -36,17 +36,17 @@ Finally, we pass the screen and texture coordinates to the shader.
 
 Firstly, we need to create a shader which accepts vertexes, and outputs them.
 ```cpp
-in  vec2 vTexCoord;
-in  vec2 vPosition;
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec2 texCoords;
 
 out vec2 texCoord;
 
 void main()
 {
-    gl_Position.xy = vPosition;
-    gl_Position.z=0;
-    gl_Position.w=1;
-    texCoord = vTexCoord;
+    gl_Position.xyz = pos;
+    gl_Position.z = 0;
+    gl_Position.w = 1;
+    texCoord = texCoords;
 }
 ```
 
@@ -54,6 +54,36 @@ This basic shader outputs the homogenous coordinates, without depth.
 
 Then, we need to pass the model's vertexs to the shader.
 
+Firstly, we created struct for the layout inputs in the shader:
+```cpp
+struct Vertex
+{
+	glm::vec3 pos;
+	glm::vec3 textureCoords;
+};
+```
+
+Then, we created VAO and VBO in MeshModel for the vertexes, and specified
+the offsets of the inputs in the layout:
+
+```cpp
+/* Initialize VAO and VBO for the vertexs */
+glGenVertexArrays(1, &vao);
+glGenBuffers(1, &vbo);
+
+glBindVertexArray(vao);
+glBindBuffer(GL_ARRAY_BUFFER, vbo);
+glBufferData(GL_ARRAY_BUFFER, modelVertexes.size() * sizeof(Vertex), &modelVertexes[0], GL_STATIC_DRAW);
+
+/* Initialize input positions of Vertex for shader */
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+glEnableVertexAttribArray(0);
+
+glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+glEnableVertexAttribArray(1);
+
+glBindVertexArray(0);
+```
 
 ## 
 ![Rectangles](part1_images/color_rectangles.gif)
