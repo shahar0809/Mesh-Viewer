@@ -1,6 +1,7 @@
 #pragma once
 #include "Scene.h"
 #include "Utils.h"
+#include "ShaderProgram.h"
 #include <iostream>
 #include <complex>
 #include <utility>
@@ -73,6 +74,12 @@ private:
 	
 	void ApplyFog(const Scene& scene, const Camera& camera);
 	void ApplyBlur();
+
+	void LoadShaders();
+	void LoadTextures();
+
+	/* Private fields */
+	ShaderProgram vertexShader;
 
 	float* color_buffer;
 	int viewport_width;

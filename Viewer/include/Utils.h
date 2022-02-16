@@ -15,6 +15,8 @@ static glm::vec3 bounding_rect_color = glm::vec3{ 0, 1, 0 };
 static float const axes_length = 50.0f;
 static float const normal_length = 50.0f;
 
+static const std::string base_path = "C: ../../../Data/";
+
 //static int const RAND_MAX = 500;
 
 class Utils

@@ -832,26 +832,37 @@ void Renderer::Render(const Scene& scene)
 	const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
 	const Light& light = scene.GetLight(scene.GetActiveLightIndex());
 
-	for (int i = 0; i < scene.GetLightCount(); i++)
+	for (int i = 0; scene.GetModelCount(); i++)
 	{
-		Light currLight = scene.GetLight(i);
-		glm::vec3 avgColor = (currLight.GetAmbientColor() + currLight.GetDiffuseColor() + currLight.GetSpecularColor()) / 3.0f;
-		DrawFilledRectangle(TransVector(currLight.GetSource(), currLight, camera), currLight.gui.LightSize, currLight.gui.LightSize, avgColor);
+		MeshModel& currModel = scene.GetModel(i);
+		vertexShader.use();
 
-		if (currLight.GetLightType() == LightType::DIRECTIONAL_LIGHT)
-		{
-			DrawLine(TransVector(currLight.GetSource(), currLight, camera), TransVector(currLight.GetSource(), currLight, camera) + light.GetDirection(),
-				avgColor);
-		}
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glBindVertexArray(currModel.GetVAO());
+		glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
+		glBindVertexArray(0);
 	}
 
-	// Draw mesh triangles
-	for (int i = 0; i < scene.GetModelCount(); i++)
-	{
-		MeshModel currModel = scene.GetModel(i);
-		if (currModel.gui.IsOnScreen)
-			DrawModel(currModel, scene);
-	}
+	//for (int i = 0; i < scene.GetLightCount(); i++)
+	//{
+	//	Light currLight = scene.GetLight(i);
+	//	glm::vec3 avgColor = (currLight.GetAmbientColor() + currLight.GetDiffuseColor() + currLight.GetSpecularColor()) / 3.0f;
+	//	DrawFilledRectangle(TransVector(currLight.GetSource(), currLight, camera), currLight.gui.LightSize, currLight.gui.LightSize, avgColor);
+
+	//	if (currLight.GetLightType() == LightType::DIRECTIONAL_LIGHT)
+	//	{
+	//		DrawLine(TransVector(currLight.GetSource(), currLight, camera), TransVector(currLight.GetSource(), currLight, camera) + light.GetDirection(),
+	//			avgColor);
+	//	}
+	//}
+
+	//// Draw mesh triangles
+	//for (int i = 0; i < scene.GetModelCount(); i++)
+	//{
+	//	MeshModel currModel = scene.GetModel(i);
+	//	if (currModel.gui.IsOnScreen)
+	//		DrawModel(currModel, scene);
+	//}
 
 	DrawWorldFrame(camera);
 }
@@ -889,4 +900,17 @@ void Renderer::SetViewport(int width, int height)
 	viewport_height = height;
 	viewport_width = width;
 	CreateBuffers(width, height);
+}
+
+void Renderer::LoadShaders()
+{
+	vertexShader.loadShaders("vshader_color.glsl", "fshader_color.glsl");
+}
+
+void Renderer::LoadTextures()
+{
+	/*if (!texture1.loadTexture(base_path + "crate.jpg", true))
+	{
+		texture1.loadTexture(base_path + "crate.jpg", true);
+	}*/
 }

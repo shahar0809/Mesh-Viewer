@@ -11,6 +11,28 @@ MeshModel::MeshModel(std::vector<Face> faces, std::vector<glm::vec3> vertices, s
 	WorldRotateVal = glm::vec3(0);
 	ModelRotateVal = glm::vec3(0);
 
+	/* Initialize vertexes as Vertex struct for shader */
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		modelVertexes.push_back(Vertex{ vertices[i] });
+	}
+
+	/* Initialize VAO and VBO for the vertexs */
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	/* Initialize input positions of Vertex for shader */
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
 	TranslateModel = glm::mat4x4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -142,6 +164,21 @@ const std::string& MeshModel::GetModelName() const
 const std::vector<glm::vec3> MeshModel::GetVertices() const
 {
 	return vertices;
+}
+
+const std::vector<Vertex> MeshModel::GetModelVertexes() const
+{
+	return modelVertexes;
+}
+
+GLuint MeshModel::GetVAO() const
+{
+	return vao;
+}
+
+GLuint MeshModel::GetVBO() const
+{
+	return vbo;
 }
 
 void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)

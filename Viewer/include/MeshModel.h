@@ -11,6 +11,12 @@
 
 #define M_PI 3.14159265358979323846264338327950288
 
+struct Vertex
+{
+	glm::vec3 pos;
+	glm::vec3 textureCoords;
+};
+
 class MeshModel
 {
 public:
@@ -24,6 +30,9 @@ public:
 	int GetNormalsCount() const;
 	const std::string& GetModelName() const;
 	const std::vector<glm::vec3> GetVertices() const;
+	const std::vector<Vertex> GetModelVertexes() const;
+	GLuint GetVAO() const;
+	GLuint GetVBO() const;
 
 	std::vector<glm::vec3> getBoundingBox() const;
 
@@ -54,7 +63,6 @@ public:
 	glm::mat4x4 GetWorldTransformation() const;
 
 	void InitLocalFrame();
-	void InitverticesFacesNeighbors();
 	
 	glm::vec3 GetNormalVertix(int index) const;
 	glm::vec3 GetFaceNormal(int index) const;
@@ -73,6 +81,9 @@ private:
 	std::vector<std::vector<int>> verticesFacesNeighbors;
 	std::string model_name;
 	std::map<int, std::vector<glm::vec3>> vertexesNormals;
+
+	std::vector<Vertex> modelVertexes;
+	GLuint vao, vbo;
 
 	// Keep the frame of the model
 	glm::vec3 Origin, AxisX, AxisY, AxisZ;

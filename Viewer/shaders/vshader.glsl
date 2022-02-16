@@ -1,14 +1,14 @@
-#version 150
+#version 330 core
 
-in  vec2 vTexCoord;
-in  vec2 vPosition;
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec2 texCoords;
 
 out vec2 texCoord;
 
 void main()
 {
-    gl_Position.xy = vPosition;
+    gl_Position = pos;
     gl_Position.z=0;
     gl_Position.w=1;
-    texCoord = vTexCoord;
+    texCoord = texCoords;
 }

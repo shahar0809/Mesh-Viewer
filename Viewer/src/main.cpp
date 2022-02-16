@@ -52,7 +52,6 @@ static const int ZOOM_IN_KEY_ASCII = int('['),
 				 ZOOM_OUT_KEY_ASCII = int(']');
 
 int windowWidth = 1280, windowHeight = 720;
-const std::string base_path = "C: ../../../Data/";
 
 
 /**
