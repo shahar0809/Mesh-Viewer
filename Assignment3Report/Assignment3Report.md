@@ -82,10 +82,92 @@ glEnableVertexAttribArray(0);
 glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
 glEnableVertexAttribArray(1);
 
-glBindVertexArray(0);
+glBindVertexArray(0)
 ```
 
-## 
+Finally, we pass the vertexes in Renderer, and draw it wireframe:
+
+```cpp
+const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
+	const Light& light = scene.GetLight(scene.GetActiveLightIndex());
+
+	for (int i = 0; i < scene.GetModelCount(); i++)
+	{
+		MeshModel& currModel = scene.GetModel(i);
+		if (currModel.gui.IsOnScreen)
+		{
+			vertexShader.use();
+			texture.bind(0);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glBindVertexArray(currModel.GetVAO());
+			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
+			glBindVertexArray(0);
+
+			texture.unbind(0);
+		}
+	}
+}
+```
+  
+## 3 - Supporting transformations all over again :)
+In order to support transformations, we need to pass the model's 
+and camera's transformations (MVP) to the vertex shader.
+
+As said in the lecture, we will pass it using uniforms. The shader now looks like this:
+
+```cpp
+#version 330 core
+
+layout(location = 0) in vec3 pos;
+layout(location = 1) in vec2 texCoords;
+
+// MVP for transformations
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+out vec2 texCoord;
+
+void main()
+{
+    gl_Position = projection * view * model * vec4(pos, 1.0f);
+}
+```
+
+Then, we need to pass the transformations as uniforms in the Render() function:
+
+```cpp
+const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
+	const Light& light = scene.GetLight(scene.GetActiveLightIndex());
+
+	for (int i = 0; i < scene.GetModelCount(); i++)
+	{
+		MeshModel& currModel = scene.GetModel(i);
+		if (currModel.gui.IsOnScreen)
+		{
+			vertexShader.use();
+
+			// Pass transformatins to shader (MVP)
+			vertexShader.setUniform("model", currModel.GetTransformation());
+			vertexShader.setUniform("view", camera.GetViewTransformation());
+			vertexShader.setUniform("projection", camera.GetProjectionTransformation());
+
+			texture.bind(0);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glBindVertexArray(currModel.GetVAO());
+			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
+			glBindVertexArray(0);
+
+			texture.unbind(0);
+		}
+	}
+}
+```
+
+
+
 ![Rectangles](part1_images/color_rectangles.gif)
 
 

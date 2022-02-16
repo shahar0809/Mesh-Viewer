@@ -839,6 +839,11 @@ void Renderer::Render(const Scene& scene)
 		{
 			vertexShader.use();
 
+			// Pass transformatins to shader (MVP)
+			vertexShader.setUniform("model", currModel.GetTransformation());
+			vertexShader.setUniform("view", camera.GetViewTransformation());
+			vertexShader.setUniform("projection", camera.GetProjectionTransformation());
+
 			texture.bind(0);
 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
