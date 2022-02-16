@@ -27,6 +27,9 @@ public:
 	int GetViewportWidth() const;
 	int GetViewportHeight() const;
 
+	void LoadShaders();
+	void LoadTextures();
+
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color, float z);
 	void DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color);
@@ -75,9 +78,6 @@ private:
 	
 	void ApplyFog(const Scene& scene, const Camera& camera);
 	void ApplyBlur();
-
-	void LoadShaders();
-	void LoadTextures();
 
 	/* Private fields */
 	ShaderProgram vertexShader;

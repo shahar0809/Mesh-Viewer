@@ -15,7 +15,7 @@ Renderer::Renderer(int viewport_width, int viewport_height) :
 	srand(time(NULL));
 	InitOpenglRendering();
 
-	InitBufferZ();
+	//InitBufferZ();
 	CreateBuffers(viewport_width, viewport_height);
 }
 
@@ -814,14 +814,8 @@ void Renderer::SwapBuffers()
 
 void Renderer::ClearColorBuffer(const glm::vec3& color)
 {
-	for (int i = 0; i < viewport_width; i++)
-	{
-		for (int j = 0; j < viewport_height; j++)
-		{
-			PutPixel(i, j, color);
-			zBuffer[i][j] = std::numeric_limits<float>::max();
-		}
-	}
+	glClearColor(clear_color.r, clear_color.g, clear_color.b, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::Render(const Scene& scene)
@@ -841,17 +835,44 @@ void Renderer::Render(const Scene& scene)
 
 			// Pass transformatins to shader (MVP)
 			vertexShader.setUniform("model", currModel.GetTransformation());
-			vertexShader.setUniform("view", camera.GetViewTransformation());
+			vertexShader.setUniform("view", glm::inverse(camera.GetViewTransformation()));
 			vertexShader.setUniform("projection", camera.GetProjectionTransformation());
+			vertexShader.setUniform("scaling", currModel.GetScalingModel());
+			vertexShader.setUniform("viewport", camera.GetViewportTrans(viewport_width, viewport_height));
+
+			GLuint cur_vao = currModel.GetVAO();
+			GLuint cur_vbo = currModel.GetVBO();
+
+			glGenVertexArrays(1, &cur_vao);
+			glBindVertexArray(cur_vao);
+
+			glGenBuffers(1, &cur_vbo);
+			glBindBuffer(GL_ARRAY_BUFFER, cur_vbo);
+
+			glBufferData(GL_ARRAY_BUFFER, currModel.GetVerticesCount() * sizeof(Vertex), &currModel.GetModelVertexes()[0], GL_STATIC_DRAW);
+
+			// Vertex Positions
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+			glEnableVertexAttribArray(0);
+
+			// Normals attribute
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+			glEnableVertexAttribArray(1);
+
 
 			texture.bind(0);
 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glBindVertexArray(currModel.GetVAO());
 			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
 			glBindVertexArray(0);
 
 			texture.unbind(0);
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			glBindVertexArray(currModel.GetVAO());
+			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
+			glBindVertexArray(0);
 		}
 	}
 }
@@ -893,7 +914,7 @@ void Renderer::SetViewport(int width, int height)
 
 void Renderer::LoadShaders()
 {
-	vertexShader.loadShaders("vshader_color.glsl", "fshader_color.glsl");
+	vertexShader.loadShaders("vshader.glsl", "fshader.glsl");
 }
 
 void Renderer::LoadTextures()

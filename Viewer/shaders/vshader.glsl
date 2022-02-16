@@ -7,10 +7,14 @@ layout(location = 1) in vec2 texCoords;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 viewport;
+uniform mat4 scaling;
 
 out vec2 texCoord;
+out vec4 colorV;
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(pos, 1.0f);
+    gl_Position = viewport * projection * view * model * scaling * vec4(pos, 1.0f);
+    colorV = vec4(0, 0, 0, 1);
 }

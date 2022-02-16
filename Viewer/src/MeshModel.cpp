@@ -183,6 +183,17 @@ GLuint MeshModel::GetVBO() const
 	return vbo;
 }
 
+glm::mat4x4 MeshModel::GetScalingModel() const
+{
+	auto minMax = GetMinMax(vertices);
+	float scaleX = std::get<0>(minMax.second) - std::get<0>(minMax.first);
+	float scaleY = std::get<1>(minMax.second) - std::get<1>(minMax.first);
+	float scaleZ = std::get<2>(minMax.second) - std::get<2>(minMax.first);
+	float max = glm::max(scaleX, glm::max(scaleY, scaleZ));
+
+	return glm::mat4x4(1 / 2* max);
+}
+
 void MeshModel::ApplyModelScale(double scaleX, double scaleY, double scaleZ)
 {
 	// Multiply current scale parameters (in diagonal) by new parameters

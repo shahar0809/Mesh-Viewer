@@ -365,20 +365,20 @@ void Camera::SetPerspectiveViewVolume(float aspect, float fovy)
 {
 	this->aspect = aspect;
 	this->fovy = fovy;
-	projection_transformation = glm::perspective(fovy, aspect, zNear, zFar);
+	CalcPerspectiveTrans();
 }
 
 void Camera::CalcOrthoTrans()
 {
-	projection_transformation = glm::ortho(left, right, bottom, top);
-	/*projection_transformation = glm::mat4x4(1);
+	//projection_transformation = glm::ortho(left, right, bottom, top);
+	projection_transformation = glm::mat4x4(1);
 	projection_transformation[0][0] = 2 / (right - left);	
 	projection_transformation[1][1] = 2 / (top - bottom);
 	projection_transformation[2][2] = 2 / (zNear - zFar);
 	projection_transformation[3][3] = 1;
 	projection_transformation[3][0] = -(right + left) / (right - left);
 	projection_transformation[3][1] = -(top + bottom) / (top - bottom);
-	projection_transformation[3][2] = -(zFar + zNear) / (zFar - zNear);*/
+	projection_transformation[3][2] = -(zFar + zNear) / (zFar - zNear);
 }
 
 void Camera::CalcPerspectiveTrans()

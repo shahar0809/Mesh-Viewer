@@ -166,7 +166,33 @@ const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
 }
 ```
 
+## 4 - Constant color in Fragment Shader
+We created a super simple fragment shader, which only has one output:
 
+```cpp
+#version 330 core
+
+out vec4 fColor;
+
+void main() 
+{ 
+   fColor = vec4(0);
+} 
+```
+
+It outputs constant black color for each pixel.
+
+We also added drawing in fill mode, coloring the model:
+
+```cpp
+glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+glBindVertexArray(currModel.GetVAO());
+glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
+glBindVertexArray(0);
+```
+
+## 5 - Update Renderer
+We did it in the previous sections.
 
 ![Rectangles](part1_images/color_rectangles.gif)
 

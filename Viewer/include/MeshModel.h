@@ -36,6 +36,8 @@ public:
 
 	std::vector<glm::vec3> getBoundingBox() const;
 
+	glm::mat4x4 GetScalingModel() const;
+
 	const glm::vec3& GetOrigin() const;
 	const glm::vec3& GetAxisX() const;
 	const glm::vec3& GetAxisY() const;
