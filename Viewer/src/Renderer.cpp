@@ -832,15 +832,19 @@ void Renderer::Render(const Scene& scene)
 	const Camera& camera = scene.GetCamera(scene.GetActiveCameraIndex());
 	const Light& light = scene.GetLight(scene.GetActiveLightIndex());
 
-	for (int i = 0; scene.GetModelCount(); i++)
+	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
 		MeshModel& currModel = scene.GetModel(i);
 		vertexShader.use();
+
+		texture.bind(0);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glBindVertexArray(currModel.GetVAO());
 		glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
 		glBindVertexArray(0);
+
+		texture.unbind(0);
 	}
 
 	//for (int i = 0; i < scene.GetLightCount(); i++)

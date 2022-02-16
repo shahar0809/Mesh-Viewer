@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 	glfwMakeContextCurrent(window);
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
 
-	Renderer renderer = Renderer(frameBufferWidth, frameBufferHeight);
+	Renderer& renderer = Renderer(frameBufferWidth, frameBufferHeight);
 	Scene scene = Scene();
 
 	CameraGUI_Attributes::width = renderer.GetViewportWidth(), CameraGUI_Attributes::height = renderer.GetViewportHeight();

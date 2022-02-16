@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Utils.h"
 #include "ShaderProgram.h"
+#include "Texture2D.h"
 #include <iostream>
 #include <complex>
 #include <utility>
@@ -80,6 +81,7 @@ private:
 
 	/* Private fields */
 	ShaderProgram vertexShader;
+	Texture2D texture;
 
 	float* color_buffer;
 	int viewport_width;
