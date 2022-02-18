@@ -306,6 +306,14 @@ Here is a really beautiful pink/magneta (not purple :) ) with a bit of a blue li
 
 
 ## *fin*
-This is a tradition by now:
+Ah one last time:
 
-![gif](part1_images/happy_gif.gif)
+Us when something works:
+![gif1](images/theoffice2.gif)
+
+
+Us when we finished just one exercise out of 8:
+![gif2](images/a.gif)
+
+
+
