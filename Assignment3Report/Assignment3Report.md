@@ -309,10 +309,12 @@ Here is a really beautiful pink/magneta (not purple :) ) with a bit of a blue li
 Ah one last time:
 
 Us when something works:
+
 ![gif1](images/theoffice2.gif)
 
 
 Us when we finished just one exercise out of 8:
+
 ![gif2](images/a.gif)
 
 
