@@ -938,8 +938,54 @@ void Renderer::LoadShaders()
 
 void Renderer::LoadTextures()
 {
-	/*if (!texture1.loadTexture(base_path + "crate.jpg", true))
+	if (!texture.loadTexture(base_path + "crate.jpg", true))
 	{
-		texture1.loadTexture(base_path + "crate.jpg", true);
-	}*/
+		texture.loadTexture(base_path + "crate.jpg", true);
+	}
+}
+
+void Renderer::planar(const MeshModel& model)
+{
+	std::vector<Vertex> vertices = model.GetModelVertexes();
+	for (Vertex& vertex : vertices) {
+		textureCoords = glm::vec2(vertex.pos.x, vertex.pos.y);
+	}
+	glBindVertexArray(model.GetVAO());
+	glBindBuffer(GL_VERTEX_ARRAY, model.GetVBO());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
+	glBindVertexArray(0);
+}
+
+void Renderer::cylindrical(const MeshModel& model)
+{
+	std::vector<Vertex> vertices = model.GetModelVertexes();
+	for (Vertex& vertex : vertices) {
+		float theta = glm::atan(vertex.pos.y / vertex.pos.x);
+		textureCoords = glm::normalize(glm::abs(glm::vec2(glm::cos(theta), glm::sin(theta))));
+	}
+	glBindVertexArray(model.GetVAO());
+	glBindBuffer(GL_VERTEX_ARRAY, model.GetVBO());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
+	glBindVertexArray(0);
+}
+
+void Renderer::spherical(const MeshModel& model, double radius)
+{
+	std::vector<Vertex> vertices = model.GetModelVertexes();
+	for (Vertex& vertex : vertices) {
+		double textcord_x = glm::acos(vertex.pos.z / radius) / M_PI;
+		double textcord_y;
+		if (vertex.pos.y >= 0) {
+			textcord_y = glm::acos(vertex.pos.x / (radius * glm::sin(M_PI* textcord_x))) / 2 * M_PI;
+		}
+		else {
+			textcord_y = (M_PI + glm::acos(vertex.pos.x / (radius * glm::sin(M_PI * textcord_x)))) / 2 * M_PI;
+		}
+		textureCoords = glm::normalize(glm::vec2(textcord_x, textcord_y));
+	}
+
+	glBindVertexArray(model.GetVAO());
+	glBindBuffer(GL_VERTEX_ARRAY, model.GetVBO());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(Vertex), &vertices[0]);
+	glBindVertexArray(0);
 }

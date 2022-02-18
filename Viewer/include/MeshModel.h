@@ -76,6 +76,7 @@ public:
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 	ModelGUI_Attributes gui;
 
+
 private:
 	std::vector<Face> faces;
 	std::vector<glm::vec3> vertices;
