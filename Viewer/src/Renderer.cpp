@@ -828,51 +828,70 @@ void Renderer::Render(const Scene& scene)
 
 	for (int i = 0; i < scene.GetModelCount(); i++)
 	{
-		MeshModel& currModel = scene.GetModel(i);
-		if (currModel.gui.IsOnScreen)
+		MeshModel* currModel = &(scene.GetModel(i));
+
+		for (int j = 0; j < scene.GetLightCount(); j++)
 		{
-			vertexShader.use();
+			Light* currLight = &scene.GetLight(j);
 
-			// Pass transformatins to shader (MVP)
-			vertexShader.setUniform("model", currModel.GetTransformation());
-			vertexShader.setUniform("view", glm::inverse(camera.GetViewTransformation()));
-			vertexShader.setUniform("projection", camera.GetProjectionTransformation());
-			vertexShader.setUniform("scaling", currModel.GetScalingModel());
-			vertexShader.setUniform("viewport", camera.GetViewportTrans(viewport_width, viewport_height));
+			if (currModel->gui.IsOnScreen)
+			{
+				vertexShader.use();
 
-			GLuint cur_vao = currModel.GetVAO();
-			GLuint cur_vbo = currModel.GetVBO();
+				// Pass transformatins to shader (MVP)
+				// Set the uniform variables
+				vertexShader.setUniform("model", currModel->GetTransformation());
+				vertexShader.setUniform("view", camera.GetViewTransformation());
+				vertexShader.setUniform("projection", camera.GetProjectionTransformation());
 
-			glGenVertexArrays(1, &cur_vao);
-			glBindVertexArray(cur_vao);
+				vertexShader.setUniform("light.ambientColor", currLight->GetAmbientColor());
+				vertexShader.setUniform("light.diffuseColor", currLight->GetDiffuseColor());
+				vertexShader.setUniform("light.specularColor", currLight->GetSpecularColor());
+				vertexShader.setUniform("light.source", currLight->GetSource());
 
-			glGenBuffers(1, &cur_vbo);
-			glBindBuffer(GL_ARRAY_BUFFER, cur_vbo);
+				vertexShader.setUniform("material.ambientColor", currModel->gui.AmbientReflectionColor);
+				vertexShader.setUniform("material.diffuseColor", currModel->gui.DiffuseReflectionColor);
+				vertexShader.setUniform("material.specularColor", currModel->gui.SpecularReflectionColor);
+				vertexShader.setUniform("material.alpha", currModel->gui.shininess);
 
-			glBufferData(GL_ARRAY_BUFFER, currModel.GetVerticesCount() * sizeof(Vertex), &currModel.GetModelVertexes()[0], GL_STATIC_DRAW);
+				vertexShader.setUniform("cameraPosition", camera.getEye());
 
-			// Vertex Positions
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
-			glEnableVertexAttribArray(0);
+				vertexShader.setUniform("material.textureMap", 0);
 
-			// Normals attribute
-			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
-			glEnableVertexAttribArray(1);
+				GLuint cur_vao = currModel->GetVAO();
+				GLuint cur_vbo = currModel->GetVBO();
+
+				glGenVertexArrays(1, &cur_vao);
+				glBindVertexArray(cur_vao);
+
+				glGenBuffers(1, &cur_vbo);
+				glBindBuffer(GL_ARRAY_BUFFER, cur_vbo);
+
+				glBufferData(GL_ARRAY_BUFFER, currModel->GetVerticesCount() * sizeof(Vertex), &currModel->GetModelVertexes()[0], GL_STATIC_DRAW);
+
+				// Vertex Positions
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+				glEnableVertexAttribArray(0);
+
+				// Normals attribute
+				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));
+				glEnableVertexAttribArray(1);
 
 
-			texture.bind(0);
+				texture.bind(0);
 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glBindVertexArray(currModel.GetVAO());
-			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
-			glBindVertexArray(0);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glBindVertexArray(currModel->GetVAO());
+				glDrawArrays(GL_TRIANGLES, 0, currModel->GetVerticesCount());
+				glBindVertexArray(0);
 
-			texture.unbind(0);
+				texture.unbind(0);
 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			glBindVertexArray(currModel.GetVAO());
-			glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
-			glBindVertexArray(0);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glBindVertexArray(currModel->GetVAO());
+				glDrawArrays(GL_TRIANGLES, 0, currModel->GetVerticesCount());
+				glBindVertexArray(0);
+			}
 		}
 	}
 }
