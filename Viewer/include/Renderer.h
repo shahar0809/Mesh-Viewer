@@ -30,6 +30,10 @@ public:
 	void LoadShaders();
 	void LoadTextures();
 
+	void planar(const MeshModel& model);
+	void cylindrical(const MeshModel& model);
+	void spherical(const MeshModel& model, double radius);
+
 private:
 	void PutPixel(const int i, const int j, const glm::vec3& color, float z);
 	void DrawLine(const glm::ivec3& p1, const glm::ivec3& p2, const glm::vec3& color);
@@ -82,6 +86,7 @@ private:
 	/* Private fields */
 	ShaderProgram vertexShader;
 	Texture2D texture;
+	glm::vec2 textureCoords;
 
 	float* color_buffer;
 	int viewport_width;
