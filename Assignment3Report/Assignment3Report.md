@@ -8,7 +8,7 @@ We assign screen coordinates as 2 triangles, with the following coordinates:
 ```cpp
 // (-1, 1)___(1, 1)
 //       |\  |
-//       | \ | <--- The exture is drawn over two triangles that stretch over the screen.
+//       | \ | <--- The texture is drawn over two triangles that stretch over the screen.
 //       |__\|
 // (-1,-1)   (1,-1)
 ```
@@ -31,6 +31,20 @@ and copy the coordinate buffers there.
 Now, we initialize the shader, and tell OpenGL to use it:
 
 Finally, we pass the screen and texture coordinates to the shader.
+
+This function is called once, upon initialization, and creates a mapping for the texture.
+
+So the pipeline is as follows:
+
+`InitOpenGLRendering` defines the mapping of a texture over the screen.
+
+The `Render` function updates the color buffer, which is a buffer the size of the screen
+which contatins a color for each pixel.
+
+Right after `Render`, we call `SwapBuffers`, which converts the 
+color buffer into a texture.
+
+Finally, we get the color buffer as a texture over the screen.
 
 ## 2 - Load mesh on the GPU
 
@@ -193,6 +207,10 @@ glBindVertexArray(0);
 
 ## 5 - Update Renderer
 We did it in the previous sections.
+
+## 6 - Phong Shading
+Phong shading needs the following parameters:
+- Model's and Light's ambient, diffuse and specular colors
 
 ![Rectangles](part1_images/color_rectangles.gif)
 
