@@ -34,6 +34,7 @@ public:
 	GLuint GetVAO() const;
 	GLuint GetVBO() const;
 
+
 	std::vector<glm::vec3> getBoundingBox() const;
 
 	glm::mat4x4 GetScalingModel() const;
