@@ -349,12 +349,120 @@ vertex.textureCoords.y = 10.f - theta / glm::pi<float>();
 
 And... We get this:
 
+![Sphere](images/sphere.png)
+
 ## NPR
 ### Normal Mapping
 
+In normal mapping, we add a given 2D texture on a flat model that we have. 
+For doing that we need to use the normals of every fragment. 
+
+By using them we make the surface look like it was built from smaller parts, this gives the surface the opportunity to get a lot of detail.
+For doing that we needed the TBN mattrix. 
+
+We added this code to vShader:
+```cpp
+vec3 T = normalize(vec3( vec4(tangents, 1.0f)));
+vec3 N = normalize(vec3( vec4(normal,1.0f)));
+T = normalize(T - N * dot(N, T));
+vec3 B = cross(N,T);
+TBN = mat3(T, B, N);
+```
+
+And we added this code to fShader:
+```cpp
+vec3 Normal;
+if(normalMapping)
+{
+	Normal = vec3(texture(material.normalMap, fragTexCoords).rgb * 2.0 - 1.0);  
+	Normal = normalize((TBN) * Normal);
+		
+}
+else
+	Normal=fragNormal;
+```
+
+We get the following:
+
+![Normal Mapping](images/normal_map.jpeg) 
+
 ### Environment mapping
 
+In environment mapping, we want to assign to the model the same color as the environment.
+
+So firstly, we created a skybox - which is a cube with 6 faces, that makes it seem as a complete 360 image.
+
+![Skybox](images/skybox.png)
+
+To load a skybox, we need to load each face, with `glTexImage2D`, which has a macro for cube map:
+
+```cpp
+glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+
+glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+
+glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 
+                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+```
+
+Then, we wanted to actually implement the reflection attribute. 
+
+We need to reflect the camera direction vector according to the normal:
+
+![env_map](images/env_map_diagram.png)
+
+So, the fragment shader is like this:
+
+```cpp
+out vec4 FragColor;
+
+in vec3 normal;
+in vec3 position;
+
+uniform vec3 cameraEye;
+uniform samplerCube skybox;
+
+void main()
+{             
+    vec3 cameraDirection = normalize(position - cameraEye);
+    vec3 reflectionVec = reflect(cameraDirection, normalize(normal));
+    FragColor = vec4(texture(skybox, reflectionVec).rgb, 1.0);
+}
+```
+
+Result:
+
+![Env Map](images/env_map.png)
+
+
 ### Toon shading
+In toon shading, we make 3D models to appear to be cartoonish by using less shading color instead of a varaity of tints and shades.
+
+To implement this, we divided all the color shades into 4 colors, only by the intensity of the color at each point.
+
+This is how we got the intensity:
+
+```cpp
+float intensity = dot(normalize(lightDirection), normalize(fragNormal));
+```
+
+We get the following:
+
+![Toon Shading](images/toon_shading.jpeg)
 
 ## *fin*
 Ah one last time:
