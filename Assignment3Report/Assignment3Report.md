@@ -349,11 +349,46 @@ vertex.textureCoords.y = 10.f - theta / glm::pi<float>();
 
 And... We get this:
 
-## 8 - 
+## NPR
+### Normal mapping
+In normal mapping, we add a given 2D texture on a flat model that we have. 
+For doing that we need to use the normals of every fragment. 
+By using them we make the surface s look like it build from smaller parts, this gives the surface the opportunity to get a lot of detail.
+For doing that we needed the TBN mattrix. 
+
+We added this code to vShader:
+```cpp
+vec3 T = normalize(vec3( vec4(tangents, 1.0f)));
+vec3 N = normalize(vec3( vec4(normal,1.0f)));
+T = normalize(T - N * dot(N, T));
+vec3 B = cross(N,T);
+TBN = mat3(T, B, N);
+```
+
+We added this code to fShader:
+```cpp
+vec3 Normal;
+if(normalMapping)
+{
+	Normal = vec3(texture(material.normalMap, fragTexCoords).rgb * 2.0 - 1.0);  
+	Normal = normalize((TBN) * Normal);
+		
+}
+else
+	Normal=fragNormal;
+```
+We get the following:
+
+![Normal Mapping](images/normal_mapping.jpeg) 
+
+### Environment mapping
+
 ### Toon shading (without the silhouette)
 In toon shading, we make 3D models to appear to be painted by using less shading color instead of a varaity of tints and shades.
 
 For implament that we divided all the shades into 4 coler only bt the intensity if the coler at each point.
+
+This is how we got the intensity:
 
 ```cpp
 float intensity = dot(normalize(lightDirection), normalize(fragNormal));
@@ -363,18 +398,7 @@ We get the following:
 
 ![Toon Shading](images/toon_shading.jpeg)
 
-### Normal mapping
-In normal mapping, we add a given 2D texture on   3-D models to appear to be painted by using less shading color instead of a varaity of tints and shades.
 
-For implament that we divided all the shades into 4 color by the intensity of the color at each point.
-
-```cpp
-float intensity = dot(normalize(lightDirection), normalize(fragNormal));
-```
-
-We get the following:
-
-![Normal Mapping](images/normal_mapping_.jpeg)
 ## *fin*
 Ah one last time:
 
