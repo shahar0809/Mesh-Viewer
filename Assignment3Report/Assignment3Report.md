@@ -351,7 +351,7 @@ And... We get this:
 
 ## 8 - 
 ### Toon shading (without the silhouette)
-In toon shading, we make 3-D models to appear to be painted by using less shading color instead of a varaity of tints and shades.
+In toon shading, we make 3D models to appear to be painted by using less shading color instead of a varaity of tints and shades.
 
 For implament that we divided all the shades into 4 coler only bt the intensity if the coler at each point.
 
@@ -363,7 +363,18 @@ We get the following:
 
 ![Toon Shading](images/toon_shading.jpeg)
 
+### Normal mapping
+In normal mapping, we add a given 2D texture on   3-D models to appear to be painted by using less shading color instead of a varaity of tints and shades.
 
+For implament that we divided all the shades into 4 color by the intensity of the color at each point.
+
+```cpp
+float intensity = dot(normalize(lightDirection), normalize(fragNormal));
+```
+
+We get the following:
+
+![Normal Mapping](images/normal_mapping_.jpeg)
 ## *fin*
 Ah one last time:
 
