@@ -304,6 +304,52 @@ Here is a really beautiful pink/magneta (not purple :) ) with a bit of a blue li
 
 [So smooth!!!]
 
+## 7 - Types of texture mapping
+### Planar
+In planar, we map the UV coordinates to be the same as the vertex's position, so:
+
+```cpp
+for (Vertex& vertex : modelVertices) {
+	vertex.textureCoords = glm::vec2(vertex.position.x, vertex.position.y);
+}
+```
+
+And we get the following:
+
+![Planar](images/planar.png)
+
+### Cylindrical
+In cylindrical, we map coordinates into their polar coordinates:
+
+```cpp
+float phi = std::atan2(vertex.position.x, vertex.position.y);
+float theta = std::atan2(vertex.position.x, vertex.position.z);
+vertex.textureCoords = glm::vec2(phi, theta);
+```
+
+We get the following:
+
+![Cylinder](images/cylinder.gif)
+
+### Spherical
+Basically the same, we convert the coordinates to spherical coordinates:
+
+![Spherical Coordinates](images/spherical_coordinates.png)
+
+![Spherical Mapping](images/spherical_mapping.png)
+
+```cpp
+float r = glm::sqrt(vertex.position.x * vertex.position.x + vertex.position.y * vertex.position.y + vertex.position.z * vertex.position.z);
+float theta = glm::atan(vertex.position.y / vertex.position.x);
+float phi = glm::acos(vertex.position.z / r);
+
+vertex.textureCoords.x = phi / 2 * glm::pi<float>();
+vertex.textureCoords.y = 10.f - theta / glm::pi<float>();
+```
+
+And... We get this:
+
+
 
 ## *fin*
 Ah one last time:
