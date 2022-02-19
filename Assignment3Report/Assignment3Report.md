@@ -349,6 +349,19 @@ vertex.textureCoords.y = 10.f - theta / glm::pi<float>();
 
 And... We get this:
 
+## 8 - 
+### Toon shading (without the silhouette)
+In toon shading, we make 3-D models to appear to be painted by using less shading color instead of a varaity of tints and shades.
+
+For implament that we divided all the shades into 4 coler only bt the intensity if the coler at each point.
+
+```cpp
+float intensity = dot(normalize(lightDirection), normalize(fragNormal));
+```
+
+We get the following:
+
+![Toon Shading](images/toon_shading.jpeg)
 
 
 ## *fin*
