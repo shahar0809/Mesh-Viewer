@@ -349,7 +349,12 @@ vertex.textureCoords.y = 10.f - theta / glm::pi<float>();
 
 And... We get this:
 
+## NPR
+### Normal Mapping
 
+### Environment mapping
+
+### Toon shading
 
 ## *fin*
 Ah one last time:
