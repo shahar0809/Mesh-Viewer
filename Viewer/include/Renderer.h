@@ -83,9 +83,15 @@ private:
 	void ApplyFog(const Scene& scene, const Camera& camera);
 	void ApplyBlur();
 
+	GLuint LoadSkybox();
+
 	/* Private fields */
 	ShaderProgram vertexShader;
+	ShaderProgram skyboxShader;
+	ShaderProgram cubeEnvShader;
+
 	Texture2D texture;
+	Texture2D cube, skybox;
 	glm::vec2 textureCoords;
 
 	float* color_buffer;
@@ -93,6 +99,9 @@ private:
 	int viewport_height;
 	GLuint gl_screen_tex;
 	GLuint gl_screen_vtc;
+
+	GLuint skyboxVAO, skyboxVBO;
+	GLuint cubeVAO, cubeVBO;
 
 	float** zBuffer;
 };
