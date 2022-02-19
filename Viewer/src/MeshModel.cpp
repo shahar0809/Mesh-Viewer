@@ -603,3 +603,44 @@ glm::vec3 MeshModel::FromHomogCoords(glm::vec4 vec)
 	return glm::vec3(vec.x / vec.w, vec.y / vec.w, vec.z / vec.w);
 }
 
+void MeshModel::planar()
+{
+	for (Vertex& vertex : modelVertices) {
+		vertex.textureCoords = glm::vec2(vertex.position.x, vertex.position.y);
+	}
+	glBindVertexArray(vao);
+	glBindBuffer(GL_VERTEX_ARRAY, vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, modelVertices.size() * sizeof(Vertex), &modelVertices[0]);
+	glBindVertexArray(0);
+}
+
+void MeshModel::cylindrical()
+{
+	for (Vertex& vertex : modelVertices) {
+		float phi = std::atan2(vertex.position[0], vertex.position[1]);
+		float theta = std::atan2(vertex.position[0], vertex.position[2]);
+		vertex.textureCoords = glm::vec2(phi, theta);
+	}
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_VERTEX_ARRAY, vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, modelVertices.size() * sizeof(Vertex), &modelVertices[0]);
+	glBindVertexArray(0);
+}
+
+void MeshModel::spherical(float radius)
+{
+	for (Vertex& vertex : modelVertices) {
+		float r = glm::sqrt(vertex.position.x * vertex.position.x + vertex.position.y * vertex.position.y + vertex.position.z * vertex.position.z);
+		float theta = glm::atan(vertex.position.y / vertex.position.x);
+		float phi = glm::acos(vertex.position.z / r);
+
+		vertex.textureCoords.x = phi / 2 * glm::pi<float>();
+		vertex.textureCoords.y = 10.f - theta / glm::pi<float>();
+	}
+
+	glBindVertexArray(vao);
+	glBindBuffer(GL_VERTEX_ARRAY, vbo);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, modelVertices.size() * sizeof(Vertex), &modelVertices[0]);
+	glBindVertexArray(0);
+}

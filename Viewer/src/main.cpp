@@ -687,7 +687,22 @@ void DrawImguiMenus(ImGuiIO& io, Scene& scene)
 		}
 		ImGui::End();
 
+		ImGui::Begin("TextureMapping");
 
+		if (ImGui::RadioButton("Planar", (int*)&scene.textureMappingMode, (int)TextureMapping::PLANAR)) {
+			scene.GetActiveModel().planar();
+		}
+		if (ImGui::RadioButton("Cylindrical", (int*)&scene.textureMappingMode, (int)TextureMapping::CYLINDRICAL)) {
+			scene.GetActiveModel().cylindrical();
+		}
+
+		if (ImGui::RadioButton("Spherical", (int*)&scene.textureMappingMode, (int)TextureMapping::SPHERICAL)) {
+			scene.GetActiveModel().spherical(0);
+		}
+
+		ImGui::RadioButton("No Texture", (int*)&scene.textureMappingMode, (int)TextureMapping::COLOR);
+
+		ImGui::End();
 
 		/* -------------------------------------------------- Post Processing -----------------------------------------------*/
 

@@ -13,8 +13,16 @@
 
 struct Vertex
 {
-	glm::vec3 pos;
-	glm::vec3 textureCoords;
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 textureCoords;
+};
+
+enum TextureMapping {
+	PLANAR,
+	CYLINDRICAL,
+	SPHERICAL,
+	COLOR
 };
 
 class MeshModel
@@ -34,6 +42,9 @@ public:
 	GLuint GetVAO() const;
 	GLuint GetVBO() const;
 
+	void planar();
+	void cylindrical();
+	void spherical(float radius);
 
 	std::vector<glm::vec3> getBoundingBox() const;
 
@@ -76,6 +87,8 @@ public:
 
 	static std::pair<std::tuple<double, double, double>, std::tuple<double, double, double>> GetMinMax(std::vector<glm::vec3> vertices);
 	ModelGUI_Attributes gui;
+
+	std::vector<Vertex> modelVertices;
 
 
 private:

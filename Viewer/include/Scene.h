@@ -46,6 +46,9 @@ public:
 	float fogStart = 90.0f;
 	float fogEnd = 95.0f; // check what value should be initialized with
 	float fogDistance = 0;
+
+	TextureMapping textureMappingMode = TextureMapping::COLOR;
+
 	
 private:
 	vector<shared_ptr<MeshModel>> mesh_models;
