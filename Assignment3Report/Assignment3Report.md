@@ -205,6 +205,10 @@ glDrawArrays(GL_TRIANGLES, 0, currModel.GetVerticesCount());
 glBindVertexArray(0);
 ```
 
+And we got a really rotten banana:
+
+![Const Color](images/const_color.png)
+
 ## 5 - Update Renderer
 We did it in the previous sections.
 
