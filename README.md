@@ -4,11 +4,7 @@
 
 Name: Shahar Tefler
 
-
-
 Name: Iris Berger
-
-Student Number: 213996549
 
 ### Lecturer
 *Roi Poranne*
