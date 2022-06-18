@@ -1,2 +1,2 @@
-# * linguist-vendored
-# *.c linguist-vendored=false
+* linguist-vendored
+*.c linguist-detectable=false
