@@ -1,2 +1,3 @@
 # * linguist-vendored
 # *.c linguist-detectable=false
+ThirdParty/** linguist-vendored=true
