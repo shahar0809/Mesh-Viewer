@@ -55,7 +55,7 @@ And then implemented Z-Buffer to avoid faces overlapping:
 ## Advenced Coloring and Shading
 
 We implemented all three types of lights: Ambient, Diffuse and Specular.
-We also added three types of Shading: Flat, Grouraud and Pong.
+We also added three types of Shading: Flat, Grouraud and Phong.
 
 ### Flat
 
@@ -65,7 +65,7 @@ We also added three types of Shading: Flat, Grouraud and Pong.
 
 ![b](Assignment2Report/part2_images/Grouraud.jpeg)
 
-### Pong
+### Phong
 
 ![c](Assignment2Report/part2_images/Phong.jpeg)
 
@@ -73,9 +73,9 @@ We also added three types of Shading: Flat, Grouraud and Pong.
 
 Finally, we implemented all of the above using OpenGL and shaders.
 
-Pong shading:
+Phong shading:
 
-![pong](Assignment3Report/images/phong.png)
+![phong](Assignment3Report/images/phong.png)
 
 ## Texture Mappings
 
